@@ -20,12 +20,12 @@
     include("IO/const.jl")
 
     # Math
-    include("Math/f.jl")
+    include("Math/f/f.jl")
     include("Math/mat_op.jl")
     include("Math/dist.jl")
     include("Math/interpol.jl")
     include("Math/rg.jl")
-    include("Math/mp.jl")
+    include("Math/mpa.jl")
     include("Math/vq.jl")
     include("Math/yamartino.jl")
     include("Math/op.jl")
