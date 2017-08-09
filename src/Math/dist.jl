@@ -61,7 +61,7 @@
     end
 
     ##-----------------------------------------------------------------------------------
-    function orthodromic_distance{T<:Number, N<:Int}(u::Array{T, 1}, v::Array{T, 1}, radius, center::Array{T, 1} = zeros(N), precision = 1)
+    function orthodromic_distance{T<:Number}(u::Array{T, 1}, v::Array{T, 1}, radius, center::Array{T, 1}, precision = 1)
         sigma = 0.0
         u = normalize(u, center)
         v = normalize(v, center)
