@@ -21,7 +21,6 @@
 
     # Math
     include("Math/f/f.jl")
-    include("Math/mat_op.jl")
     include("Math/dist.jl")
     include("Math/interpol.jl")
     include("Math/rg.jl")
