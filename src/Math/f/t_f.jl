@@ -19,7 +19,7 @@
 		@testset "hyperbolic tangent function tests" begin
 			@testset "tanh overload tests" begin
 				@test f.tanh(3, 3)		≈ 0 	atol = tol
-				@test f.tanh(.55, 0)  	≈.5		atol = tol
+				@test f.tanh(.55, 0)  	≈ .5	atol = tol
 			end
 			@testset "tanh derivate tests" begin
 				@test d_tanh(3, 3) 	≈ 1 	atol = tol
