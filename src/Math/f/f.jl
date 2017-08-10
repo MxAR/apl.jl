@@ -43,31 +43,31 @@
     ##===================================================================================
     ## BLAS wrapper
     ##===================================================================================
-    export bdot, bdotu, bdotc, bnrm2
+    export bdot, bdotu, bdotc, bnrm
 
     ##-----------------------------------------------------------------------------------
     bdot(l::Int64, v::Array{Float64, 1}, u::Array{Float64, 1}) = BLAS.dot(l, v, 1, u, 1)            # l = length of the vectors
 
     ##-----------------------------------------------------------------------------------
-    bdot(v::Array{Float64, 1}, u::Array{Float64, 1}) = BLAS.dot(length(v), v, 1, u, 1)
+    bdot(v::Array{Float64, 1}, u::Array{Float64, 1}) = BLAS.dot(size(v, 1), v, 1, u, 1)
 
     ##-----------------------------------------------------------------------------------
     bdotu(l::Int64, v::Array{Complex128, 1}, u::Array{Complex128, 1}) = BLAS.dotu(l, v, 1, u, 1)    # l = length of the vectors
 
     ##-----------------------------------------------------------------------------------
-    bdotu(v::Array{Complex128, 1}, u::Array{Complex128, 1}) = BLAS.dotu(length(v), v, 1, u, 1)
+    bdotu(v::Array{Complex128, 1}, u::Array{Complex128, 1}) = BLAS.dotu(size(v, 1), v, 1, u, 1)
 
     ##-----------------------------------------------------------------------------------
     bdotc(l::Int64, v::Array{Complex128, 1}, u::Array{Complex128, 1}) = BLAS.dotc(l, v, 1, u, 1)    # l = length of the vectors
 
     ##-----------------------------------------------------------------------------------
-    bdotc(v::Array{Complex128, 1}, u::Array{Complex128, 1}) = BLAS.dotc(length(v), v, 1, u, 1)
+    bdotc(v::Array{Complex128, 1}, u::Array{Complex128, 1}) = BLAS.dotc(size(v, 1), v, 1, u, 1)
 
     ##-----------------------------------------------------------------------------------
-    bnrm2{T<:Real, N<:Int}(l::N, v::Array{T, 1}) = BLAS.nrm2(l, v, 1)                               # l = length of the vector
+    bnrm(l::Int64, v::Array{Float64, 1}) = BLAS.nrm2(l, v, 1)                                      # l = length of the vector
 
     ##-----------------------------------------------------------------------------------
-    bnrm2{T<:Real}(v::Array{T, 1}) = BLAS.nrm2(length(v), v, 1)
+    bnrm(v::Array{Float64, 1}) = BLAS.nrm2(size(v, 1), v, 1)
 
 
     ##===================================================================================
@@ -148,10 +148,10 @@
     export sigmoid, d_sigmoid
 
     ##-----------------------------------------------------------------------------------
-    sigmoid(x, eta = 0) = 1 / (1 + exp(-(x-eta)))
+    sigmoid(x, eta = 0) = @. 1/(1+exp(-(x-eta)))
 
     ##-----------------------------------------------------------------------------------
-    d_sigmoid(x, eta = 0) =  sigmoid(x, eta) * (1-sigmoid(x, eta))
+    d_sigmoid(x, eta = 0) =  @. sigmoid(x, eta) * (1-sigmoid(x, eta))
 
 
     ##===================================================================================
@@ -160,7 +160,7 @@
     export norm_d
 
     ##-----------------------------------------------------------------------------------
-    nrom_d{T<:Real}(v::Array{T, 1}, p::Int = 2) = (abs(v) ./ ifelse(iszero(v), 1, norm(v, p))).^(p-1) .* sign(v)
+    nrom_d(v::Array{Float64, 1}, p::Int64 = 2) = @. sign(v)*(abs(v)/ifelse(iszero(v), 1, norm(v, p)))^(p-1)
 
 
     ##===================================================================================
@@ -170,11 +170,12 @@
         rbf_multi_quad, rbf_inv_multi_quad, rbf_inv_quad, rbf_poly_harm, rbf_thin_plate_spline
 
     ##-----------------------------------------------------------------------------------
-    rbf_gaussian(delta, lambda = 1) = exp(-(delta/(2*lambda))^2)
+    rbf_gaussian(delta, lambda = 1) = @. exp(-(delta/(2*lambda))^2)
 
     ##-----------------------------------------------------------------------------------
     function rbf_gaussian_d_lambda(delta, lambda = 1)
-        delta .^= 2; lam = lambda^2; return (delta./ (lam.*lambda)) .* exp(-delta./lam)
+        @. delta^= 2; lam = lambda^2;
+        return @. (delta/(lam*lambda))*exp(-delta/lam)
     end
 
     ##-----------------------------------------------------------------------------------
@@ -371,26 +372,26 @@
         haversine_central_angle, vincenty_central_angle
 
     ##-----------------------------------------------------------------------------------
-    angle{T<:Real}(u::Array{T, 1}, v::Array{T, 1}, bias = 0) = acosd((abs(bdot(v, u))/(norm(v) * norm(u))) + bias)
+    angle(u::Array{Float64, 1}, v::Array{Float64, 1}, bias = .0) = acosd((abs(bdot(v, u))/(bnrm(v)*bnrm(u)))+bias)
 
     ##-----------------------------------------------------------------------------------
-    acos_central_angle{T<:Number}(u::Array{T, 1}, v::Array{T, 1}) = acos(bdot(u,v))             # returns radians / u&v = normal vectors on the circle
+    acos_central_angle(u::Array{Float64, 1}, v::Array{Float64, 1}) = acos(bdot(u,v))             # returns radians | u&v = normal vectors on the circle
 
     ##-----------------------------------------------------------------------------------
-    asin_central_angle{T<:Number}(u::Array{T, 1}, v::Array{T, 1}) = asin(norm(cross(u, v)))     # returns radians / u&v = normal vectors on the circle
+    asin_central_angle(u::Array{Float64, 1}, v::Array{Float64, 1}) = asin(bnrm(cross(u, v)))     # returns radians | u&v = normal vectors on the circle
 
     ##-----------------------------------------------------------------------------------
-    atan_central_angle{T<:Number}(u::Array{T, 1}, v::Array{T, 1}) = atan(norm(cross(u, v))/bdot(u, v))  # returns radians / u&v = normal vectors on the circle
+    atan_central_angle(u::Array{Float64, 1}, v::Array{Float64, 1}) = atan(bnrm(cross(u, v))/bdot(u, v))  # returns radians | u&v = normal vectors on the circle
 
     ##-----------------------------------------------------------------------------------
-    central_angle(pla, plo, sla, slo) = acos((sin(pla)*sin(sla))+(cos(pla)*cos(sla)*cos(abs(plo-slo)))) # returns radians / pla/sla = primary/secondary latitude / plo/slo = primary/secondary longitude
+    central_angle(pla, plo, sla, slo) = acos((sin(pla)*sin(sla))+(cos(pla)*cos(sla)*cos(abs(plo-slo)))) # returns radians | pla/sla = primary/secondary latitude / plo/slo = primary/secondary longitude
 
     ##-----------------------------------------------------------------------------------
-    haversine_central_angle(pla, plo, sla, slo) = 2*asin(sqrt(havsin(abs(pla-sla))+cos(pla)*cos(sla)*havsin(abs(plo-slo)))) # returns radians / pla/sla = primary/secondary latitude / plo/slo = primary/secondary longitude
+    haversine_central_angle(pla, plo, sla, slo) = 2*asin(sqrt(havsin(abs(pla-sla))+cos(pla)*cos(sla)*havsin(abs(plo-slo)))) # returns radians | pla/sla = primary/secondary latitude / plo/slo = primary/secondary longitude
 
     ##-----------------------------------------------------------------------------------
     function vincenty_central_angle(pla, plo, sla, slo)
-        longitude_delta = abs(plo-slo)                                                                                      # returns radians / pla/sla = primary/secondary latitude / plo/slo = primary/secondary longitude
+        longitude_delta = abs(plo-slo)                                                                                      # returns radians | pla/sla = primary/secondary latitude / plo/slo = primary/secondary longitude
         return atan2(sqrt((cos(sla)*sin(longitude_delta))^2+((cos(pla)*sin(sla))-(sin(pla)*cos(sla)*cos(longitude_delta)))^2), (sin(pla)*sin(sla)+cos(pla)*cos(sla)*cos(longitude_delta)))
     end
 
