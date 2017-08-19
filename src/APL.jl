@@ -37,6 +37,9 @@
     include("Percepton/MultilayerPercepton.jl")
     include("Percepton/Percepton.jl")
 
+    # Eva
+    include("Eva/eva.jl")
+
     # RBFNetworks
     include("RBFNetworks/RBFNetwork.jl")
 end
