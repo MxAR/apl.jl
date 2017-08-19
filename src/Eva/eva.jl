@@ -62,6 +62,7 @@
 	##===================================================================================
 	function vl_rand(ncbd::t_ncbd, l::Int64)
 		vl = Array{Array{Float64, 1}, 1}(l)												# create an empty vl of length l
+		set_zero_subnormals(true)														# to save computing time
 		@inbounds for i = 1:l															# fill the list
 			vl[i] = ncbd.alpha+(rand(ncbd.n).*ncbd.delta)								# (filling)
 		end
@@ -78,7 +79,7 @@
 	##===================================================================================
 	function mut_default(v::Array{Float64, 1}, ncbd::t_ncbd, max_delta::Array{Float64, 1})
 		supremum = ncbd.alpha .+ ncbd.delta												# calculate the supremum (for later checks)
-		@inbound for i=1:ncbd.n															# mutate each value inside the vector
+		@inbounds for i=1:ncbd.n															# mutate each value inside the vector
 			v[i] += prison(randn()*max_delta[i], ncbd.alpha[i], ncbd.supremum[i])		# random mutation inside the given n dim intervall
 		end
 		return v																		# return the mutation
