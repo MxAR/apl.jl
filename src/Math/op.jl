@@ -7,7 +7,7 @@
     ##-----------------------------------------------------------------------------------
     function PI{T<:Real}(N::Array{T, 1})
         p = N[1]
-        for i = 2:length(N) p *= N[i] end 
+        for i = 2:length(N) p *= N[i] end
         return p
     end
 
@@ -36,7 +36,7 @@
     export prison
 
     ##-----------------------------------------------------------------------------------
-    prison(value, infimum, supremum) = min(max(Value, Infimum), Supremum)
+    prison(value, infimum, supremum) = min(max(value, infimum), supremum)
 
     ##-----------------------------------------------------------------------------------
     prison(x, f::Function, infimum, supremum) = ifelse(x < infimum, 0, ifelse(x > supremum, 1, f(x)))
