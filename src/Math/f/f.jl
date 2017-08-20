@@ -3,6 +3,17 @@
     ##  using Directives
     ##===================================================================================
     using cnv
+    
+
+    ##===================================================================================
+    ##  types
+    ##===================================================================================
+    type t_ncbd																			# n dimensional cuboid
+		alpha::Array{Float64, 1}														# infimum 									(point)
+		delta::Array{Float64, 1}														# diference between supremum and infimum	(s-i)
+		n::Int64																		# n
+	end
+
 
     ##===================================================================================
     ## hyperbolic tangent
@@ -616,14 +627,24 @@
     ##===================================================================================
     ## random vl
     ##===================================================================================
-    export randvl
+    export vl_rand
 
     ##-----------------------------------------------------------------------------------
-    function randvl{T<:Int, N<:Int}(l::T, w::N)
+    function vl_rand(l::Int64, w::Int64)
         vl = Array{Any, 1}
         for i = 1:l push!(vl, rand(w)) end
         return vl
     end
+
+    ##-----------------------------------------------------------------------------------
+	function vl_rand(ncbd::t_ncbd, l::Int64)
+		vl = Array{Array{Float64, 1}, 1}(l)												# create an empty vl of length l
+		set_zero_subnormals(true)														# to save computing time
+		@inbounds for i = 1:l															# fill the list
+			vl[i] = ncbd.alpha+(rand(ncbd.n).*ncbd.delta)								# (filling)
+		end
+		return vl																		# return of the vl
+	end
 
 
     ##===================================================================================
