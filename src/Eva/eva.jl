@@ -31,24 +31,28 @@
 	##		mr = mutation rate
 	##===================================================================================
 	function eve(optp::t_opt_prb, tc::Tuple{Int64, Float64}, gen_size::Int64, mut::Function, mr::Float64)
-		const max_delta = Array{Float64, 1}(abs.(mr./optp.sp.delta))					# calculate the maximal change that can occure through mutation
-		cc = [1, Inf, Int64(0)]; s = 0.													# cc = current condition of the population (epoch, current error, best element)
+		const max_delta = map((x) -> abs(mr/x), optp.sp.delta)							# calculate the maximal change that can occure through mutation
+		supremum = optp.sp.alpha + optp.sp.delta										# supremum of the n dim cubiod (for mutation)
 		pop = vl_rand(optp.sp, gen_size)												# generate population from the given search space
-		while cc[1] <= tc[1] && cc[2] > tc[2]											# initiate the process
+		swp = Float64(0)																# swap var, mainly for searching for the best element
+		cbe = Int64(0)																	# current best element (champion)
+		cep = Int64(1)																	# current epoch
+		cer = Inf																		# current error
+
+		while cep <= tc[1] && cer > tc[2]												# initiate the process
 			@inbounds for i = 1:gen_size												# get the fittest subject
-				s = optp.ff(pop[i])															# evaluate the fitness of the subject
-				if s < cc[2]																# compare it to the current champion
-					cc[2] = s																	# if better the the highscore gets updated
-					cc[3] = i 																	# and the subject becomes the new champion
+				swp = Float64(optp.ff(pop[i]))												# evaluate the fitness of the subject
+				if swp < cer																# compare it to the current champion
+					cer = swp																	# if better the the highscore gets updated
+					cbe = i 																	# and the subject becomes the new champion
 				end
 			end
 
-			pop[1] = deepcopy(pop[Int64(cc[3])])										# move champion to the first place
-			@inbounds for i = 2:gen_size												# generate a new generation from the gens of the champion
-				pop[i] .= deepcopy(pop[1])
-				pop[i] .= mut(pop[i], optp.sp, max_delta)								# (mutation)
+			pop[1] = deepcopy(pop[cbe])													# move champion to the first place
+			@inbounds for i = 2:gen_size												# generate a new generation from the genes of the champion
+				pop[i] .= mut(pop[i], pop[1], optp.sp, max_delta, supremum)					# (mutation)
 			end
-			cc[1] += 1																	# update epoche counter
+			cep += 1																	# update epoche counter
 		end
 		return pop[1]																	# return overall champion
 	end
@@ -73,15 +77,16 @@
 	##===================================================================================
 	##	mut_default
 	##		default mutation function for n dim vectors
-	##		v = the vector to be mustated
+	##		child = the array that will store a mutated version of the parent
+	##		parent = the original parent that from which a new generation is created
 	##		ncbd = t_ncbd
 	##		max_delta = the maximal change that can occure through muation
+	## 		supremum = the supremum of the n dim cubiod represented in optp.sp
 	##===================================================================================
-	function mut_default(v::Array{Float64, 1}, ncbd::t_ncbd, max_delta::Array{Float64, 1})
-		supremum = ncbd.alpha .+ ncbd.delta												# calculate the supremum (for later checks)
-		@inbounds for i=1:ncbd.n														# mutate each value inside the vector
-			v[i] += op.prison(2*(rand()-.5)*max_delta[i], ncbd.alpha[i], supremum[i])	# random mutation inside the given n dim intervall
+	function mut_default(child::Array{Float64, 1}, parent::Array{Float64, 1}, ncbd::t_ncbd, max_delta::Array{Float64, 1}, supremum::Array{Float64, 1})
+		@inbounds for i=1:ncbd.n																		# mutate each value inside the vector
+			child[i] = parent[i] + op.prison(2*(rand()-.5)*max_delta[i], ncbd.alpha[i], supremum[i])	# random mutation inside the given n dim intervall
 		end
-		return v																		# return the mutation
+		return child
 	end
 end
