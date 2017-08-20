@@ -3,19 +3,13 @@
 	##	using directives
 	##===================================================================================
 	using op
+	using f
 
 	##===================================================================================
 	##	types
 	##===================================================================================
-	type t_ncbd																			# n dimensional cuboid
-		alpha::Array{Float64, 1}														# infimum 									(point)
-		delta::Array{Float64, 1}														# diference between supremum and infimum	(s-i)
-		n::Int64																		# n
-	end
-
-	##-----------------------------------------------------------------------------------
 	type t_opt_prb																		# optimization problem
-		sp::t_ncbd																		# search space
+		sp::f.t_ncbd																		# search space
 		ff::Function																	# fitness function
 	end
 
@@ -26,14 +20,13 @@
 	##		tc = termination conditions
 	##			tc[1] = maximal number of epochs
 	##			tc[2] = minimal error where the search is aborted
-	##		gen_size = size of each generation
+	##		pop = initial population
 	##		mut = mutation function
 	##		mr = mutation rate
 	##===================================================================================
-	function eve(optp::t_opt_prb, tc::Tuple{Int64, Float64}, gen_size::Int64, mut::Function, mr::Float64)
-		const max_delta = map((x) -> abs(mr/x), optp.sp.delta)							# calculate the maximal change that can occure through mutation
+	function eve(optp::t_opt_prb, tc::Tuple{Int64, Float64}, pop::Array{Array{Float64, 1}, 1}, mut::Function, mr::Function)
 		supremum = optp.sp.alpha + optp.sp.delta										# supremum of the n dim cubiod (for mutation)
-		pop = vl_rand(optp.sp, gen_size)												# generate population from the given search space
+		gen_size = size(pop, 1)															# size of each generation
 		swp = Float64(0)																# swap var, mainly for searching for the best element
 		cbe = Int64(0)																	# current best element (champion)
 		cep = Int64(1)																	# current epoch
@@ -48,29 +41,15 @@
 				end
 			end
 
+			max_delta = Base.map((x) -> abs(mr(cep)/x), optp.sp.delta)							# calculate the maximal change that can occure through mutation
 			pop[1] = deepcopy(pop[cbe])													# move champion to the first place
 			@inbounds for i = 2:gen_size												# generate a new generation from the genes of the champion
 				pop[i] .= mut(pop[i], pop[1], optp.sp, max_delta, supremum)					# (mutation)
 			end
+
 			cep += 1																	# update epoche counter
 		end
 		return pop[1]																	# return overall champion
-	end
-
-
-	##===================================================================================
-	##	vl_rand
-	##		fills a vl with l vectors of dim n from a n dim cuboid
-	##		ncbd = t_ncbd
-	## 		l = length of vl
-	##===================================================================================
-	function vl_rand(ncbd::t_ncbd, l::Int64)
-		vl = Array{Array{Float64, 1}, 1}(l)												# create an empty vl of length l
-		set_zero_subnormals(true)														# to save computing time
-		@inbounds for i = 1:l															# fill the list
-			vl[i] = ncbd.alpha+(rand(ncbd.n).*ncbd.delta)								# (filling)
-		end
-		return vl																		# return of the vl
 	end
 
 
@@ -83,9 +62,9 @@
 	##		max_delta = the maximal change that can occure through muation
 	## 		supremum = the supremum of the n dim cubiod represented in optp.sp
 	##===================================================================================
-	function mut_default(child::Array{Float64, 1}, parent::Array{Float64, 1}, ncbd::t_ncbd, max_delta::Array{Float64, 1}, supremum::Array{Float64, 1})
+	function mut_default(child::Array{Float64, 1}, parent::Array{Float64, 1}, ncbd::f.t_ncbd, max_delta::Array{Float64, 1}, supremum::Array{Float64, 1})
 		@inbounds for i=1:ncbd.n																		# mutate each value inside the vector
-			child[i] = parent[i] + op.prison(2*(rand()-.5)*max_delta[i], ncbd.alpha[i], supremum[i])	# random mutation inside the given n dim intervall
+			child[i] = parent[i] + prison(2*(rand()-.5)*max_delta[i], ncbd.alpha[i], supremum[i])	# random mutation inside the given n dim intervall
 		end
 		return child
 	end
