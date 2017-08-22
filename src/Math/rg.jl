@@ -38,7 +38,7 @@
     export lsta_rg
 
     ##-----------------------------------------------------------------------------------
-    function lsta_rg{T<:Real}(X::Array{T, 2})
+    function lsta_rg(X::Array{Float64, 2})
         m = APL.mmed(X)
         a = cov(X[:, 1], X[:, 2]) / var(X[:, 1])
         return [(m[2] - (a * m[1])), a]
@@ -51,11 +51,10 @@
     export mla_rg
 
     ##-----------------------------------------------------------------------------------
-    function mla_rg{T<:Real}(X::Array{T, 2})
-        y = X[:, end]
+    function mla_rg(X::Array{Float64, 2})
         X = hcat(ones(size(X, 1)), X[:, 1:end-1])
         Xt = X'
-        return (Xt * X) \ (Xt * y)
+        return (Xt * X) \ (Xt * X[:, end])
     end
 
     ##===================================================================================
@@ -64,7 +63,7 @@
     export mlqr_rg
 
     ##-----------------------------------------------------------------------------------
-    function mlqr_rg{T<:Real}(X::Array{T, 2})
+    function mlqr_rg(X::Array{Float64, 2})
         QR = qr(hcat(ones(size(X, 1)), X[:, 1:end-1]))
         return QR[2] \ QR[1]' * X[:, end]
     end
