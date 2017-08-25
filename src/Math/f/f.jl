@@ -57,37 +57,7 @@
     ##===================================================================================
     export qrd
 
-    # 603
-    # static: 14 = 235.688 KiB
-    # mat mul: 188
     ##-----------------------------------------------------------------------------------
-    function qrd(m::Array{Float64, 2}) # 603
-        v = m[:, 1]; s = size(v, 1)
-        qw = zeros(s, s)
-        qs = eye(s)
-
-        for i=1:s-1
-            v[1] += sign(v[1])*norm(v)
-            v ./= norm(v)
-
-            for j=1:s, k=1:s
-                qw[j,k] = k == j ? 1. : 0.
-                if j>=i && k>=i
-                    qw[j, k] = -2.0*v[j+1-i]*v[k+1-i]
-                end
-            end
-
-            qs .= qs*qw
-            println(qw,m)
-            if i < s-1
-                v = (qw*m)[(i+1):end,(i+1)]
-            end
-            println(v, (i+1), length(v))
-        end
-
-        return (qs, qs'*m)
-    end
-
     function qrd(m::Array{Float64, 2})
         v = m[:, 1]; s = size(v, 1)
         qw = zeros(s, s)
@@ -99,11 +69,13 @@
 
             for j=1:s, k=1:s
                 qw[j,k] = k == j ? 1. : 0.
-                if j>=i && k>=i
-                    qw[j, k] = -2.0*v[j]*v[k]
-                end
+                #if j>=i && k>=i
+                #    qw[j, k] = -2.0*v[j]*v[k]
+                #end
             end
+            println(qw)
 
+            break
             qs .= qs*qw
             if i < s-1
                 for j=(s-i):-1:s
