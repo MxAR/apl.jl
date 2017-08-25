@@ -57,32 +57,62 @@
     ##===================================================================================
     export qrd
 
+    # 603
+    # static: 14 = 235.688 KiB
+    # mat mul: 188
     ##-----------------------------------------------------------------------------------
-    function qrd(m::Array{Float64, 2})
-        s = size(m, 1); v = m[:, 1]
-        qc = Array{Array{Float64, 2}, 1}([zeros(s, s) for i=1:s-1])
+    function qrd(m::Array{Float64, 2}) # 603
+        v = m[:, 1]; s = size(v, 1)
+        qw = zeros(s, s)
+        qs = eye(s)
 
         for i=1:s-1
-            v[1] -= -sign(v[i])*BLAS.nrm2(size(v, 1), v, 1)
-            v = normalize(v)
+            v[1] += sign(v[1])*norm(v)
+            v ./= norm(v)
 
             for j=1:s, k=1:s
+                qw[j,k] = k == j ? 1. : 0.
                 if j>=i && k>=i
-                    qc[i][j, k] = k == j ? (1.0-(2.0*v[j+1-i]^2.0)) : (-2.0*v[j+1-i]*v[k+1-i])
-                elseif k == j
-                    qc[i][j, k] = 1.
+                    qw[j, k] = -2.0*v[j+1-i]*v[k+1-i]
                 end
             end
 
+            qs .= qs*qw
+            println(qw,m)
             if i < s-1
-                v = (qc[i]*m)[(i+1):end,(i+1)]
+                v = (qw*m)[(i+1):end,(i+1)]
+            end
+            println(v, (i+1), length(v))
+        end
+
+        return (qs, qs'*m)
+    end
+
+    function qrd(m::Array{Float64, 2})
+        v = m[:, 1]; s = size(v, 1)
+        qw = zeros(s, s)
+        qs = eye(s)
+
+        for i=1:s-1
+            v[i] += sign(v[i])*norm(v[i:end])
+            v[i:end] ./= norm(v[i:end])
+
+            for j=1:s, k=1:s
+                qw[j,k] = k == j ? 1. : 0.
+                if j>=i && k>=i
+                    qw[j, k] = -2.0*v[j]*v[k]
+                end
+            end
+
+            qs .= qs*qw
+            if i < s-1
+                for j=(s-i):-1:s
+                    v[j] = dot(qw[j, :], m[:, 1])
+                end
             end
         end
 
-        q = Array{Float64, 2}(qc[1]')
-        for i=2:s-1 q *= qc[i]' end
-
-        return (q, q'*m)
+        return (qs, qs'*m)
     end
 
     ##===================================================================================
