@@ -59,32 +59,40 @@
 
     ##-----------------------------------------------------------------------------------
     function qrd(m::Array{Float64, 2})
-        v = m[:, 1]; s = size(v, 1)
-        qw = zeros(s, s)
-        qs = eye(s)
+    	s = size(m, 1)
+    	t = zeros(s, s)
+    	v = zeros(s)
+    	r = copy(m)
+    	w = 0.
 
-        for i=1:s-1
-            v[i] += sign(v[i])*norm(v[i:end])
-            v[i:end] ./= norm(v[i:end])
+    	@inbounds for i=1:s
+    		w = 0.
+    		@inbounds for j=i:s
+    			v[j] = r[j, i]
+    			w += v[j]*v[j]
+    		end
 
-            for j=1:s, k=1:s
-                qw[j,k] = k == j ? 1. : 0.
-                #if j>=i && k>=i
-                #    qw[j, k] = -2.0*v[j]*v[k]
-                #end
-            end
-            println(qw)
+    		v[i] += (r[1, i] >= 0 ? 1. : -1.)*sqrt(w)
+    		w = 0.
 
-            break
-            qs .= qs*qw
-            if i < s-1
-                for j=(s-i):-1:s
-                    v[j] = dot(qw[j, :], m[:, 1])
-                end
-            end
-        end
+    		@inbounds for j=i:s w += v[j]*v[j] end
+    		w = 2.0/w
 
-        return (qs, qs'*m)
+    		@inbounds for j=1:s, k=1:s
+    			t[j, k] = k == j ? 1. : 0.
+    			if j>=i && k>=i
+    			    t[j, k] -= w*v[j]*v[k]
+    			end
+    		end
+
+    		r .= t*r
+    	end
+
+    	@inbounds for j=1:(s-1), k=(j+1):s
+    		r[k, j] = 0.
+    	end
+
+    	return (m/r, r)
     end
 
     ##===================================================================================
