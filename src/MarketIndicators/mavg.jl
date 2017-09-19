@@ -36,7 +36,7 @@
 		for i = start:stop
 			s = s + 1
 			for j = i:(-n):(i-np+1)
-				r[s] = r[s] + (v[j] * (pivot_weight + slope*(i-j)))
+				r[s] = r[s] + (v[j] * max((pivot_weight + slope*(i-j)), 0.))
 			end
 		end
 
