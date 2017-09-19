@@ -3,6 +3,10 @@
     include("Packages/require.jl")
     include("Packages/pkg.jl")
 
+    # IO
+    include("IO/const.jl")
+    include("IO/tmp_op.jl")
+
     # ADT
     include("ADT/graph.jl")
     include("ADT/heap.jl")
@@ -15,11 +19,8 @@
     # Convertation
     include("Convertation/cnv.jl")
 
-    # IO
-    include("IO/tmp_op.jl")
-    include("IO/const.jl")
-
     # Math
+    include("Math/op.jl")
     include("Math/f/f.jl")
     include("Math/dist.jl")
     include("Math/interpol.jl")
@@ -27,8 +28,13 @@
     include("Math/mpa.jl")
     include("Math/vq.jl")
     include("Math/yamartino.jl")
-    include("Math/op.jl")
     #include("Math/func.jl") under construction...
+
+    # MarketIndicators
+    include("MarketIndicators/med.jl")
+    include("MarketIndicators/mavg.jl")
+    include("MarketIndicators/macd.jl")
+
 
     # ProcedualGeneration
     include("ProcedualGeneration/WaveFunctionCollapse.jl")
@@ -42,4 +48,7 @@
 
     # RBFNetworks
     include("RBFNetworks/RBFNetwork.jl")
+
+    # init.jl
+    include("init.jl")
 end
