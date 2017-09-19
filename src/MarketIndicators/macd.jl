@@ -8,14 +8,38 @@
 	##===================================================================================
 	##	smacd (simple moving average convergence divergence)
 	##===================================================================================
-	function smacd(v::Array{Float64, 1}, p::Tuple{Int64, Int64}, n::Int64, start::Int64, stop::Int64)
-		v = sma(v, p[1], n, start, stop)
-		u = sma(v, p[2], n, start, stop)
+	export smacd
 
-		for i = 1:(stop-start)
-			v[i] = v[i] - u[i]
+	##-----------------------------------------------------------------------------------
+	function smacd(v::Array{Float64, 1}, p::Tuple{Int64, Int64}, n::Int64, start::Int64, stop::Int64)
+		np = (n * p[1], n * p[2])
+		s = stop-start+1
+		r = zeros(s)
+		q = zeros(s)
+		s = 0
+
+		for i = start:stop
+			s = s + 1
+
+			for j = i:(-n):(i-np[1]+1)
+				r[s] = r[s] + v[j]
+			end
+
+			r[s] = r[s]/(np[1])
+
+			for j = i:(-n):(i-np[2]+1)
+				q[s] = q[s] + v[j]
+			end
+
+			r[s] = r[s] - (q[s]/np[2])
 		end
 
-		return v
+		return r
 	end
+
+
+	##===================================================================================
+	##	lmacd (linear moving average convergence divergence)
+	##===================================================================================
+
 end
