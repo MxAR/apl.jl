@@ -1,4 +1,4 @@
-@everywhere module APL
+#@everywhere module APL
     # Packages
     include("Packages/require.jl")
     include("Packages/pkg.jl")
@@ -34,6 +34,7 @@
     include("MarketIndicators/med.jl")
     include("MarketIndicators/mavg.jl")
     include("MarketIndicators/macd.jl")
+    include("MarketIndicators/rsi.jl")
 
 
     # ProcedualGeneration
@@ -51,4 +52,4 @@
 
     # init.jl
     include("init.jl")
-end
+#end
