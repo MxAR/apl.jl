@@ -36,7 +36,7 @@
     end
 
     ##-----------------------------------------------------------------------------------
-    function imp_subt{T<:Float64}(V1::Array{Float64, 1}, V2::Array{Float64, 1})
+    function imp_subt(V1::Array{Float64, 1}, V2::Array{Float64, 1})
         L = [length(V1), length(V1)]
         V = zeros(maximum(L))
         V[1:L[1]] += V1

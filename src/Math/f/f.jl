@@ -72,7 +72,7 @@
     			w += v[j]*v[j]
     		end
 
-    		v[i] += (r[1, i] >= 0 ? 1. : -1.)*sqrt(w)
+    		v[i] += (r[i, i] >= 0 ? 1. : -1.)*sqrt(w)
     		w = 0.
 
     		for j=i:s w += v[j]*v[j] end
