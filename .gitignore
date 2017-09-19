@@ -1,5 +1,5 @@
 *.jl.cov
 *.jl.*.cov
 *.jl.mem
-test.jl
+init.jl
 deps/deps.jl
