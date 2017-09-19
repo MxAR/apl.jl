@@ -46,6 +46,31 @@
 	##-----------------------------------------------------------------------------------
 	function lmacd(v::Array{Float64, 1}, pivot_weight::Float64, slope::Float64, p::Tuple{Int64, Int64}, n::Int64, start::Int64, stop::Int64)
 		d = Int64(abs(p[1] - p[2]))
-		return lma(v, (pivot_weight + slope*d), slope, minimum(p), n, start-d, stop-d)
+		return -1*lma(v, (pivot_weight + slope*d), slope, minimum(p), n, start-d, stop-d)
+	end
+
+
+	##===================================================================================
+	##	emacd (exponential moving average convergence divergence)
+	##===================================================================================
+	export emacd
+
+	##-----------------------------------------------------------------------------------
+	function emacd(v::Array{Float64, 1}, pivot_weight::Float64, slope::Float64, p::Tuple{Int64, Int64}, n::Int64, start::Int64, stop::Int64)
+		np = n * (p[1] < p[2] ? p[1] : p[2])
+		d = Int64(abs(p[1] - p[2]))
+		r = zeros(stop-start+1)
+		start = start - d
+		stop = stop - d
+		s = Int64(0)
+
+		for i = start:stop
+			s = s + 1
+			for j = i:(-n):(i-np+1)
+				r[s] = r[s] + (-v[j] * pivot_weight * exp(-(slope*(i-j+d))^2))
+			end
+		end
+
+		return r
 	end
 end
