@@ -14,7 +14,6 @@
 	function srsi(v::Array{Float64, 1}, pivot_weight::Float64, slope::Float64, p::Int64, n::Int64, start::Int64)
 		r = [0, 0.]
 		np = n * p
-		c = 0
 
 		for i = start:(-n):max((start-np+1), 2)
 			if v[i-1] < v[i]
@@ -24,9 +23,9 @@
 			end
 		end
 
-		return r[2] >= 0 ? 100. : (100 - (100/(1+(r[1]/r[2]))))
+		return r[2] >= 0 ? 100. : (100. - (100./(1+(r[1]/r[2]))))
 	end
-	
+
 
 	##===================================================================================
 	##	lrsi (linear relative strength index)
@@ -35,7 +34,6 @@
 
 	##-----------------------------------------------------------------------------------
 	function lrsi(v::Array{Float64, 1}, pivot_weight::Float64, slope::Float64, p::Int64, n::Int64, start::Int64)
-		s = Int64(0)
 		r = [0, 0.]
 		np = n * p
 
@@ -58,7 +56,6 @@
 
 	##-----------------------------------------------------------------------------------
 	function ersi(v::Array{Float64, 1}, pivot_weight::Float64, slope::Float64, p::Int64, n::Int64, start::Int64)
-		s = Int64(0)
 		r = [0, 0.]
 		np = n * p
 

@@ -1,4 +1,4 @@
-#@everywhere module APL
+@everywhere module APL
     # Packages
     include("Packages/require.jl")
     include("Packages/pkg.jl")
@@ -51,5 +51,5 @@
     include("RBFNetworks/RBFNetwork.jl")
 
     # init.jl
-    include("init.jl")
-#end
+    #include("init.jl")
+end
