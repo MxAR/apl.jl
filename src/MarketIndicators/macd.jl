@@ -41,5 +41,11 @@
 	##===================================================================================
 	##	lmacd (linear moving average convergence divergence)
 	##===================================================================================
+	export lmacd
 
+	##-----------------------------------------------------------------------------------
+	function lmacd(v::Array{Float64, 1}, pivot_weight::Float64, slope::Float64, p::Tuple{Int64, Int64}, n::Int64, start::Int64, stop::Int64)
+		d = Int64(abs(p[1] - p[2]))
+		return lma(v, (pivot_weight + slope*d), slope, minimum(p), n, start-d, stop-d)
+	end
 end
