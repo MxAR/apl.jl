@@ -3,34 +3,36 @@ using macd
 using rsi
 using f
 
-#v = 1 + (0.1*(0.5-rand(10)))
-v = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10.]
+v = 1 + (0.1*(0.5-rand(10)))
+#v = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10.]
 println("test vector: ", v)
 
 
-function g(v::Array{Float64, 1}, k::Float64, pivot_weight::Float64, slope::Float64, p::Int64, n::Int64, start::Int64, stop::Int64)
-	s = stop-start+1
-	r1 = zeros(s)
-	r2 = zeros(s)
-	r3 = zeros(s)
+function g(v::Array{Float64, 1}, current_price::Float64, p::Int64, n::Int64, start::Int64, stop::Int64)
+	r = zeros(stop-start+1)
+	b = [-Inf, Inf]
+	s = Int64(0)
 	np = n * p
-	s = 0
 
 	for i = start:stop
-		sr = i:(-n):(i-np+1)
 		s = s + 1
+		for j = i:(-n):(i-np+1)
+			if v[j] > b[1]
+				b[1] = v[j]
+			end
 
-		for j = sr
-			r1[s] = r1[s] + (v[j] * pivot_weight * exp(-(slope*(i-j))^2))
+			if v[j] < b[2]
+				b[2] = v[j]
+			end
 		end
 
-		r2[s] = r1[s] + k * f.std(v[sr], r1[s])
-		r3[s] = r1[s] - k * f.std(v[sr], r1[s])
+		r[s] = r[s] + ((current_price - b[2])/(b[1] - b[2]))
+		b = [-Inf, Inf]
 	end
 
-	return (r1, r2, r3)
+	return r/(stop-start+1)
 end
 
 
-println(g(v, 2., .5, .1, 2, 1, 2, 10))
-println(@code_warntype g(v, 2., .5, .1, 2, 1, 2, 10))
+println(g(v, 1., 3, 1, 3, 10))
+println(@code_warntype g(v, 1., 3, 1, 3, 10))
