@@ -21,7 +21,7 @@ function g(v::Array{Float64, 1}, k::Float64, pivot_weight::Float64, slope::Float
 		s = s + 1
 
 		for j = sr
-			r1[s] = r1[s] + (v[j] * max((pivot_weight + slope*(i-j)), 0.))
+			r1[s] = r1[s] + (v[j] * pivot_weight * exp(-(slope*(i-j))^2))
 		end
 
 		r2[s] = r1[s] + k * f.std(v[sr], r1[s])
