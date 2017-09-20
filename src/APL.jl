@@ -35,6 +35,8 @@
     include("MarketIndicators/mavg.jl")
     include("MarketIndicators/macd.jl")
     include("MarketIndicators/rsi.jl")
+    include("MarketIndicators/bb.jl")
+    include("MarketIndicators/stosc.jl")
 
 
     # ProcedualGeneration
