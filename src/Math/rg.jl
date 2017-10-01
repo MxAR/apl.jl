@@ -39,8 +39,8 @@
 
     ##-----------------------------------------------------------------------------------
     function lsta_rg(X::Array{Float64, 2})
-        m = APL.mmed(X)
-        a = cov(X[:, 1], X[:, 2]) / var(X[:, 1])
+        m = f.mmed(X)
+        a = Base.cov(X[:, 1], X[:, 2]) / Base.var(X[:, 1])
         return [(m[2] - (a * m[1])), a]
     end
 

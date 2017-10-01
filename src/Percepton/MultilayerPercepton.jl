@@ -3,6 +3,11 @@
     import Base.print
 
     ##===================================================================================
+    ##  using directives
+    ##===================================================================================
+    using f
+
+    ##===================================================================================
     ##  types
     ##===================================================================================
     type tlayer
@@ -92,8 +97,9 @@
     export gdb!
 
     ##-----------------------------------------------------------------------------------
-    function gdb!(MLP::tmlp, TrainingData::Array{Any, 1}, LearningRate = 0.2, MaxEp = 2000, MaxErr = 0.01, Alpha = 0.2, Beta = 0.998)
-        CVSize = convert(Int, round(length(TrainingData) / log(length(TrainingData))))  # TrainingData example:
+    function gdb!(MLP::tmlp, TrainingData::Array{Array{Array{Float64,1},1},1}, LearningRate = 0.2, MaxEp = 2000, MaxErr = 0.01, Alpha = 0.2, Beta = 0.998)
+        #CVSize = convert(Int, round(length(TrainingData) / log(length(TrainingData))))  # TrainingData example:
+        CVSize = 10
         NetworkLength = length(MLP.Layers)                                              # second subarray: output
                                                                                         # 4-element Array{Any,1}:
         for E = 1:MaxEp                                                                 #     Array{Float64,1}[[2.0,2.0],[2.0,2.0]]
@@ -119,7 +125,7 @@
                     z = MLP.ThresholdFunctionDerivate(x, y)
                     return z < 0 ? z - Alpha :  z + Alpha
                 end, PH[NextLayer, 2], MLP.Layers[NextLayer].Threshold))
-                epsilon += sumabs2(TD[2] - PH[NextLayer])
+                epsilon += sum(abs, TD[2] - PH[NextLayer])
 
                 CNL = [0, NextLayer]
                 delta = [0, delta]
@@ -130,8 +136,8 @@
                     delta = [delta[2], (MLP.Layers[CNL[1]].LTWM' * delta[2])]
 
                     out = MLP.Layers[CNL[1]].PreceedingLayer == 0 ? TD[1] : PH[MLP.Layers[CNL[1]].PreceedingLayer]
-                    MLP.Layers[CNL[1]].LTWMD += (delta[1] * out') * LearningRate
-                    MLP.Layers[CNL[1]].ThresholdD -= delta[1] * LearningRate
+                    MLP.Layers[CNL[1]].LTWMD = min(1., max(-1., MLP.Layers[CNL[1]].LTWMD + (delta[1] * out') * LearningRate))
+                    MLP.Layers[CNL[1]].ThresholdD = min(1., max(-1., MLP.Layers[CNL[1]].ThresholdD - delta[1] * LearningRate))
 
                     if CNL[2] == 0 break; else
                         delta[2] .*= (map((x, y) -> begin
@@ -144,19 +150,20 @@
 
             for i = 1:NetworkLength
                 MLP.Layers[i].LTWM .*= Beta
-                MLP.Layers[i].LTWM += MLP.Layers[i].LTWMD
+                MLP.Layers[i].LTWM = min(1., max(-1., MLP.Layers[i].LTWM + MLP.Layers[i].LTWMD))
                 MLP.Layers[i].LTWMD = 0.2 * (MLP.Layers[i].LTWMD)
 
                 MLP.Layers[i].Threshold .*= Beta
-                MLP.Layers[i].Threshold += MLP.Layers[i].ThresholdD
+                MLP.Layers[i].Threshold = min(1., max(-1., MLP.Layers[i].Threshold - MLP.Layers[i].ThresholdD))
                 MLP.Layers[i].ThresholdD = 0.2 * (MLP.Layers[i].ThresholdD)
             end
 
-            #println(epsilon, " <> ", E)
+            println(epsilon/CVSize, " <> ", E)
             #println("-------------------")
 
             if epsilon <= MaxErr
                 epsilon = 0
+                println("******")
                 for TD in TrainingData epsilon += sumabs2(TD[2] - iaf(MLP, TD[1])) end
                 if epsilon <= MaxErr break; end
             end

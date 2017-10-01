@@ -2,7 +2,8 @@
     ##===================================================================================
     ##  using Directives
     ##===================================================================================
-    using cnv
+	using StatsBase
+	using cnv
     using op
 
 
@@ -717,7 +718,7 @@
 
     ##-----------------------------------------------------------------------------------
     function mmed{T<:Float64}(arr::Array{T, 2}, column::Bool = true)
-        n = size(X, (column ? 1 : 2))
+        n = size(arr, (column ? 1 : 2))
         return BLAS.gemv((column ? 'N' : 'T'), 1/n, arr, ones(n))
     end
 
@@ -873,7 +874,7 @@
     function samples{T<:Any}(data::Array{T, 1}, size::Int)
         L = length(data)
         @assert size < L ["The number of samples musn't be bigger than the data!"]
-        return shuffle(getindex(data, sort(sample(1:L, Size, replace = false))))
+        return shuffle(getindex(data, sort(sample(1:L, size, replace = false))))
     end
 
 
@@ -1173,7 +1174,7 @@
     ##===================================================================================
     ## map (overload)
     ##===================================================================================
-    export map
+    #export map
 
     ##===================================================================================
     function map{T<:Any}(f::Function, vl::Array{Array{T, 1}, 1})
