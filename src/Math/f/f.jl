@@ -228,6 +228,43 @@
         return r
     end
 
+	##===================================================================================
+	##	generalized mean
+	##===================================================================================
+	export gnmn, gnmn_n1, gnmn_0
+
+	##-----------------------------------------------------------------------------------
+	function gnmn(v::Array{Float64, 1}, p::Int64, l::Int64, n::Int64)
+		u = Float64(0)
+
+		for i = 1:n:l u += v[i]^p end
+		u = u / floor(l/n)
+
+		return u^(1/p)
+	end
+
+	##-----------------------------------------------------------------------------------
+	function gnmn_n1(v::Array{Float64, 1}, l::Int64, n::Int64)							# harmonic mean
+		u = Float64(0)
+
+		for i = 1:n:l u += 1/v[i] end
+		u = floor(l/n) / u
+
+		return u;
+	end
+
+	##-----------------------------------------------------------------------------------
+	function gnmn_0(v::Array{Float64, 1}, l::Int64, n::Int64)							# geometric mean
+		u = v[1]
+
+		for i = 1+n:n:l
+			u = u * v[i]
+		end
+
+		return u^(1/floor(l/n))
+	end
+
+
 
     ##===================================================================================
     ##  outer product implementation (faster than vanila)
