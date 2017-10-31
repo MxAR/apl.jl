@@ -421,7 +421,7 @@
             if x & 1 == 1
                 x = 3*x +1
             end
-            
+
             x = x >> 1
             c = c + 1
         end
@@ -433,7 +433,7 @@
     ##===================================================================================
     ## veconomy core function
     ##===================================================================================
-    function veconomy_core{T<:Real, N<:Real}(v::Array{T, 1}, cc::N = 0.4)
+    function veconomy_core(v::Array{Float64, 1}, cc::Float64 = 0.4)
         lumV = norm(v) / MAX_LUM
         o = prison(rotation_matrix(rand_orthonormal_vec(v), 90)*(v-127.5), -127.5, 127.5)
         while abs(lumv-(norm(o)/MAX_LUM)) < cc; o = map((x) -> x*(lumV>0.5?.5:1.5), o) end
@@ -447,7 +447,7 @@
     export dcd
 
     ##-----------------------------------------------------------------------------------
-    function dcd{T<:Number}(x::T)
+    function dcd(x::Float64)
         set_zero_subnormals(true)
         return x == 0 ? inf : 0
     end
@@ -963,11 +963,12 @@
     export supp
 
     ##-----------------------------------------------------------------------------------
-    function supp(v::Array{Float64, 1}, f::Function = (x) -> x, eps = 1.0e-5)
+    function supp(v::Array{Float64, 1}, f::Function = (x) -> x)
+        set_zero_subnormals(true)
         u = Array{Float64, 1}
 
         @inbounds for i = 1:size(v, 1)
-			if abs(f(x)) <= eps
+			if abs(f(x)) == 0
 				push!(u, v[i])
 			end
 		end
@@ -975,11 +976,12 @@
     end
 
     ##-----------------------------------------------------------------------------------
-    function supp(vl::Array{Array{T, 1}, 1}, f::Function = (x) -> x, eps = 1.0e-5)		# supp for vector lists
+    function supp(vl::Array{Array{T, 1}, 1}, f::Function = (x) -> x)		# supp for vector lists
         ul = Array{Array{Float64, 1}, 1}
+        set_zero_subnormals(true)
 
         @inbounds for i = 1:size(vl, 1)
-			if AND(abs(f(x)) .<= eps)
+			if AND(abs(f(x)) .== 0)
 				push!(ul, v[i])
 			end
 		end
