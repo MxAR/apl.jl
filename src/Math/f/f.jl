@@ -928,8 +928,8 @@
     export ccovs
 
     ##-----------------------------------------------------------------------------------
-    function ccovs{T<:Real, N<:Real}(v::Array{T, 1}, u::Array{N, 1}, tau::Int64 = 1)    # ccov sumed
-        return bdot(l, (v-vmed(v)), (circshift(u, tau)-vmed(u)))/l
+    function ccovs(v::Array{Float64, 1}, u::Array{Float64, 1}, t::Int64 = 1)    		# ccov sumed
+        return BLAS:dot((l-t), (v-vmed(v)), 1, (circshift(u, t)-vmed(u)), 1)/(l-t)
     end
 
 
