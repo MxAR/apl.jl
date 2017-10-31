@@ -44,24 +44,13 @@
             m = m + v[i]
         end
 
-        m = m/l
-
-    	@inbounds for i = 1:n:(n*l)
-    		v[i] = v[i] - m
-    	end
-
-    	return sqrt(BLAS.dot(l, v, n, v, n)/l)
+    	return sqrt(BLAS.dot(l, v, n, v, n)-(m/l)^2)
     end
 
     ##-----------------------------------------------------------------------------------
     function std(v::Array{Float64, 1}, m::Float64, l::Int64, n::Int64 = 1)
     	s = size(v, 1)
-
-        @inbounds for i = 1:n:(n*l)
-    		v[i] = v[i] - m
-    	end
-
-    	return sqrt(BLAS.dot(l, v, n, v, n)/l)
+    	return sqrt(BLAS.dot(l, v, n, v, n)-m^2)
     end
 
 
@@ -78,6 +67,7 @@
     function hh_mat(v::Array{Float64, 1})
         s = size(v, 1)
         m = Array{Float64, 2}(s, s)
+
         for i=1:s, j=1:s
             if i == j
                 m[i, j]= 1-(2*v[i]*v[j])
@@ -85,6 +75,7 @@
                 m[i, j]= -2*v[i]*v[j]
             end
         end
+
         return m
     end
 
@@ -100,7 +91,7 @@
     	t = zeros(s, s)
     	v = zeros(s)
     	r = copy(m)
-    	w = 0.
+    	w = Float64(0)
 
     	for i=1:(s-1)
     		w = 0.
@@ -208,6 +199,7 @@
     function ul_x_expand(m::Array{Float64, 2}, s::Tuple{Int64, Int64}, x::Float64 = 1.0)# ul = upper left
         d = (s[1]-size(m, 1), s[2]-size(m,2))
         r = zeros(s)
+
         for i = 1:s[1], j = 1:s[2]
             if i>d[1] && j>d[2]
                 r[i, j] = m[i-d[1], j-d[2]]
@@ -215,6 +207,7 @@
                 r[i, j] = x
             end
         end
+
         return r
     end
 
@@ -228,9 +221,11 @@
     function minor(m::Array{Float64, 2}, p::Tuple{Int64, Int64} = (1, 1))
         s = size(m)
         r = Array{Float64, 2}(s[1]-p[1], s[2]-p[1])
+
         for i=(1+p[1]):s[1], j=(1+p[2]):s[2]
             r[i-p[1], j-p[2]] = m[i, j]
         end
+
         return r
     end
 
@@ -254,10 +249,11 @@
 	function gnmn_n1(v::Array{Float64, 1}, l::Int64, n::Int64)							# harmonic mean
 		u = Float64(0)
 
-		for i = 1:n:l u += 1/v[i] end
-		u = floor(l/n) / u
+		for i = 1:n:l
+            u += 1/v[i]
+        end
 
-		return u;
+		return (floor(l/n)/u)
 	end
 
 	##-----------------------------------------------------------------------------------
@@ -281,9 +277,11 @@
     function otr(v::Array{Float64, 1}, w::Array{Float64, 1})
         s = (size(v, 1), size(w, 1))
         m = Array{Float64, 2}(s)
+
         @inbounds for i=1:s[1], j=1:s[2]
             m[i, j]=v[i]*w[j]
         end
+
         return m
     end
 
@@ -300,6 +298,7 @@
                 return false
             end
         end
+
         return true
     end
 
@@ -310,7 +309,8 @@
                 return true
             end
         end
-        return fals
+
+        return false
     end
 
 
@@ -325,6 +325,7 @@
         @inbounds for i = 1:size(v, 1)
             v[i] = x/v[i]
         end
+
         return v
     end
 
