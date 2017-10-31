@@ -414,12 +414,14 @@
     export collatz
 
     ##-----------------------------------------------------------------------------------
-    function collatz{T<:Int}(x::T)
+    function collatz(x::Int64)
         c = 0
+
         while x != 4
-            x = x%2 == 0 ? x >> 1 : 3*x+1
-            c += 1
+            x = x & 1 == 0 ? x >> 1 : 3*x+1
+            c = c + 1
         end
+
         return c
     end
 
