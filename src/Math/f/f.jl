@@ -37,26 +37,31 @@
 	export std
 
     ##-----------------------------------------------------------------------------------
-    function std(v::Array{Float64, 1})
-    	s = size(v, 1)
-    	m = sum(v) / s
+    function std(v::Array{Float64, 1}, l::Int64, n::Int64 = 1)
+        m = Float64(0)
 
-    	@inbounds for i = 1:s
+        @inbounds for i = 1:n:(n*l)
+            m = m + v[i]
+        end
+
+        m = m/l
+
+    	@inbounds for i = 1:n:(n*l)
     		v[i] = v[i] - m
     	end
 
-    	return sqrt(soq(s, v)/s)
+    	return sqrt(BLAS.dot(l, v, n, v, n)/l)
     end
 
     ##-----------------------------------------------------------------------------------
-    function std(v::Array{Float64, 1}, m::Float64)
+    function std(v::Array{Float64, 1}, m::Float64, l::Int64, n::Int64 = 1)
     	s = size(v, 1)
 
-    	@inbounds for i = 1:s
+        @inbounds for i = 1:n:(n*l)
     		v[i] = v[i] - m
     	end
 
-    	return sqrt(soq(s, v)/s)
+    	return sqrt(BLAS.dot(l, v, n, v, n)/l)
     end
 
 
