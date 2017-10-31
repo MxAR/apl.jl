@@ -951,17 +951,28 @@
     export supp
 
     ##-----------------------------------------------------------------------------------
-    function supp{T<:Number}(v::Array{T, 1})
-        u = Array{T, 1}
-        for x in v if x != 0 push!(u, v) end end
+    function supp(v::Array{Float64, 1}, f::Function = (x) -> x, eps = 1.0e-5)
+        u = Array{Float64, 1}
+
+        @inbounds for i = 1:size(v, 1)
+			if abs(f(x)) <= eps
+				push!(u, v[i])
+			end
+		end
         return u
     end
 
     ##-----------------------------------------------------------------------------------
-    function supp{T<:Number}(vl::Array{Array{T, 1}, 1})                                 # supp for vector lists
-        ul = Array{Array{T, 1}, 1}
-        for v in vl push!(ul, supp(v)) end
-        return ul
+    function supp(vl::Array{Array{T, 1}, 1}, f::Function = (x) -> x, eps = 1.0e-5)		# supp for vector lists
+        ul = Array{Array{Float64, 1}, 1}
+
+        @inbounds for i = 1:size(vl, 1)
+			if AND(abs(f(x)) .<= eps)
+				push!(ul, v[i])
+			end
+		end
+
+		return ul
     end
 
 
