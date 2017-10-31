@@ -672,6 +672,7 @@
         return r
     end
 
+    # TODO continue refactoring from here
 
     ##===================================================================================
     ## semi linear
@@ -682,7 +683,7 @@
     semi_lin(x, eta, sigma = 0.5) = prison(x, (x) -> x-eta+sigma, eta-sigma, eta+sigma)
 
     ##-----------------------------------------------------------------------------------
-    d_semi_lin(x, eta, sigma = 0.5) = ifelse(x > eta+sigma || x < eta-sigma, 0.0, 1.0)
+    d_semi_lin(x, eta, sigma = 0.5) = ifelse(x > eta+sigma || x < eta-sigma, 0., 1.)
 
 
     ##===================================================================================
