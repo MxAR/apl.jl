@@ -590,39 +590,59 @@
         rbf_multi_quad, rbf_inv_multi_quad, rbf_inv_quad, rbf_poly_harm, rbf_thin_plate_spline
 
     ##-----------------------------------------------------------------------------------
-    rbf_gaussian(delta, lambda = 1) = @. exp(-(delta/(2*lambda))^2)
+    rbf_gaussian(delta, lambda::Float64 = 1) = @. exp(-(delta/(2*lambda))^2)
 
     ##-----------------------------------------------------------------------------------
-    function rbf_gaussian_d_lambda(delta, lambda = 1)
-        @. delta^= 2; lam = lambda^2;
+    function rbf_gaussian_d_lambda(delta, lambda::Float64 = 1)
+        @. delta ^= 2
+        lam = lambda^2
         return @. (delta/(lam*lambda))*exp(-delta/lam)
     end
 
     ##-----------------------------------------------------------------------------------
-    function rbf_gaussian_d_delta(delta, lambda = 1)
-        lambda ^= 2; return (delta./lambda) .* exp(-(delta.^2)./(2*lambda))
+    function rbf_gaussian_d_delta(delta, lambda::Float64 = 1)
+        @. lambda ^= 2
+        return @. (delta./lambda) .* exp(-(delta.^2)./(2*lambda))
     end
 
     ##-----------------------------------------------------------------------------------
-    rbf_triang(delta, lambda = 1) = delta > lambda ? 0 : (1 - (delta/lambda))
+    rbf_triang(delta::Float64, lambda::Float64 = 1) = delta > lambda ? 0. : (1 - (delta/lambda))
 
     ##-----------------------------------------------------------------------------------
-    rbf_cos_decay(delta, lambda = 1) = delta > lambda ? 0 : ((cos((pi*delta)/(2*lambda)))+1)/2
+    function rbf_triang(delta::Array{Float64, 1}, lambda::Float64 = 1)
+        if AND(delta .> lambda)
+            return zeros(delta)
+        else
+            return (1.-(delta./lambda))
+        end
+    end
 
     ##-----------------------------------------------------------------------------------
-    rbf_multi_quad(delta, lambda = 1) = sqrt(1+(lambda*delta)^2)
+    rbf_cos_decay(delta::Float64, lambda::Float64 = 1) = delta > lambda ? 0. : ((cos((pi*delta)/(2*lambda)))+1)/2
 
     ##-----------------------------------------------------------------------------------
-    rbf_inv_multi_quad(delta, lambda = 1) = 1 / sqrt(1+(lambda*delta)^2)
+    function rbf_cos_decay(delta::Array{Float64, 1}, lambda::Float64 = 1)
+        if AND(delta .> lambda)
+            return zeros(delta)
+        else
+            return @. ((cos((pi*delta)/(2*lambda))).+1)/2
+        end
+    end
 
     ##-----------------------------------------------------------------------------------
-    rbf_inv_quad(delta, lambda = 1) = 1 / (1+(lambda*delta)^2)
+    rbf_multi_quad(delta, lambda::Float64 = 1) = @. sqrt(1+(lambda*delta)^2)
 
     ##-----------------------------------------------------------------------------------
-    rbf_poly_harm(delta, Exponent = 2) = delta^Exponent
+    rbf_inv_multi_quad(delta, lambda::Float64 = 1) = @. 1/sqrt(1+(lambda*delta)^2)
 
     ##-----------------------------------------------------------------------------------
-    rbf_thin_plate_spline(delta, Exponent = 2) = delta^Exponent * log(delta)
+    rbf_inv_quad(delta, lambda::Float64 = 1) = @. 1/(1+(lambda*delta)^2)
+
+    ##-----------------------------------------------------------------------------------
+    rbf_poly_harm(delta, expt::Float64 = 2) = delta.^expt
+
+    ##-----------------------------------------------------------------------------------
+    rbf_thin_plate_spline(delta, expt::Float64 = 2) = @. (delta^expt)*log(delta)
 
 
     ##===================================================================================
