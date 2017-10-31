@@ -449,7 +449,7 @@
     ##-----------------------------------------------------------------------------------
     function dcd(x::Float64)
         set_zero_subnormals(true)
-        return x == 0 ? inf : 0
+        return x == 0 ? Inf : 0
     end
 
 
