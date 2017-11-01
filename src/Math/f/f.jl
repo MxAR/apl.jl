@@ -774,7 +774,7 @@
         havsin, ahavsin, havcos, ahavcos, hacoversin, hacovercos
 
     ##-----------------------------------------------------------------------------------
-    sin2(alpha) = return sin(alpha)^2
+    sin2(alpha) = sin(alpha)^2
 
     ##-----------------------------------------------------------------------------------
     cos2(alpha) = cos(alpha)^2
@@ -860,27 +860,33 @@
     ##-----------------------------------------------------------------------------------
     function normalize_sta{T<:Number}(m::Array{T, 2})                                   # sets variance to 1 and mean to 0
         d = size(m, 1)
+
         for w = 1:size(m, 2)
             m[1:d, w] = (m[1:d, w] - median(m[1:d, w])) / std(m[1:d, w])
         end
+
         return m
     end
 
     ##-----------------------------------------------------------------------------------
     function normalize_sta_parallel{T<:Number}(m::Array{T, 2})
         d = size(m, 1); m = convert(SharedArray, m)
+
         @sync @parallel for w = 1:size(m, 2)
             m[1:d, w] = (m[1:d, w] - median(m[1:d, w])) / std(m[1:d, w])
         end
+
         return convert(Array, m)
     end
 
     ##-----------------------------------------------------------------------------------
     function normalize_sta_parallel_shared{T<:Number}(m::Array{T, 2})
         d = size(m, 1);
+
         @sync @parallel for w = 1:size(m, 2)
             m[1:d, w] = (m[1:d, w] - median(m[1:d, w])) / std(m[1:d, w])
         end
+        
         return m
     end
 
