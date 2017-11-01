@@ -713,22 +713,22 @@
     ##===================================================================================
     ## orthogonal projection (only returning the projection matrices)
     ##===================================================================================
-    export op, op_gen
+    export ortp, ortp_gen
 
     ##-----------------------------------------------------------------------------------
-    op{T<:Real}(b::Array{T, 2}, complex = false) = b*(complex ? b.' : b')               # b is a orthonormal basis
+    ortp{T<:Real}(b::Array{T, 2}, complex = false) = b*(complex ? b.' : b')               # b is a orthonormal basis
 
     ##-----------------------------------------------------------------------------------
-    op{T<:Real}(b::Array{Array{T, 1}, 1}) = op(vl_to_mat(b), T<:Complex)                # b is a orthonormal basis
+    ortp{T<:Real}(b::Array{Array{T, 1}, 1}) = op(vl_to_mat(b), T<:Complex)                # b is a orthonormal basis
 
     ##-----------------------------------------------------------------------------------
-    function op_gen{T<:Real}(b::Array{T, 2}, complex = false)                           # b mustn't be a orthonormal basis
+    function ortp_gen{T<:Real}(b::Array{T, 2}, complex = false)                           # b mustn't be a orthonormal basis
         bt = ifelse(complex, bt.', bt')
         return b\(bt*b)*bt
     end
 
     ##-----------------------------------------------------------------------------------
-    op_gen{T<:Number}(b::Array{Array{T, 1}, 1}) = op_gen(vl_to_mat(b), T<:Complex)
+    ortp_gen{T<:Number}(b::Array{Array{T, 1}, 1}) = op_gen(vl_to_mat(b), T<:Complex)
 
 
     ##===================================================================================
@@ -956,9 +956,9 @@
     end
 
     ##-----------------------------------------------------------------------------------
-    function cov(l::Int64, x::Arrray{Float64, 1}, n::Int64, d::Int64 = 1)               # d = delay
+    function cov(l::Int64, x::Array{Float64, 1}, n::Int64, d::Int64 = 1)               # d = delay
         return cov(l, x, n, x[d+1:end], n)
-    end 
+    end
 
 
     ##===================================================================================
@@ -967,7 +967,7 @@
     export covp, covs
 
     ##-----------------------------------------------------------------------------------
-    function covp{T<:Real}(samples::Array{T, 2})                                        # cov population
+    function covp(x::Array{Float64, 2})                                        # cov population
         n = size(samples, 1)
         m = BLAS.gemv('T', samples, ones(n))
         return BLAS.gemm('T', 'N', 1/n, samples, samples) - (BLAS.nrm2(n) / n)^2
@@ -1037,7 +1037,7 @@
     end
 
     ##-----------------------------------------------------------------------------------
-    function supp(vl::Array{Array{T, 1}, 1}, f::Function = (x) -> x)		# supp for vector lists
+    function supp(vl::Array{Array{Float64, 1}, 1}, f::Function = (x) -> x)		# supp for vector lists
         ul = Array{Array{Float64, 1}, 1}
         set_zero_subnormals(true)
 
