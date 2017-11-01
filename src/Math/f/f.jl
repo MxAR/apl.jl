@@ -886,7 +886,7 @@
         @sync @parallel for w = 1:size(m, 2)
             m[1:d, w] = (m[1:d, w] - median(m[1:d, w])) / std(m[1:d, w])
         end
-        
+
         return m
     end
 
@@ -937,7 +937,23 @@
     export cov
 
     ##-----------------------------------------------------------------------------------
-    cov(x, mx, y, my, p) = p*(x-mx)*(y-my)'                                             # m* median of * | p = probability
+    function cov(l::Int64, x::Array{Float64, 1}, n1::Int64, y::Array{Float64, 1}, n2::Int64)
+        m1 = Float64(0)
+        m2 = Float64(0)
+
+        for i = 1:n1:(n1*l)
+            m1 = m1 + x[i]
+        end
+
+        for i = 1:n2:(n2*l)
+            m2 = m2 + y[i]
+        end
+
+        m1 = m1/l
+        m2 = m2/l
+
+        return (BLAS.dot(l, x, n1, y, n2)/l)-(m1*m2)
+    end
 
 
     ##===================================================================================
