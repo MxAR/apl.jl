@@ -3,3 +3,4 @@
 *.jl.mem
 init.jl
 deps/deps.jl
+*.png

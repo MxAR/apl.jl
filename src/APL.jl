@@ -53,5 +53,5 @@
     include("RBFNetworks/RBFNetwork.jl")
 
     # init.jl
-    #include("init.jl")
+    include("init.jl")
 end
