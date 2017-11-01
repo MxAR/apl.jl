@@ -955,6 +955,11 @@
         return (BLAS.dot(l, x, n1, y, n2)/l)-(m1*m2)
     end
 
+    ##-----------------------------------------------------------------------------------
+    function cov(l::Int64, x::Arrray{Float64, 1}, n::Int64, d::Int64 = 1)               # d = delay
+        return cov(l, x, n, x[d+1:end], n)
+    end 
+
 
     ##===================================================================================
     ## covariance matrices from observations
