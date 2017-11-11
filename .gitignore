@@ -1,6 +1,6 @@
 *.jl.cov
 *.jl.*.cov
 *.jl.mem
-init.jl
+src/init.jl
 deps/deps.jl
 *.png
