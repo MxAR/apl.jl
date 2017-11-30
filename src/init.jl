@@ -1,59 +1,38 @@
-using Wavelets
-using TimeWarp
-using TimeWarp.WarpPlots
-using MDCT
-using APL
+using mavg
+using macd
+using rsi
+using f
 
-### SETUP BEGIN ###
-l = 25000
-u = zeros(l)
-v = zeros(l)
+v = 1 + (0.1*(0.5-rand(10)))
+#v = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10.]
+println("test vector: ", v)
 
-for i = 2:l
-	u[i] = u[i-1]+(randn()*0.01)
-	v[i] = v[i-1]+(randn()*0.01)
-end
 
-v += 1+(circshift(-u, 100)+(randn(l)*0.01))
-u .+= 1
+function g(v::Array{Float64, 1}, current_price::Float64, pivot_weight::Float64, slope::Float64, p::Int64, n::Int64, start::Int64, stop::Int64)
+	r = zeros(stop-start+1)
+	b = [-Inf, Inf]
+	s = Int64(0)
+	np = n * p
 
-sv = AbstractArray{Float64, 1}(v[1:12500])
-su = u[1:12500]
+	for i = start:stop
+		s = s + 1
+		for j = i:(-n):(i-np+1)
+			if v[j] > b[1]
+				b[1] = v[j]
+			end
 
-tv = v[12501:end]
-tu = u[12501:end]
-### SETUP END ###
-
-### MDCT BEGIN ###
-dv = mdct(sv)
-du = mdct(su)
-### MDCT END ###
-
-### OMPA BEGIN ###
-function mm(c::Array{Float64, 1}, il::Int64, si::Int64)
-	cl = length(c)
-	r = zeros(cl, il)
-
-	for i = 1:cl
-		for j = 1:il
-
-			r[i, j] = (1/cl)*c[i]*cos((pi/cl)*(j-0.5+(cl/2))*(si+i+0.5))
-
+			if v[j] < b[2]
+				b[2] = v[j]
+			end
 		end
+
+		r[s] = r[s] + (((current_price - b[2])/(b[1] - b[2])) * pivot_weight * exp(-(slope*(s-1))^2))
+		b = [-Inf, Inf]
 	end
 
 	return r
 end
 
-p = 0
 
-mv = mm(dv, 6250, 0+p)
-mu = mm(du, 6250, 0+p)
-
-rv = matchingpursuit(sv[(1+p):(6250+p)], (x)->mv*x, (x)->mv'*x, 1)
-ru = matchingpursuit(su[(1+p):(6250+p)], (x)->mu*x, (x)->mu'*x, 1)
-### OMPA END ###
-
-### DTW BEGIN ###
-plot([fastdtw(rv, ru, radius)[1] for radius=1:100, i=1:10 ], show=true)
-### DTW END ###
+println(g(v, 1., .5, -.1, 3, 1, 3, 10))
+println(@code_warntype g(v, 1., .5, -.1, 3, 1, 3, 10))
