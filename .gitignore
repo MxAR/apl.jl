@@ -4,3 +4,6 @@
 src/init.jl
 deps/deps.jl
 *.png
+*.save
+*.swp
+*.swap
