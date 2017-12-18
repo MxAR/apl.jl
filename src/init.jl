@@ -1,38 +1,73 @@
-using mavg
-using macd
-using rsi
-using f
+function t2a(v::Array{UInt64, 1}, b::UInt)
+	l = size(v, 1)
 
-v = 1 + (0.1*(0.5-rand(10)))
-#v = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10.]
-println("test vector: ", v)
+	t = UInt64(v[l] >> 1)
+	for i = l:-1:2
+		v[i] = xor(v[i], v[i-1])
+	end
+	v[1] = t
 
-
-function g(v::Array{Float64, 1}, current_price::Float64, pivot_weight::Float64, slope::Float64, p::Int64, n::Int64, start::Int64, stop::Int64)
-	r = zeros(stop-start+1)
-	b = [-Inf, Inf]
-	s = Int64(0)
-	np = n * p
-
-	for i = start:stop
-		s = s + 1
-		for j = i:(-n):(i-np+1)
-			if v[j] > b[1]
-				b[1] = v[j]
-			end
-
-			if v[j] < b[2]
-				b[2] = v[j]
+	q = UInt64(2)
+	while q != (2 << (b-1))
+		p = UInt64(q - UInt64(1))
+		for i = l:-1:1
+			if v[i] & q == 0
+				t = UInt64(xor(v[1], v[i]) & p)
+				v[1] = xor(v[1], t)
+				v[i] = xor(v[i], t)
+			else
+				v[1] = xor(v[1], p)
 			end
 		end
-
-		r[s] = r[s] + (((current_price - b[2])/(b[1] - b[2])) * pivot_weight * exp(-(slope*(s-1))^2))
-		b = [-Inf, Inf]
+		q = UInt64(q << 1)
 	end
 
-	return r
+	return v
 end
 
+function a2t(v::Array{UInt64, 1}, b::UInt)
+	m = UInt64(1 << (b-1))
+	l = size(v, 1)
+	q = m
 
-println(g(v, 1., .5, -.1, 3, 1, 3, 10))
-println(@code_warntype g(v, 1., .5, -.1, 3, 1, 3, 10))
+	while q > UInt64(1)
+		p = UInt64(q - UInt64(1))
+		for i = 1:l
+			if v[i] & q == 0
+				t = UInt64(xor(v[1], v[i]) & p)
+				v[1] = xor(v[1], t)
+				v[i] = xor(v[i], t)
+			else
+				v[1] = xor(v[1], p)
+			end
+		end
+		q = UInt64(q >> 1)
+	end
+
+	for i = 2:l v[i] = xor(v[i], v[i-1]) end
+	t = UInt64(0)
+	q = m
+
+	while q > UInt64(1)
+		if !(v[l-1] & q == 0)
+			t = UInt64(xor(t, q - UInt64(1)))
+		end
+		q = UInt64(q >> 1)
+	end
+
+	for i = 1:l
+		v[i] = xor(v[i], t)
+	end
+
+	return v
+end
+
+grayf{T<:Unsigned}(x::T) = xor(x, (x >> 1))
+function grayb{T<:Unsigned}(x::T)
+	y = x
+	while y != 0
+		y =  y >> 1
+		x = xor(x, y)
+	end
+	return x
+end
