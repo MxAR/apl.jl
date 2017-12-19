@@ -1248,7 +1248,7 @@
 	export sbit
 
 	##-----------------------------------------------------------------------------------
-	sbit{T<:Unsigned}(x::T, i::Int, v::Boolean) = (nbit_on(x, i) == v) ? x : xor(x, T(1 << (i-1)))
+	sbit{T<:Unsigned}(x::T, i::Int, v::Bool) = (nbit_on(x, i) == v) ? x : xor(x, T(1 << (i-1)))
 
 
 	##===================================================================================
@@ -1258,17 +1258,23 @@
 
 	##-----------------------------------------------------------------------------------
 	function cb_merge{T<:Unsigned}(v::Array{T, 1})
-		r = T(0)																		# r = A B C D E F G H I J K L M N O
-		c = T(1)																		# 	v[1] = A D G J M
-																						# 	v[2] = B E H K N
-		for i = 1:((sizeof(v[1])*8)-1), j = 1:size(v, 1)								# 	v[3] = C F I L O
-			if nbit_on(v[j], i)
-				r = xor(r, c)
-			end
-			c <<= 1
-		end
+		s = (sizeof(v[1])*8)-1															# r = A B C D E F G H I J K L M N O
+		c = UInt8(1)																	# 	v[1] = A D G J M
+		f = T(1)																		# 	v[2] = B E H K N
+		r = T(0)																		# 	v[3] = C F I L O
 
-		return r
+		for i = 1:s, j = 1:size(v, 1)
+			if nbit_on(v[j], i)
+				r = xor(r, f)
+			end
+
+			if c > s
+				return r
+			else
+				f <<= 1
+				c += 1
+			end
+		end
 	end
 
 
