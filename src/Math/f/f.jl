@@ -1209,7 +1209,7 @@
 	nbit_on{T<:Unsigned}(x::T, i::Integer) = (x >> (i-1)) & T(1) == T(1)
 
 	##-----------------------------------------------------------------------------------
-	nbit_off{T<:Unsigned}(x::T, i::Int) = xor((x >> (i-1)), T(1)) == T(1)
+	nbit_off{T<:Unsigned}(x::T, i::Integer) = xor((x >> (i-1)), T(1)) == T(1)
 
 
 	##===================================================================================
@@ -1218,7 +1218,7 @@
 	export ibit_range
 
 	##-----------------------------------------------------------------------------------
-	ibit_range{T<:Unsigned}(x::T, lb::Int, ub::Int) = T(xor(sum([T(1) << x for x = (lb-1):(ub-1)]), x))
+	ibit_range{T<:Unsigned}(x::T, lb::Integer, ub::Integer) = T(xor(sum([T(1) << x for x = (lb-1):(ub-1)]), x))
 
 
 	##===================================================================================
@@ -1227,7 +1227,7 @@
 	export ebit_range
 
 	##-----------------------------------------------------------------------------------
-	function ebit_range{T<:Unsigned}(x::T, y::T, lb::Int, ub::Int)
+	function ebit_range{T<:Unsigned}(x::T, y::T, lb::Integer, ub::Integer)
 		c = sum([UInt32(1) << i for i = (lb-1):(ub-1)])
 		d = ~c
 		return (T(xor((x & d), (y & c))), T(xor((y & d), (x & c))))
@@ -1239,7 +1239,7 @@
 	export fbit
 
 	##-----------------------------------------------------------------------------------
-	fbit{T<:Unsigned}(x::T, i::Int) = xor(x, T(1 << (i-1)))
+	fbit{T<:Unsigned}(x::T, i::Integer) = xor(x, T(1 << (i-1)))
 
 
 	##===================================================================================
@@ -1248,7 +1248,7 @@
 	export sbit
 
 	##-----------------------------------------------------------------------------------
-	sbit{T<:Unsigned}(x::T, i::Int, v::Bool) = (nbit_on(x, i) == v) ? x : xor(x, T(1 << (i-1)))
+	sbit{T<:Unsigned}(x::T, i::Integer, v::Bool) = (nbit_on(x, i) == v) ? x : xor(x, T(1 << (i-1)))
 
 
 	##===================================================================================
@@ -1271,7 +1271,7 @@
 			if c == s
 				return r
 			end
-			
+
 			f <<= 1
 			c += 1
 		end
@@ -1283,7 +1283,7 @@
 	export cb_split
 
 	##-----------------------------------------------------------------------------------
-	function cb_split{T<:Unsigned}(x::T, d::Int)										# d = number of dimensions
+	function cb_split{T<:Unsigned}(x::T, d::Integer)										# d = number of dimensions
 		r = Array{T, 1}(zeros(d))
 		s = sizeof(x)*8
 		c = UInt8(1)
@@ -1348,7 +1348,7 @@
 	end
 
 	##-----------------------------------------------------------------------------------
-	function hilbert_cb{T<:Unsigned}(v::T, d::Int)
+	function hilbert_cb{T<:Unsigned}(v::T, d::Integer)
 		b = sizeof(v)*8
 		v = grayb(v)
 
@@ -1399,7 +1399,7 @@
 	export hbm
 
 	##-----------------------------------------------------------------------------------
-	function hbm(s::Int)
+	function hbm(s::Integer)
 		m = zeros(s, s); c = s
 		m[1, :] = ones(s) ./ [x for x = 1:s]
 
@@ -1419,7 +1419,7 @@
 	export lehm
 
 	##-----------------------------------------------------------------------------------
-	function lehm(s::Int)
+	function lehm(s::Integer)
 		m = eye(s)
 
 		for y = 2:s, x = 1:(y-1)
@@ -1446,7 +1446,7 @@
 	export redh
 
 	##-----------------------------------------------------------------------------------
-	function redh(s::Int)
+	function redh(s::Integer)
 		m = eye(s)
 
 		@inbounds for i = 2:s
@@ -1468,7 +1468,7 @@
 	export shift
 
 	##-----------------------------------------------------------------------------------
-	function shift(s::Int, sup::Bool = true)
+	function shift(s::Integer, sup::Bool = true)
 		b = sup ? (s+1) : 2
 		m = zeros(s, s)
 
@@ -1509,7 +1509,7 @@
 	export pasc
 
 	##-----------------------------------------------------------------------------------
-	function pasc(s::Int)
+	function pasc(s::Integer)
 		m = zeros(s, s)
 
 		for x = 1:s, y = 1:x
@@ -1529,7 +1529,7 @@
 	export exm
 
 	##-----------------------------------------------------------------------------------
-	exm(s::Int) = [((s+1)-x == y) ? 1 : 0 for x = 1:s, y = 1:s]
+	exm(s::Integer) = [((s+1)-x == y) ? 1 : 0 for x = 1:s, y = 1:s]
 
 
 	##===================================================================================
@@ -1538,7 +1538,7 @@
 	export rou
 
 	##-----------------------------------------------------------------------------------
-	rou(n::Int) = [exp((2*pi*i*im)/n) for i = 0:(n-1)]
+	rou(n::Integer) = [exp((2*pi*i*im)/n) for i = 0:(n-1)]
 
 
 	##===================================================================================
@@ -1565,7 +1565,7 @@
     export rand_sto_mat
 
     ##-----------------------------------------------------------------------------------
-    function rand_sto_mat(sx::Int, sy::Int)
+    function rand_sto_mat(sx::Integer, sy::Integer)
         m = APL.rand_sto_vec(sy)'
 
         for i = 2:sx
@@ -1576,7 +1576,7 @@
     end
 
     ##-----------------------------------------------------------------------------------
-    function rand_sto_mat(s::Int)
+    function rand_sto_mat(s::Integer)
         return rand_sto_mat(s, s)
     end
 
@@ -1610,7 +1610,7 @@
     export samples
 
     ##-----------------------------------------------------------------------------------
-    function samples{T<:Any}(data::Array{T, 1}, size::Int)
+    function samples{T<:Any}(data::Array{T, 1}, size::Integer)
         L = length(data)
         @assert size < L ["The number of samples musn't be bigger than the data!"]
         return shuffle(getindex(data, sort(sample(1:L, size, replace = false))))
