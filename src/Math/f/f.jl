@@ -633,7 +633,7 @@
 	difut(v::Array{Float64, 1}, p::Float64, d::Float64) = ar(1, v-[d*x for x = 1:size(v, 1)])[2] <= p
 
 	##-----------------------------------------------------------------------------------
-	difut(v::Array{Float64, 1}, p::Float64, d::Float64, t::Float64) = ar(1, v-[(d*x)+(t*sum(x)) for x = 1:size(v, 1)])[2] <= p 
+	difut(v::Array{Float64, 1}, p::Float64, d::Float64, t::Float64) = ar(1, v-[(d*x)+(t*sum(x)) for x = 1:size(v, 1)])[2] <= p
 
 
 	##===================================================================================
@@ -642,7 +642,13 @@
 	export angrat
 
 	##-----------------------------------------------------------------------------------
-	angrat(x::Array{Float64, 1}, y::Array{Float64, 1}) = difut(y - (((soq(x))\dot(x, y))*x))
+	angrat(x::Array{Float64, 1}, y::Array{Float64, 1}, p::Float64 = 0.01) = difut(y - (((soq(x))\dot(x, y))*x), p)
+
+	##-----------------------------------------------------------------------------------
+	angrat(x::Array{Float64, 1}, y::Array{Float64, 1}, p::Float64, d::Float64) = difut(y - (((soq(x))\dot(x, y))*x), p, d)
+
+	##-----------------------------------------------------------------------------------
+	angrat(x::Array{Float64, 1}, y::Array{Float64, 1}, p::Float64, d::Float64, t::Float64) = difut(y - (((soq(x))\dot(x, y))*x), p, d, t)
 
 
     ##===================================================================================
