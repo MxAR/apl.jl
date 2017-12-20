@@ -1206,7 +1206,7 @@
 	export nbit_on, nbit_off
 
 	##-----------------------------------------------------------------------------------
-	nbit_on{T<:Unsigned}(x::T, i::Int) = (x >> (i-1)) & T(1) == T(1)
+	nbit_on{T<:Unsigned}(x::T, i::Integer) = (x >> (i-1)) & T(1) == T(1)
 
 	##-----------------------------------------------------------------------------------
 	nbit_off{T<:Unsigned}(x::T, i::Int) = xor((x >> (i-1)), T(1)) == T(1)
@@ -1258,7 +1258,7 @@
 
 	##-----------------------------------------------------------------------------------
 	function cb_merge{T<:Unsigned}(v::Array{T, 1})
-		s = (sizeof(v[1])*8)-1															# r = A B C D E F G H I J K L M N O
+		s = sizeof(v[1])*8																# r = A B C D E F G H I J K L M N O
 		c = UInt8(1)																	# 	v[1] = A D G J M
 		f = T(1)																		# 	v[2] = B E H K N
 		r = T(0)																		# 	v[3] = C F I L O
@@ -1268,15 +1268,41 @@
 				r = xor(r, f)
 			end
 
-			if c > s
+			if c == s
 				return r
-			else
-				f <<= 1
-				c += 1
 			end
+			
+			f <<= 1
+			c += 1
 		end
 	end
 
+	##===================================================================================
+	##	split column wise binary merge again (cb_merge reverse)
+	##===================================================================================
+	export cb_split
+
+	##-----------------------------------------------------------------------------------
+	function cb_split{T<:Unsigned}(x::T, d::Int)										# d = number of dimensions
+		r = Array{T, 1}(zeros(d))
+		s = sizeof(x)*8
+		c = UInt8(1)
+		f = T(1)
+
+		for i = 1:s
+			for j = 1:d
+				if nbit_on(x, c)
+					r[j] = xor(r[j], f)
+				end
+
+				if c == s
+					return r
+				end
+				c += 1
+			end
+			f <<= 1
+		end
+	end
 
 	##===================================================================================
 	##	gray codes (forward/backward)
@@ -1308,7 +1334,7 @@
 		b = sizeof(v[1])*8
 		s = size(v, 1)
 
-		for i = (b-1):-1:1, j = size(v, 1):-1:1
+		for i = (b-1):-1:1, j = 1:size(v, 1)
 			if nbit_on(v[j], i)
 				v[1] = ibit_range(v[1], 1, i)
 			else
@@ -1318,7 +1344,18 @@
 			end
 		end
 
-		return v
+		return grayf(cb_merge(v))
+	end
+
+	##-----------------------------------------------------------------------------------
+	function hilbert_cb{T<:Unsigned}(v::T, d::Int)
+		b = sizeof(v)*8
+		v = grayb(v)
+
+		#for i = 1:b, j = d:-1:1
+		#	if nbit_on(v[j], i)
+		#
+		#end
 	end
 
 
