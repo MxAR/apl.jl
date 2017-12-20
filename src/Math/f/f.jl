@@ -1314,48 +1314,59 @@
 
 	##-----------------------------------------------------------------------------------
 	function grayb{T<:Unsigned}(x::T)
-		y = x
+		y = x; r = x
 
-		while y != 0
-			y = y >> 1
-			x = xor(x, y)
+		while y != T(0)
+			y >>= 1
+			r = xor(r, y)
 		end
 
-		return x
+		return r
 	end
 
 	##===================================================================================
 	##	hilbert curve (forward/backward)
 	##===================================================================================
-	export hilbert_cf
+	export hilbert_cf, hilbert_cb
 
 	##-----------------------------------------------------------------------------------
-	function hilbert_cf{T<:Unsigned}(v::Array{T, 1})
-		b = sizeof(v[1])*8
-		s = size(v, 1)
+	function hilbert_cf{T<:Unsigned}(v::Array{T, 1})									# support for different output types is needed
+		b = sizeof(T)*8
+		r = deepcopy(v)
 
-		for i = (b-1):-1:1, j = 1:size(v, 1)
-			if nbit_on(v[j], i)
-				v[1] = ibit_range(v[1], 1, i)
+		for i = (b-1):-1:1, j = 1:size(r, 1)
+			if nbit_on(r[j], i)
+				r[1] = ibit_range(r[1], i+1, b-1)
 			else
-				r = ebit_range(v[1], v[j], i+1, b)
-				v[1] = r[1]
-				v[j] = r[2]
+				s = ebit_range(r[1], r[j], i+1, b-1)
+				r[1] = s[1]
+				r[j] = s[2]
 			end
+			println(r)
 		end
 
-		return grayf(cb_merge(v))
+		return grayf(cb_merge(r))
 	end
 
 	##-----------------------------------------------------------------------------------
 	function hilbert_cb{T<:Unsigned}(v::T, d::Integer)
-		b = sizeof(v)*8
-		v = grayb(v)
+		r = cb_split(grayb(v), d)
+		b = sizeof(T)*8
 
-		#for i = 1:b, j = d:-1:1
-		#	if nbit_on(v[j], i)
-		#
-		#end
+		println(r)
+
+		for i = 1:b, j = d:-1:1
+			if nbit_on(r[j], i)
+				r[1] = ibit_range(r[1], i+1, b)
+			else
+				s = ebit_range(r[1], r[j], i+1, b)
+				r[1] = s[1]
+				r[j] = s[2]
+			end
+			println(r)
+		end
+
+		return r
 	end
 
 
@@ -1913,7 +1924,7 @@
     ##===================================================================================
     ## map (overload)
     ##===================================================================================
-    #export map
+    export map
 
     ##===================================================================================
     function map{T<:Any}(f::Function, vl::Array{Array{T, 1}, 1})
