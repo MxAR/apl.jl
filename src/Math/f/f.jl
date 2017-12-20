@@ -348,54 +348,54 @@
 	##===================================================================================
 	##  gram schmidt proces
 	##===================================================================================
-    	export grscn, grscn
+    export grscn, grscn
 
-    	##-----------------------------------------------------------------------------------
-    	function grsc(m::Array{Float64, 2})
-        	s = size(m, 2)
-        	d = zeros(s);
-        	ob = []
+	##-----------------------------------------------------------------------------------
+	function grsc(m::Array{Float64, 2})
+    	s = size(m, 2)
+    	d = zeros(s);
+    	ob = []
 
-        	for i = 1:s
-            		push!(ob, m[:, i])
-            		for j = 1:(i-1)
-                		ob[i] -= (dot(ob[j], ob[i])/d[j])*ob[j]
-            		end
-         		d[i] = dot(ob[i], ob[i])
-       		end
+    	for i = 1:s
+        		push!(ob, m[:, i])
+        		for j = 1:(i-1)
+            		ob[i] -= (dot(ob[j], ob[i])/d[j])*ob[j]
+        		end
+     		d[i] = dot(ob[i], ob[i])
+   		end
 
-        	return ob
-    	end
+    	return ob
+	end
 
-    	##-----------------------------------------------------------------------------------
+    ##-----------------------------------------------------------------------------------
    	function grscn(m::Array{Float64, 2})
-        	ob = []
+    	ob = []
 
-        	for i = 1:size(m, 2)
-            		push!(ob, m[:, i])
-            		for j = 1:(i-1)
-                		ob[i] -= dot(ob[j], ob[i])*ob[j]
-            		end
-            		normalize!(ob[i])
-        	end
-
-        	return ob
+    	for i = 1:size(m, 2)
+        		push!(ob, m[:, i])
+        		for j = 1:(i-1)
+            		ob[i] -= dot(ob[j], ob[i])*ob[j]
+        		end
+        		normalize!(ob[i])
     	end
 
+    	return ob
+    end
 
-    	##===================================================================================
-    	##  orthogonal projection
-    	##===================================================================================
-    	export proj, projn
 
-    	##-----------------------------------------------------------------------------------
-    	function proj(v::Array{Float64, 1}, m::Array{Float64, 2})
-        	r = zeros(size(v))
-        	for i = 1:size(m, 2)
-            		r += m[:, i]*(dot(v, m[:, i])/dot(m[:, i], m[:, i]))
-        	end
-        	return r
+    ##===================================================================================
+    ##  orthogonal projection
+    ##===================================================================================
+    export proj, projn
+
+    ##-----------------------------------------------------------------------------------
+    function proj(v::Array{Float64, 1}, m::Array{Float64, 2})
+    	r = zeros(size(v))
+    	for i = 1:size(m, 2)
+        		r += m[:, i]*(dot(v, m[:, i])/dot(m[:, i], m[:, i]))
     	end
+    	return r
+    end
 
     ##-----------------------------------------------------------------------------------
     projn(v::Array{Float64, 1}, m::Array{Float64, 2}) = m*m'*v
@@ -1330,7 +1330,7 @@
 	export hilbert_cf, hilbert_cb
 
 	##-----------------------------------------------------------------------------------
-	function hilbert_cf{T<:Unsigned}(v::Array{T, 1})									# support for different output types is needed
+	function hilbert_cf{T<:Unsigned}(v::Array{T, 1})									# TODO support for different output types is needed
 		b = sizeof(T)*8
 		r = deepcopy(v)
 
