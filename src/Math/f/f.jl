@@ -607,12 +607,12 @@
 
 	##-----------------------------------------------------------------------------------
 	function ar(q::Integer, v::Array{Float64, 1})
-		l = size(v, 1)-q
+		l = size(v, 1) - q
 		m = zeros(l, q+1)
 		y = zeros(l)
 
 		for i = 1:l
-			m[i, 1] = 1
+			m[i, 1] = 1.
 			m[i, 2:end] = v[i:(q+i-1)]
 			y[i] = v[q+i]
 		end
@@ -622,12 +622,12 @@
 
 
 	##===================================================================================
-    ## dickey fuller test for stationarity
+    ## [augumented] dickey fuller test for stationarity
     ##===================================================================================
-	export difut
+	export difut, adifut
 
 	##-----------------------------------------------------------------------------------
-	difut(v::Array{Float64, 1}, p::Float64 = 0.01) = ar(1, v)[2] <= p
+	difut(v::Array{Float64, 1}, p::Float64 = .01) = ar(1, v)[2] <= p
 
 	##-----------------------------------------------------------------------------------
 	difut(v::Array{Float64, 1}, p::Float64, d::Float64) = ar(1, v-[d*x for x = 1:size(v, 1)])[2] <= p
@@ -635,6 +635,22 @@
 	##-----------------------------------------------------------------------------------
 	difut(v::Array{Float64, 1}, p::Float64, d::Float64, t::Float64) = ar(1, v-[(d*x)+(t*sum(x)) for x = 1:size(v, 1)])[2] <= p
 
+	##-----------------------------------------------------------------------------------
+	function adifut(v::Array{Float64, 1}, q::Integer, p::Float64 = .01)
+		@assert(l > p, "sample size to small")
+		d = (circshift(v, -1) - v)[1:end-1]
+		l = size(v, 1) - q - 1
+		m = zeros(l, q + 2)
+		y = d[(q+1):end]
+
+		for i = 1:l
+			m[i, 1] = 1.
+			m[i, 2] = v[q+i-1]
+			m[i, 3:end] = d[(q+i-1):-1:i]
+		end
+
+		return map((x) -> isnan(x) ? 0. : x, (m'*m)\(m'*y))[2] <= p
+	end
 
 	##===================================================================================
     ## angle granger test for cointegration
@@ -642,7 +658,7 @@
 	export angrat
 
 	##-----------------------------------------------------------------------------------
-	angrat(x::Array{Float64, 1}, y::Array{Float64, 1}, p::Float64 = 0.01) = difut(y - (((soq(x))\dot(x, y))*x), p)
+	angrat(x::Array{Float64, 1}, y::Array{Float64, 1}, p::Float64 = .01) = difut(y - (((soq(x))\dot(x, y))*x), p)
 
 	##-----------------------------------------------------------------------------------
 	angrat(x::Array{Float64, 1}, y::Array{Float64, 1}, p::Float64, d::Float64) = difut(y - (((soq(x))\dot(x, y))*x), p, d)
