@@ -2,13 +2,13 @@
     ##===================================================================================
     ##  types
     ##===================================================================================
-    type tpda
-        is::Tuple{Int, Int}                                                             # initial state (x) and stack symbol (y)
-        fs::Array{Int, 1}                                                               # final states
-        cs::Int                                                                         # current state
-        st::Array{Int, 1}                                                               # stack
-        il::Dict{Any, Int}                                                              # input lookup table
-        tm::Array{Tuple{Int,Int},3}                                                     # transition matrix x = input | y = state | z = top of stack || result x = state transition | y = stack operation
+    type tpda{T<:Int}
+        is::Tuple{T, T}                                                                 # initial state (x) and stack symbol (y)
+        fs::Array{T, 1}                                                                 # final states
+        cs::T                                                                           # current state
+        st::Array{T, 1}                                                                 # stack
+        il::Dict{Any, T}                                                                # input lookup table
+        tm::Array{Tuple{T, T}, 3}                                                       # transition matrix x = input | y = state | z = top of stack || result x = state transition | y = stack operation (1 push | -1 pop)
     end
 
 
@@ -21,11 +21,13 @@
     function ais!(pda::tpda, symbol::Any)                                               # input a symbol
         r = pda.tm[pda.il[symbol], pda.cs, pda.st[end]]
         pda.cs = r[1]
-        if r[2] == 1        # push symbol on top of the stack
+
+        if r[2] == 1
             push!(pda.st, pda.il[symbol])
-        elseif r[2] == -1   # delete first element of the stack
+        elseif r[2] == -1
             pop!(pda.st)
         end
+
         return pda
     end
 
