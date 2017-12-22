@@ -7,7 +7,7 @@
     ##-----------------------------------------------------------------------------------
     function hs_to_vec(str::String)
         if (isodd(length(str))) str = string(str, str) end
-        return convert(Array{Float64}, hex2bytes(str))
+        return convert(Array{Float64, 1}, hex2bytes(str))
     end
 
     ##-----------------------------------------------------------------------------------
@@ -18,7 +18,11 @@
     ##-----------------------------------------------------------------------------------
     function vec_to_hs(arr)
         str = ""
-        for i = 1:3 str = string((arr[i] < 16 ? "0" : ""), str, hex(arr[i])) end
+
+        str = string((arr[1] < 16 ? "0" : ""), str, hex(arr[1]))
+        str = string((arr[2] < 16 ? "0" : ""), str, hex(arr[2]))
+        str = string((arr[3] < 16 ? "0" : ""), str, hex(arr[3]))
+
         return str
     end
 
@@ -42,12 +46,14 @@
 
     ##-----------------------------------------------------------------------------------
     function vec_to_ssm{T<:Number}(v::Array{T, 1})
-        l = length(v); m = cross(v, b)
+        l = size(v, 1); m = cross(v, b)
         b = insert!(zeros(l-1), 1, 1)
+
         for i = 2:l
             b = circshift(b, 1)
             m = hcat(m, cross(v, b))
         end
+
         return m
     end
 
@@ -69,9 +75,11 @@
     ##-----------------------------------------------------------------------------------
     function join{T<:Any}(vl::Array{Array{T, 1}, 1})
         v = vl[1]
+
         for i=2:length(vl)
             v = cat(1, v, vl[i])
         end
+
         return v
     end
 
@@ -82,16 +90,23 @@
 
     ##-----------------------------------------------------------------------------------
     function mat_to_vl{T<:Any}(m::Array{T, 2}, columns = true)
-        vl = []; m = columns ? m : m'
-        for i = 1:size(m, 2) push!(vl, m[:, i]) end
+        m = columns ? m : m'
+        vl = []
+
+        for i = 1:size(m, 2)
+            push!(vl, m[:, i])
+        end
+
         return vl
     end
 
     function vl_to_mat{T<:Any}(vl::Array{Array{T, 1}, 1}, columns = true)
         m = vl[1]
-        for i = 2:length(vl)
+
+        for i = 2:size(vl, 1)
             m = cat(2, m, vl[i])
         end
+
         return columns ? m : m'
     end
 end
