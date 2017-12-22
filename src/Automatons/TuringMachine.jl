@@ -2,15 +2,15 @@
     ##===================================================================================
     ##  types
     ##===================================================================================
-    type ttuma
-        cs::Int                                                                         # current state
-        fs::Array{Int, 1}                                                               # final states
-        is::Int                                                                         # initial state
-        cts::Int                                                                        # current tape symbol
-        lst::Array{Int, 1}                                                              # left side of the tape
-        rst::Array{Int, 1}                                                              # right side of the tape
-        il::Dict{Any, Int}                                                              # input lookup table
-        tm::Array{Tuple{Int, Int, Int}, 3}                                              # transition matrix x = input | y = state | z = current tape symbol || result x = state transition | y = symbol to be written | z = tape movement
+    type ttuma{T<:Int}
+        cs::T                                                                           # current state
+        fs::Array{T, 1}                                                                 # final states
+        is::T                                                                           # initial state
+        cts::T                                                                          # current tape symbol
+        lst::Array{T, 1}                                                                # left side of the tape
+        rst::Array{T, 1}                                                                # right side of the tape
+        il::Dict{Any, T}                                                                # input lookup table
+        tm::Array{Tuple{T, T, T}, 3}                                                    # transition matrix x = input | y = state | z = current tape symbol || result x = state transition | y = symbol to be written | z = tape movement (1 right | -1 left)
     end
 
 
@@ -20,24 +20,30 @@
     export ais!, aiw!
 
     ##-----------------------------------------------------------------------------------
-    function ais!(tuma::ttuma, symbol::Any) # input a symbol
+    function ais!(tuma::ttuma, symbol::Any)                                             # input a symbol
         r = tuma.tm[tuma.il[symbol], tuma.cs, tuma.cts]
         tuma.cts = r[2]
         tuma.cs = r[1]
-        if r[3] == 1    # move one to the right
+
+        if r[3] == 1
             push!(tuma.lst, tuma.cs)
             tuma.cs = pop!(tuma.rst)
-        elseif r[3] == -1    # move one to the left
+        elseif r[3] == -1
             push!(tuma.rst, tuma.cs)
             tuma.cs = pop!(tuma.lst)
         end
+
         return tuma
     end
 
     ##-----------------------------------------------------------------------------------
-    function aiw!(tuma::ttuma, word::String, is::Bool = true) # input a word
+    function aiw!(tuma::ttuma, word::String, is::Bool = true)                           # input a word
         tuma.cs = ifelse(is, tuma.is, tuma.cs)
-        for s in word ais!(tuma, s) end
+
+        for s in word
+            ais!(tuma, s)
+        end
+
         return (tuma, csif(tuma))
     end
 
