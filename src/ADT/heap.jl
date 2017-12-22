@@ -9,7 +9,7 @@
 
     ##-----------------------------------------------------------------------------------
     function is_heap{T<:Number}(v::Array{T, 1}, max = true, p = 1)                      # for max c = > || for min c = <
-        c = ifelse(max, >, <)                                                           # p = index (when nodes represent vectors this is the element after which everything is sorted)
+        c = max ? > : <                                                                 # p = index (when nodes represent vectors this is the element after which everything is sorted)
 
         for i = size(v, 1):-1:1
             if c(v[i][p], v[Base.max(1, convert(Int, floor(i/2)))][p])
