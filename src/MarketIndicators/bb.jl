@@ -7,9 +7,7 @@
 	##-----------------------------------------------------------------------------------
 	function sbb(v::Array{Float64, 1}, k::Float64, p::Int64, n::Int64, start::Int64, stop::Int64)
 		s = stop-start+1
-		r1 = zeros(s)
-		r2 = zeros(s)
-		r3 = zeros(s)
+		r1 = r2 = r3 = zeros(s)
 		np = n * p
 		s = 0
 

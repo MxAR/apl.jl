@@ -14,8 +14,7 @@
 	function smacd(v::Array{Float64, 1}, p::Tuple{Int64, Int64}, n::Int64, start::Int64, stop::Int64)
 		np = (n * p[1], n * p[2])
 		s = stop-start+1
-		r = zeros(s)
-		q = zeros(s)
+		r = q = zeros(s)
 		s = 0
 
 		for i = start:stop
