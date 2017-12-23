@@ -105,7 +105,7 @@
 	export ols
 
 	##-----------------------------------------------------------------------------------
-	ols(m::Array{Float64, 2}, y::Array{Float64, 1}) = (m'*m)\(m'*y)
+	ols{T<:AbstractFloat}(m::Array{T, 2}, y::Array{T, 1}) = (m'*m)\(m'*y)
 
 
 	##===================================================================================
@@ -140,10 +140,10 @@
 	export w6, nw6
 
 	##-----------------------------------------------------------------------------------
-	w6() = Int64(ceil(rand()*6))
+	w6() = Int(ceil(rand()*6))
 
 	##-----------------------------------------------------------------------------------
-	nw6(n::Int64) = sum([w6() for i = 1:n])
+	nw6(n::Integer) = sum([w6() for i = 1:n])
 
 
 	##===================================================================================
@@ -299,38 +299,29 @@
 	##===================================================================================
 	##	generalized mean
 	##===================================================================================
-	export gnmn, gnmn_n1, gnmn_0
+	export gnmn, gnmn_h, gnmn_g, gnfmn
 
 	##-----------------------------------------------------------------------------------
-	function gnmn(v::Array{Float64, 1}, p::Int64, l::Int64, n::Int64)
+	gamean{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, l::N, n::N) = gfmean(v, (x) -> x, (x) -> x, l, n)					# arithmetic mean
+
+	##-----------------------------------------------------------------------------------
+	ghmean{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, l::N, n::N) = gfmean(v, (x) -> 1/x, (x) -> 1/x, l, n)				# harmonic mean
+
+	##-----------------------------------------------------------------------------------
+	ggmean{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, l::N, n::N) = gfmean(v, (x) -> log(x), (x) -> exp(x), l, n)		# geometric mean
+
+	##-----------------------------------------------------------------------------------
+	gpmean{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, l::N, n::N, p::T) = gfmean(v, (x) -> x^m, (x) -> x^(1/m), l, n)	# power mean
+
+	##-----------------------------------------------------------------------------------
+	function gfmean{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, g::Function, g_inv::Function, l::N, n::N) 				# generalized f mean
 		u = Float64(0)
 
-		for i = 1:n:l u += v[i]^p end
-		u = u / floor(l/n)
-
-		return u^(1/p)
-	end
-
-	##-----------------------------------------------------------------------------------
-	function gnmn_n1(v::Array{Float64, 1}, l::Int64, n::Int64)			# harmonic mean
-		u = Float64(0)
-
-		for i = 1:n:l
-            u += 1/v[i]
-        end
-
-		return (floor(l/n)/u)
-	end
-
-	##-----------------------------------------------------------------------------------
-	function gnmn_0(v::Array{Float64, 1}, l::Int64, n::Int64)			# geometric mean
-		u = v[1]
-
-		for i = 1+n:n:l
-			u = u * v[i]
+		for i = 1:n:(n*l)
+			u += g(v[i])
 		end
 
-		return u^(1/floor(l/n))
+		return g_inv(u/l)
 	end
 
 
@@ -345,7 +336,7 @@
 		m = Array{Float64, 2}(s)
 
 		@inbounds for i=1:s[1], j=1:s[2]
-			m[i, j]=v[i]*w[j]
+			m[i, j] = v[i] * w[j]
 		end
 
 		return m
