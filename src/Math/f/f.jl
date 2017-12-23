@@ -346,12 +346,12 @@
 	##===================================================================================
 	##  gram schmidt proces
 	##===================================================================================
-    export grscn, grscn
+    export grsc, grscn
 
 	##-----------------------------------------------------------------------------------
-	function grsc(m::Array{Float64, 2})
+	function grsc{T<:AbstractFloat}(m::Array{T, 2})
     	s = size(m, 2)
-    	d = zeros(s);
+    	d = zeros(T, s)
     	ob = []
 
     	for i = 1:s
@@ -366,7 +366,7 @@
 	end
 
     ##-----------------------------------------------------------------------------------
-   	function grscn(m::Array{Float64, 2})
+   	function grscn{T<:AbstractFloat}(m::Array{T, 2})
     	ob = []
 
     	for i = 1:size(m, 2)
