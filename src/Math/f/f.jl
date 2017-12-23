@@ -331,9 +331,9 @@
 	export otr
 
 	##-----------------------------------------------------------------------------------
-	function otr(v::Array{Float64, 1}, w::Array{Float64, 1})
+	function otr{T<:AbstractFloat}(v::Array{T, 1}, w::Array{T, 1})
 		s = (size(v, 1), size(w, 1))
-		m = Array{Float64, 2}(s)
+		m = Array{T, 2}(s)
 
 		@inbounds for i=1:s[1], j=1:s[2]
 			m[i, j] = v[i] * w[j]
