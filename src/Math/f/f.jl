@@ -299,7 +299,7 @@
 	##===================================================================================
 	##	generalized mean
 	##===================================================================================
-	export gnmn, gnmn_h, gnmn_g, gnfmn
+	export gamean, ghmean, ggmean, gpmean, gfmean, grmean
 
 	##-----------------------------------------------------------------------------------
 	gamean{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, l::N, n::N) = gfmean(v, (x) -> x, (x) -> x, l, n)					# arithmetic mean
@@ -311,13 +311,17 @@
 	ggmean{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, l::N, n::N) = gfmean(v, (x) -> log(x), (x) -> exp(x), l, n)		# geometric mean
 
 	##-----------------------------------------------------------------------------------
-	gpmean{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, l::N, n::N, p::T) = gfmean(v, (x) -> x^m, (x) -> x^(1/m), l, n)	# power mean
+	gpmean{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, l::N, n::N, p::T) = gfmean(v, (x) -> x^p, (x) -> x^(1/p), l, n)	# power mean
+
+	##-----------------------------------------------------------------------------------
+	grmean{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, l::N, n::N, p::T) = gfmean(v, (x) -> x^2, (x) -> sqrt(x), l, n)  		# root squared mean
 
 	##-----------------------------------------------------------------------------------
 	function gfmean{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, g::Function, g_inv::Function, l::N, n::N) 				# generalized f mean
+		@assert(size(v, 1) >= (n*l), "out of bounds error")
 		u = Float64(0)
 
-		for i = 1:n:(n*l)
+		@inbounds for i = 1:n:(n*l)
 			u += g(v[i])
 		end
 
