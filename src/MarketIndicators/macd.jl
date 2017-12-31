@@ -11,13 +11,14 @@
 	export smacd
 
 	##-----------------------------------------------------------------------------------
-	function smacd(v::Array{Float64, 1}, p::Tuple{Int64, Int64}, n::Int64, start::Int64, stop::Int64)
+	function smacd{T<:Float64, N<:Integer}(v::Array{T, 1}, p::Tuple{N, N}, n::N, start::N, stop::N)
+		@assert(start <= stop && stop <= size(v, 1), "out of bounds error")
+		@assert(start > 0 && stop > 0, "out of bounds error")
+		r = q = zeros(T, stop-start+1)
 		np = (n * p[1], n * p[2])
-		s = stop-start+1
-		r = q = zeros(s)
-		s = 0
+		s = N(0)
 
-		for i = start:stop
+		@inbounds for i = start:stop
 			s = s + 1
 
 			for j = i:(-n):(i-np[1]+1)
@@ -43,8 +44,8 @@
 	export lmacd
 
 	##-----------------------------------------------------------------------------------
-	function lmacd(v::Array{Float64, 1}, pivot_weight::Float64, slope::Float64, p::Tuple{Int64, Int64}, n::Int64, start::Int64, stop::Int64)
-		d = Int64(abs(p[1] - p[2]))
+	function lmacd{T<:Float64, N<:Integer}(v::Array{T, 1}, pivot_weight::T, slope::T, p::Tuple{N, N}, n::N, start::N, stop::N)
+		d = N(abs(p[1] - p[2]))
 		return -1*lma(v, (pivot_weight + slope*d), slope, minimum(p), n, start-d, stop-d)
 	end
 
@@ -55,15 +56,17 @@
 	export emacd
 
 	##-----------------------------------------------------------------------------------
-	function emacd(v::Array{Float64, 1}, pivot_weight::Float64, slope::Float64, p::Tuple{Int64, Int64}, n::Int64, start::Int64, stop::Int64)
+	function emacd{T<:Float64, N<:Integer}(v::Array{T, 1}, pivot_weight::T, slope::T, p::Tuple{N, N}, n::N, start::N, stop::N)
+		@assert(start <= stop && stop <= size(v, 1), "out of bounds error")
+		@assert(start > 0 && stop > 0, "out of bounds error")
 		np = n * (p[1] < p[2] ? p[1] : p[2])
-		d = Int64(abs(p[1] - p[2]))
-		r = zeros(stop-start+1)
+		r = zeros(T, stop-start+1)
+		d = N(abs(p[1] - p[2]))
 		start = start - d
 		stop = stop - d
-		s = Int64(0)
+		s = N(0)
 
-		for i = start:stop
+		@inbounds for i = start:stop
 			s = s + 1
 			for j = i:(-n):(i-np+1)
 				r[s] = r[s] + (-v[j] * pivot_weight * exp(-(slope*(i-j+d))^2))
