@@ -8,8 +8,8 @@
 	##===================================================================================
 	##	types
 	##===================================================================================
-	type t_opt_prb																		# optimization problem
-		sp::f.t_ncbd																		# search space
+	type topt_prb																		# optimization problem
+		sp::f.tncbd																		# search space
 		ff::Function																	# fitness function
 	end
 
@@ -24,12 +24,12 @@
 	##		mut = mutation function
 	##		mr = mutation rate
 	##===================================================================================
-	function eve(optp::t_opt_prb, tc::Tuple{Int64, Float64}, pop::Array{Array{Float64, 1}, 1}, mut::Function, mr::Function)
+	function eve{T<:AbstractFloat, N<:Integer}(optp::topt_prb, tc::Tuple{N, T}, pop::Array{Array{T, 1}, 1}, mut::Function, mr::Function)
 		supremum = optp.sp.alpha + optp.sp.delta										# supremum of the n dim cubiod (for mutation)
 		gen_size = size(pop, 1)															# size of each generation
-		swp = Float64(0)																# swap var, mainly for searching for the best element
-		cbe = Int64(0)																	# current best element (champion)
-		cep = Int64(1)																	# current epoch
+		swp = T(0)																		# swap var, mainly for searching for the best element
+		cbe = N(0)																		# current best element (champion)
+		cep = N(1)																		# current epoch
 		cer = Inf																		# current error
 
 		while cep <= tc[1] && cer > tc[2]												# initiate the process
@@ -41,7 +41,7 @@
 				end
 			end
 
-			max_delta = Base.map((x) -> abs(mr(cep)/x), optp.sp.delta)							# calculate the maximal change that can occure through mutation
+			max_delta = Base.map((x) -> abs(mr(cep)/x), optp.sp.delta)					# calculate the maximal change that can occure through mutation
 			pop[1] = deepcopy(pop[cbe])													# move champion to the first place
 			@inbounds for i = 2:gen_size												# generate a new generation from the genes of the champion
 				pop[i] .= mut(pop[i], pop[1], optp.sp, max_delta, supremum)					# (mutation)
@@ -62,7 +62,7 @@
 	##		max_delta = the maximal change that can occure through muation
 	## 		supremum = the supremum of the n dim cubiod represented in optp.sp
 	##===================================================================================
-	function mut_default(child::Array{Float64, 1}, parent::Array{Float64, 1}, ncbd::f.t_ncbd, max_delta::Array{Float64, 1}, supremum::Array{Float64, 1})
+	function mut_default{T<:AbstractFloat}(child::Array{T, 1}, parent::Array{T, 1}, ncbd::f.tncbd, max_delta::Array{T, 1}, supremum::Array{T, 1})
 		@inbounds for i=1:ncbd.n																		# mutate each value inside the vector
 			child[i] = parent[i] + prison(2*(rand()-.5)*max_delta[i], ncbd.alpha[i], supremum[i])	# random mutation inside the given n dim intervall
 		end
