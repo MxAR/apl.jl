@@ -31,7 +31,6 @@
     #include("Math/func.jl") under construction...
 
     # MarketIndicators
-    include("MarketIndicators/med.jl")
     include("MarketIndicators/mavg.jl")
     include("MarketIndicators/macd.jl")
     include("MarketIndicators/rsi.jl")
