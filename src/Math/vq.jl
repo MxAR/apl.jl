@@ -10,10 +10,10 @@
 	export lvq
 
 	##-----------------------------------------------------------------------------------
-	function lvq{T<:Number}(vl::Array{Array{T, 1}, 1}, nn::Array{Array{T, 1}, 1}, eta::Function = (x) -> 0.2, max_epoch = 100)
+	function lvq{T<:Number}(vl::Array{Array{T, 1}, 1}, nn::Array{Array{T, 1}, 1}, eta::Function = (x) -> 0.2, max_epoch::Integer = 100)
 		for i in 1:max_epoch															# vl = data as vector list
 			bn = [0, inf]																# nn = probing points as vectorlist
-			for v = 1:length(vl)														# eta = learn value function
+			@inbounds for v = 1:length(vl)												# eta = learn value function
 				for n = 1:length(nn)
 					s = norm(v-nn[n])
 					if bn[2] > s
@@ -24,6 +24,7 @@
 				nn[bn[1]] += eta(i)*(v-nn[bn[1]])
 			end
 		end
+
 		return nn
 	end
 
@@ -34,12 +35,14 @@
 	export kmeans
 
 	##-----------------------------------------------------------------------------------
-	function kmeans{T<:Real, N<:Int}(vl::Array{Array{T, 1}, 1}, k::N, max_iter::N = 100, dist::Function = (l, v) -> soq(l, v))
-		j = length(vl); l = length(vl[1])
-		mn = vl[1:k]; cl = fill(0, j)
+	function kmeans{T<:Number, N<:Integer}(vl::Array{Array{T, 1}, 1}, k::N, max_iter::N = 100, dist::Function = (l, v) -> soq(l, v))
+		l = size(vl[1], 1)
+		j = size(vl, 1)
+		cl = fill(0, j)
+		mn = vl[1:k]
 
 		for ep = 1:max_iter
-			for v = 1:j																	# assignment step
+			@inbounds for v = 1:j														# assignment step
 				i = [Inf, 0]
 				for m = 1:k																# find nearest cluster for vec v
 					d = dist(l, mn[m]-vl[v])
@@ -53,13 +56,14 @@
 
 			hmn = mn
 			mn = vl_zeros(k, l)
-			c = zeros(k)
+			c = zeros(T, k)
+
 			for v = 1:j																	# update step
 				mn[cl[v]] += vl[v]
 				c[cl[v]] += 1
 			end
+
 			mn ./= c
-			println(mn)
 			hmn == mn && break
 		end
 
