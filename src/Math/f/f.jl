@@ -2071,7 +2071,7 @@
     function map{T<:Any}(f::Function, vl::Array{Array{T, 1}, 1})
         ul = Array{Array{T, 1}, 1}
 
-        @simd @inbounds for i = 1:length(ul)
+        @inbounds @simd for i = 1:length(ul)
             push!(ul, f(ul[i]))
         end
 
