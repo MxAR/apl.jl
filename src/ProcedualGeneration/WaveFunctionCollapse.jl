@@ -12,14 +12,14 @@
 	export wfc
 
 	##-----------------------------------------------------------------------------------
-	function wfc{T<:Int}(pairs::Dict{T, Array{T, 1}}, space::Tuple{T, T}, border_type::T, start::Tuple{T, T, T})
+	function wfc{T<:Integer}(pairs::Dict{T, Array{T, 1}}, space::Tuple{T, T}, border_type::T, start::Tuple{T, T, T})
 		plane = fill(-1, space[1], space[2])											# to be filled plane
 		plane[start[1], start[2]] = start[3]											# set intial tile
 
 		tbd = nigb(start[1:2], space, plane)[2]											# add the neighbouring tiles to the list (to be done (rbd)) of tiles to be processed
 
 		# check if the first tile is vaild
-		@assert !isempty(intersect(nigbt(tbd, plane, pairs, border_type))) ["given initial tile is invalid"]
+		@assert(!isempty(intersect(nigbt(tbd, plane, pairs, border_type))), "given initial tile is invalid")
 
 		# while there are indefinite tiles
 		while !isempty(tbd)
@@ -65,10 +65,10 @@
 	##===================================================================================
 	##	internal functions
 	##===================================================================================
-	u{T<:Int}(vl::Array{Array{Tuple{T, T}, 1}, 1}) = vcat(vl[1], vl[2])
+	u{T<:Integer}(vl::Array{Array{Tuple{T, T}, 1}, 1}) = vcat(vl[1], vl[2])
 
 	##-----------------------------------------------------------------------------------
-	function nigb{T<:Int}(p::Tuple{T, T}, s::Tuple{T, T}, plane::Array{T, 2})
+	function nigb{T<:Integer}(p::Tuple{T, T}, s::Tuple{T, T}, plane::Array{T, 2})
 		c = [(p[1]+1, p[2]), (p[1], p[2]+1), (p[1]-1, p[2]), (p[1], p[2]-1)]
 		r = [Array{Tuple{T, T}, 1}(), Array{Tuple{T, T}, 1}()]
 		@inbounds for i=1:4
@@ -80,7 +80,7 @@
 	end
 
 	##-----------------------------------------------------------------------------------
-	function nigbt{T<:Int}(nb::Array{Tuple{T, T}, 1}, plane::Array{T, 2}, pairs::Dict{T, Array{T, 1}}, border_type::T)
+	function nigbt{T<:Integer}(nb::Array{Tuple{T, T}, 1}, plane::Array{T, 2}, pairs::Dict{T, Array{T, 1}}, border_type::T)
 		nt = map((x) -> pairs[plane[x[1], x[2]]], nb)
 		if length(nt)<4; push!(nt, pairs[border_type]) end
 		return nt
