@@ -23,12 +23,10 @@
     include("Math/op.jl")
     include("Math/f/f.jl")
     include("Math/dist.jl")
-    include("Math/interpol.jl")
     include("Math/rg.jl")
     include("Math/mpa.jl")
     include("Math/vq.jl")
     include("Math/yamartino.jl")
-    #include("Math/func.jl") under construction...
 
     # MarketIndicators
     include("MarketIndicators/mavg.jl")
