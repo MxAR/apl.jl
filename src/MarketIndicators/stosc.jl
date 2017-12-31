@@ -5,13 +5,15 @@
 	export sstosc
 
 	##-----------------------------------------------------------------------------------
-	function sstosc(v::Array{Float64, 1}, current_price::Float64, p::Int64, n::Int64, start::Int64, stop::Int64)
-		r = zeros(stop-start+1)
-		b = [-Inf, Inf]
-		s = Int64(0)
+	function sstosc{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, current_price::T, p::N, n::N, start::N, stop::N)
+		@assert(start <= stop && stop <= size(v, 1), "out of bounds error")
+		@assert(start > 0 && stop > 0, "out of bounds error")
+		r = zeros(T, stop-start+1)
+		b = [T(-Inf), T(Inf)]
 		np = n * p
+		s = N(0)
 
-		for i = start:stop
+		@inbounds for i = start:stop
 			s = s + 1
 			for j = i:(-n):(i-np+1)
 				if v[j] > b[1]
@@ -24,7 +26,7 @@
 			end
 
 			r[s] = r[s] + ((current_price - b[2])/(b[1] - b[2]))
-			b = [-Inf, Inf]
+			b = [T(-Inf), T(Inf)]
 		end
 
 		return r/(stop-start+1)
@@ -37,13 +39,15 @@
 	export lstosc
 
 	##-----------------------------------------------------------------------------------
-	function lstosc(v::Array{Float64, 1}, current_price::Float64, pivot_weight::Float64, slope::Float64, p::Int64, n::Int64, start::Int64, stop::Int64)
-		r = zeros(stop-start+1)
-		b = [-Inf, Inf]
-		s = Int64(0)
+	function lstosc{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, current_price::T, pivot_weight::T, slope::T, p::N, n::N, start::N, stop::N)
+		@assert(start <= stop && stop <= size(v, 1), "out of bounds error")
+		@assert(start > 0 && stop > 0, "out of bounds error")
+		r = zeros(T, stop-start+1)
+		b = [T(-Inf), T(Inf)]
 		np = n * p
+		s = N(0)
 
-		for i = start:stop
+		@inbounds for i = start:stop
 			s = s + 1
 			for j = i:(-n):(i-np+1)
 				if v[j] > b[1]
@@ -56,7 +60,7 @@
 			end
 
 			r[s] = r[s] + (((current_price - b[2])/(b[1] - b[2])) * max((pivot_weight + slope*(s-1)), 0.))
-			b = [-Inf, Inf]
+			b = [T(-Inf), T(Inf)]
 		end
 
 		return r
@@ -69,13 +73,15 @@
 	export estosc
 
 	##-----------------------------------------------------------------------------------
-	function estosc(v::Array{Float64, 1}, current_price::Float64, pivot_weight::Float64, slope::Float64, p::Int64, n::Int64, start::Int64, stop::Int64)
-		r = zeros(stop-start+1)
-		b = [-Inf, Inf]
-		s = Int64(0)
+	function estosc{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, current_price::T, pivot_weight::T, slope::T, p::N, n::N, start::N, stop::N)
+		@assert(start <= stop && stop <= size(v, 1), "out of bounds error")
+		@assert(start > 0 && stop > 0, "out of bounds error")
+		r = zeros(T, stop-start+1)
+		b = [T(-Inf), T(Inf)]
 		np = n * p
+		s = N(0)
 
-		for i = start:stop
+		@inbounds for i = start:stop
 			s = s + 1
 			for j = i:(-n):(i-np+1)
 				if v[j] > b[1]
@@ -88,7 +94,7 @@
 			end
 
 			r[s] = r[s] + (((current_price - b[2])/(b[1] - b[2])) * pivot_weight * exp(-(slope*(s-1))^2))
-			b = [-Inf, Inf]
+			b = [T(-Inf), T(Inf)]
 		end
 
 		return r
