@@ -10,11 +10,12 @@
     export omp
 
     ##-----------------------------------------------------------------------------------
-    function omp{T<:Number, N<:Number}(y::Array{T, 1}, X::Array{N, 2}, min_eps)         # columns of X should be normalized
-        ly = length(y); re = y
-        @assert ly == size(X, 1)
-        gv = mat_to_vec_ls(X, false)
-        sv = Array{Array{N, 1}, 1}
+    function omp{T<:AbstractFloat}(y::Array{T, 1}, X::Array{T, 2}, min_eps::T)         # columns of X should be normalized
+        ly = size(y, 1)
+        re = y
+        @assert(ly == size(X, 1))
+        gv = mat_to_vl(X, false)
+        sv = Array{Array{T, 1}, 1}
         coeff = Array{T, 1}
 
         while abs(re) > min_eps
@@ -44,10 +45,10 @@
     export mp
 
     ##-----------------------------------------------------------------------------------
-    function mp{T<:Number, N<:Number}(y::Array{T, 1}, X::Array{N, 2}, min_eps)          # columns of X should be normalized
+    function mp{T<:AbstractFloat}(y::Array{T, 1}, X::Array{T, 2}, min_eps::T)          # columns of X should be normalized
         ly = length(y); re = y
         @assert ly == size(X, 1)
-        gv = mat_to_vec_ls(X, false)
+        gv = mat_to_vl(X, false)
         sv = Array{Array{N, 1}, 1}
         coeff = Array{T, 1}
 
