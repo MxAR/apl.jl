@@ -2,19 +2,19 @@
     export mv_to_tmp, mv_to_tmp!, clr_tmp
 
     ##-----------------------------------------------------------------------------------
-    function mv_to_tmp(Src::AbstractString)
-        name = *(tempdir(), "/", bytes2hex(sha256(open(Src))), ".dat")
-        (!isfile(name) && isfile(Src)) && writetable(name, readtable(Src))
+    function mv_to_tmp(src::AbstractString)
+        name = *(tempdir(), "/", bytes2hex(sha256(open(src))), ".dat")
+        (!isfile(name) && isfile(src)) && writetable(name, readtable(src))
         return name
     end
 
     ##-----------------------------------------------------------------------------------
-    function mv_to_tmp!(Src::AbstractString)
-        name = *(tempdir(), "/", bytes2hex(sha256(open(Src))), ".dat")
-        if isfile(Src) && !isfile(name)
-            Src = name; writetable(name, readtable(Src))
+    function mv_to_tmp!(src::AbstractString)
+        name = *(tempdir(), "/", bytes2hex(sha256(open(src))), ".dat")
+        if isfile(src) && !isfile(name)
+            src = name; writetable(name, readtable(src))
         end
-        return Src
+        return src
     end
 
     ##-----------------------------------------------------------------------------------
