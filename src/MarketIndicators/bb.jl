@@ -5,13 +5,14 @@
 	export sbb
 
 	##-----------------------------------------------------------------------------------
-	function sbb(v::Array{Float64, 1}, k::Float64, p::Int64, n::Int64, start::Int64, stop::Int64)
-		s = stop-start+1
-		r1 = r2 = r3 = zeros(s)
+	function sbb{T<:Float64, N<:Integer}(v::Array{T, 1}, k::T, p::N, n::N, start::N, stop::N)
+		@assert(start <= stop && stop <= size(v, 1), "out of bounds error")
+		@assert(start > 0 && stop > 0, "out of bounds error")
+		r1 = r2 = r3 = zeros(T, stop-start+1)
 		np = n * p
 		s = 0
 
-		for i = start:stop
+		@inbounds for i = start:stop
 			sr = i:(-n):(i-np+1)
 			s = s + 1
 
@@ -34,15 +35,14 @@
 	export lbb
 
 	##-----------------------------------------------------------------------------------
-	function lbb(v::Array{Float64, 1}, k::Float64, pivot_weight::Float64, slope::Float64, p::Int64, n::Int64, start::Int64, stop::Int64)
-		s = stop-start+1
-		r1 = zeros(s)
-		r2 = zeros(s)
-		r3 = zeros(s)
+	function lbb{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, k::T, pivot_weight::T, slope::T, p::N, n::N, start::N, stop::N)
+		@assert(start <= stop && stop <= size(v, 1), "out of bounds error")
+		@assert(start > 0 && stop > 0, "out of bounds error")
+		r1 = r2 = r3 = zeros(T, stop-start+1)
 		np = n * p
 		s = 0
 
-		for i = start:stop
+		@inbounds for i = start:stop
 			sr = i:(-n):(i-np+1)
 			s = s + 1
 
@@ -64,15 +64,14 @@
 	export ebb
 
 	##-----------------------------------------------------------------------------------
-	function ebb(v::Array{Float64, 1}, k::Float64, pivot_weight::Float64, slope::Float64, p::Int64, n::Int64, start::Int64, stop::Int64)
-		s = stop-start+1
-		r1 = zeros(s)
-		r2 = zeros(s)
-		r3 = zeros(s)
+	function ebb{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, k::T, pivot_weight::T, slope::T, p::N, n::N, start::N, stop::N)
+		@assert(start <= stop && stop <= size(v, 1), "out of bounds error")
+		@assert(start > 0 && stop > 0, "out of bounds error")
+		r1 = r2 = r3 = zeros(T, stop-start+1)
 		np = n * p
 		s = 0
 
-		for i = start:stop
+		@inbounds for i = start:stop
 			sr = i:(-n):(i-np+1)
 			s = s + 1
 
