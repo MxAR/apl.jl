@@ -14,9 +14,9 @@
 	const t_alpha = [-5., -5.]
 	const t_delta = [10., 10.]
 	const t_n = 2
-	const t_sp = f.t_ncbd(t_alpha, t_delta, t_n)
+	const t_sp = f.tncbd(t_alpha, t_delta, t_n)
 	const t_ff(v::Array{Float64, 1}) = v[1]^2 + v[2]^2
-	const t_optp = eva.t_opt_prb(t_sp, t_ff)
+	const t_optp = eva.topt_prb(t_sp, t_ff)
 	const t_tc = (100000, .01)
 	const t_gen_size = 500
 	const t_mr = (x) -> 1.0
