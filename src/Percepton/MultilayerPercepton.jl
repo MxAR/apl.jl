@@ -7,24 +7,25 @@
     ##===================================================================================
     using f
 
+
     ##===================================================================================
     ##  types
     ##===================================================================================
-    type tlayer
-        LTWM::Array{Real, 2}                                                            # Layer-Transition-Weight-Matrix | x = current y = preceding
-        LTWMD::Array{Real, 2}
-        Threshold::Array{Real, 1}
-        ThresholdD::Array{Real, 1}
-        SubsequentLayer::Int
-        PreceedingLayer::Int
+    type tlayer{T<:AbstractFloat, N<:Int}
+        LTWM::Array{T, 2}                                                            # Layer-Transition-Weight-Matrix | x = current y = preceding
+        LTWMD::Array{T, 2}
+        Threshold::Array{T, 1}
+        ThresholdD::Array{T, 1}
+        SubsequentLayer::N
+        PreceedingLayer::N
     end
 
-    type tmlp                                                                           # MultilayerPercepton
+    type tmlp{T<:Int}                                                                           # MultilayerPercepton
         Layers::Array{Any, 1}
         ThresholdFunction::Function
         ThresholdFunctionDerivate::Function
-        FirstHiddenLayer::Int
-        OutputLayer::Int
+        FirstHiddenLayer::T
+        OutputLayer::T
     end
 
 
@@ -34,7 +35,7 @@
     export tmlpv0, disjuncfunc_to_tmlp
 
     ##-----------------------------------------------------------------------------------
-    function tmlpv0(NumberOfInputs, NeuronsPerLayer::Array{Int, 1}, ThresholdFunction::Function, ThresholdFunctionDerivate::Function, RandomWeights = true)
+    function tmlpv0{N<:Integer}(NumberOfInputs::N, NeuronsPerLayer::Array{N, 1}, ThresholdFunction::Function, ThresholdFunctionDerivate::Function, RandomWeights::Bool = true)
         MLP = tmlp([], ThresholdFunction, ThresholdFunctionDerivate, 1, length(NeuronsPerLayer))
         for (i, l) in enumerate(NeuronsPerLayer)
             push!(MLP.Layers, tlayer(
@@ -49,7 +50,7 @@
     function disjuncfunc_to_tmlp(BooleanFunction::AbstractString)
         BooleanFunction = replace(uppercase(BooleanFunction), " ", "")
         # "([A-Z])((-([A-Z]|\([A-Z](\+[A-Z]|)*\)))*|)" | OR -> -   AND -> + | Regex for disjunctive normal form
-        @assert ismatch(r"([a-zA-Z])((-([a-zA-Z]|\([a-zA-Z](\+[a-zA-Z]|)*\)))*|)", BooleanFunction) ["it would be great if the boolean function matches the disjunctive normal form or the syntax"]
+        @assert(ismatch(r"([a-zA-Z])((-([a-zA-Z]|\([a-zA-Z](\+[a-zA-Z]|)*\)))*|)", BooleanFunction), "it would be great if the boolean function matches the disjunctive normal form or the syntax")
 
         or = 1; lambda = []
         for n in BooleanFunction
@@ -82,7 +83,7 @@
     export iaf
 
     ##-----------------------------------------------------------------------------------
-    function iaf{T<:Real}(MLP::tmlp, V::Array{T, 1})
+    function iaf{T<:AbstractFloat}(MLP::tmlp, V::Array{T, 1})
         NextLayer = MLP.FirstHiddenLayer
         while true
             V = map(MLP.ThresholdFunction, *(MLP.Layers[NextLayer].LTWM, V), MLP.Layers[NextLayer].Threshold)
@@ -97,8 +98,8 @@
     export gdb!
 
     ##-----------------------------------------------------------------------------------
-    function gdb!(MLP::tmlp, TrainingData::Array{Array{Array{Float64,1},1},1}, LearningRate = 0.2, MaxEp = 2000, MaxErr = 0.01, Alpha = 0.2, Beta = 0.998)
-        #CVSize = convert(Int, round(length(TrainingData) / log(length(TrainingData))))  # TrainingData example:
+    function gdb!{T<:AbstractFloat, N<:Integer}(MLP::tmlp, TrainingData::Array{Array{Array{T, 1}, 1}, 1}, LearningRate::T = 0.2, MaxEp::N = 2000, MaxErr::T = 0.01, Alpha::T = 0.2, Beta::T = 0.998)
+        CVSize = convert(Int, round(length(TrainingData) / log(length(TrainingData))))  # TrainingData example:
         CVSize = 10
         NetworkLength = length(MLP.Layers)                                              # second subarray: output
                                                                                         # 4-element Array{Any,1}:
@@ -158,14 +159,14 @@
                 MLP.Layers[i].ThresholdD = 0.2 * (MLP.Layers[i].ThresholdD)
             end
 
-            println(epsilon/CVSize, " <> ", E)
+            #println(epsilon/CVSize, " <> ", E)
             #println("-------------------")
 
             if epsilon <= MaxErr
-                epsilon = 0
-                println("******")
-                for TD in TrainingData epsilon += sumabs2(TD[2] - iaf(MLP, TD[1])) end
-                if epsilon <= MaxErr break; end
+                for TD in TrainingData
+                    epsilon += sumabs2(TD[2] - iaf(MLP, TD[1]))
+                end
+                epsilon <= MaxErr && break
             end
         end
         #println(TrainingData)
