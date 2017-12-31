@@ -7,7 +7,7 @@
 	##-----------------------------------------------------------------------------------
 	function save_pkg_list()
 		p = *(homedir(), "/.julia/pkg_list")
-		if isfile(p); rm(p; force=true) end
+		isfile(p) && rm(p; force=true)
 		IO = open(p, true, true, true, false, false)
 		write(IO, join(collect(keys(Pkg.installed())), "+"))
 		close(IO)
