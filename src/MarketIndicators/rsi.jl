@@ -5,11 +5,12 @@
 	export srsi
 
 	##-----------------------------------------------------------------------------------
-	function srsi(v::Array{Float64, 1}, pivot_weight::Float64, slope::Float64, p::Int64, n::Int64, start::Int64)
-		r = [0, 0.]
+	function srsi{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, p::N, n::N, start::N)
+		@assert(start > 0 && n > 0, "out of bounds error")
+		r = zeros(T, 2)
 		np = n * p
 
-		for i = start:(-n):max((start-np+1), 2)
+		@inbounds for i = start:(-n):max((start-np+1), 2)
 			if v[i-1] < v[i]
 				r[1] = r[1] + (v[i-1] - v[i])
 			else
@@ -27,11 +28,12 @@
 	export lrsi
 
 	##-----------------------------------------------------------------------------------
-	function lrsi(v::Array{Float64, 1}, pivot_weight::Float64, slope::Float64, p::Int64, n::Int64, start::Int64)
-		r = [0, 0.]
+	function lrsi{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, pivot_weight::T, slope::T, p::N, n::N, start::N)
+		@assert(start > 0 && n > 0, "out of bounds error")
+		r = zeros(T, 2)
 		np = n * p
 
-		for i = start:(-n):max((start-np+1), 2)
+		@inbounds for i = start:(-n):max((start-np+1), 2)
 			if v[i-1] < v[i]
 				r[1] = r[1] + ((v[i-1] - v[i]) * max((pivot_weight + slope*(start-i)), 0.))
 			else
@@ -49,11 +51,12 @@
 	export ersi
 
 	##-----------------------------------------------------------------------------------
-	function ersi(v::Array{Float64, 1}, pivot_weight::Float64, slope::Float64, p::Int64, n::Int64, start::Int64)
-		r = [0, 0.]
+	function ersi{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, pivot_weight::T, slope::T, p::N, n::N, start::N)
+		@assert(start > 0 && n > 0, "out of bounds error")
+		r = zeros(T, 2)
 		np = n * p
 
-		for i = start:(-n):max((start-np+1), 2)
+		@inbounds for i = start:(-n):max((start-np+1), 2)
 			if v[i-1] < v[i]
 				r[1] = r[1] + ((v[i-1] - v[i]) * pivot_weight * exp(-(slope*(start-i))^2))
 			else
