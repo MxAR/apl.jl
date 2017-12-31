@@ -12,6 +12,7 @@
         Deviation::Real
     end
 
+    ##-----------------------------------------------------------------------------------
     type TYamartinoState
         SampleNumber::Int
         Sa::Real
@@ -29,15 +30,17 @@
         return IYamartinoResult(atan2(Ra, Sa), (asind(theta) * (1 + ((2/sqrt(3)) - 1) * theta^3)))
     end
 
-    function CalcYamartino{T}(arr::Array{T, 1}, PTYS::TYamartinoState = TYamartinoState(-1, 0, 0))
-        PTYS.SampleNumber += PTYS.SampleNumber < 0 ? length(arr) + 1 : length(arr)
+    ##-----------------------------------------------------------------------------------
+    function CalcYamartino{T<:AbstractFloat}(arr::Array{T, 1}, PTYS::TYamartinoState = TYamartinoState(-1, 0, 0))
+        PTYS.SampleNumber += PTYS.SampleNumber < 0 ? size(arr, 1) + 1 : size(arr, 1)
         PTYS.Sa += sum(map(sind, arr))
         PTYS.Ra += sum(map(cosd, arr))
         return PTYS
     end
 
-    function PCalcYamartino{T}(arr::Array{T, 1}, PTYS::TYamartinoState = TYamartinoState(-1, 0, 0))
-        SampleCount = length(arr)
+    ##-----------------------------------------------------------------------------------
+    function PCalcYamartino{T<:AbstractFloat}(arr::Array{T, 1}, PTYS::TYamartinoState = TYamartinoState(-1, 0, 0))
+        SampleCount = size(arr, 1)
         PTYS.SampleNumber += PTYS.SampleNumber < 0 ? SampleCount + 1 : SampleCount
 
         @parallel (+) for i = 1:SampleCount
@@ -59,6 +62,7 @@
         )
     end
 
+    ##-----------------------------------------------------------------------------------
     function deepcopy(ys::TYamartinoState)
         return TYamartinoState(
             deepcopy(ys.SampleNumber),
