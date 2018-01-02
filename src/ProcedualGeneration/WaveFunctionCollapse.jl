@@ -1,4 +1,4 @@
-@everywhere module wave_function_collapse
+@everywhere module wfc
 	##===================================================================================
 	##  using directives
 	##===================================================================================
@@ -9,10 +9,10 @@
 	##===================================================================================
 	## main
 	##===================================================================================
-	export wfc
+	export wfcc
 
 	##-----------------------------------------------------------------------------------
-	function wfc{T<:Integer}(pairs::Dict{T, Array{T, 1}}, space::Tuple{T, T}, border_type::T, start::Tuple{T, T, T})
+	function wfcc{T<:Integer}(pairs::Dict{T, Array{T, 1}}, space::Tuple{T, T}, border_type::T, start::Tuple{T, T, T})
 		plane = fill(-1, space[1], space[2])											# to be filled plane
 		plane[start[1], start[2]] = start[3]											# set intial tile
 
