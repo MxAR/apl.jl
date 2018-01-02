@@ -22,6 +22,12 @@
     # Math
     include("Math/op.jl")
     include("Math/f/f.jl")
+    include("Math/bin.jl")
+    include("Math/bla.jl")
+    include("Math/gen.jl")
+    include("Math/mean.jl")
+    include("Math/sta.jl")
+    include("Math/trig.jl")
     include("Math/dist.jl")
     include("Math/rg.jl")
     include("Math/mpa.jl")
@@ -29,7 +35,6 @@
     include("Math/yamartino.jl")
 
     # MarketIndicators
-    include("MarketIndicators/mavg.jl")
     include("MarketIndicators/macd.jl")
     include("MarketIndicators/rsi.jl")
     include("MarketIndicators/bb.jl")
