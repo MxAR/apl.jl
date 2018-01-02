@@ -1,5 +1,10 @@
 @everywhere module gen
 	##===================================================================================
+	##	using directives
+	##===================================================================================
+	using f
+
+	##===================================================================================
 	## fill (square matrix, diagonal matrix, triangular)
 	##===================================================================================
 	export zeros_sq, ones_sq, rand_sq, randn_sq, fill_sq, fill_dia, ones_dia, rand_dia,
@@ -206,7 +211,7 @@
     end
 
     ##-----------------------------------------------------------------------------------
-	function vl_rand(ncbd::tncbd, l::Integer)
+	function vl_rand(ncbd::f.tncbd, l::Integer)
 		vl = Array{Array{Float64, 1}, 1}(l)												# create an empty vl of length l
 		set_zero_subnormals(true)														# to save computing time
 		@inbounds for i = 1:l															# fill the list
@@ -348,6 +353,7 @@
 		return m
 	end
 
+
 	##===================================================================================
     ## rotation matrix
     ##===================================================================================
@@ -362,4 +368,22 @@
         m = [ 0 -axis[3] axis[2]; axis[3] 0 -axis[1]; -axis[2] axis[1] 0 ]
         return eye(T, 3) + m * sind(alpha) + (1 - cosd(alpha)) * m^2
     end
+
+
+	##===================================================================================
+	##  general evaluation matrix
+	##      l = [(x)->1, (x)->x, (x)->x^2] for polynomial of degree two
+	##===================================================================================
+	export gevamat
+
+	##-----------------------------------------------------------------------------------
+	function gevamat{T<:AbstractFloat}(l::Array{Function, 1}, v::Array{T, 1})
+		m = map(l[1], v)
+
+		@inbounds for i = 2:size(l, 1)
+			m = hcat(m, map(l[i], v))
+		end
+
+		return m
+	end
 end
