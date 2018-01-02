@@ -347,4 +347,19 @@
 
 		return m
 	end
+
+	##===================================================================================
+    ## rotation matrix
+    ##===================================================================================
+    export rotmat_3d
+
+	##-----------------------------------------------------------------------------------
+	rotmat_2d{T<:AbstractFloat}(angle::T = T(90)) = [cos(angle) -sin(angle); sin(angle) cos(angle)]
+
+    ##-----------------------------------------------------------------------------------
+    function rotmat_3d{T<:AbstractFloat}(axis::Array{T, 1}, angle::T = T(90))
+        axis = axis'
+        m = [ 0 -axis[3] axis[2]; axis[3] 0 -axis[1]; -axis[2] axis[1] 0 ]
+        return eye(T, 3) + m * sind(alpha) + (1 - cosd(alpha)) * m^2
+    end
 end
