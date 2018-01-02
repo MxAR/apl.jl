@@ -47,7 +47,7 @@
     end
 
     ##-----------------------------------------------------------------------------------
-    function disjuncfunc_to_tmlp(BooleanFunction::AbstractString)
+    function disj_tmlp(BooleanFunction::AbstractString)
         BooleanFunction = replace(uppercase(BooleanFunction), " ", "")
         # "([A-Z])((-([A-Z]|\([A-Z](\+[A-Z]|)*\)))*|)" | OR -> -   AND -> + | Regex for disjunctive normal form
         @assert(ismatch(r"([a-zA-Z])((-([a-zA-Z]|\([a-zA-Z](\+[a-zA-Z]|)*\)))*|)", BooleanFunction), "it would be great if the boolean function matches the disjunctive normal form or the syntax")

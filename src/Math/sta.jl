@@ -152,10 +152,10 @@
 	##===================================================================================
     ## mutual incoherence
     ##===================================================================================
-    export mut_incoherent
+    export mut_inch
 
     ##-----------------------------------------------------------------------------------
-    function mut_incoherent{T<:Number, N<:Integer}(m::Array{T, 2}, rows = true, p::N = 2)         # the lower the better the mutual incoherence property
+    function mut_inch{T<:Number, N<:Integer}(m::Array{T, 2}, rows = true, p::N = 2)    	# the lower the better the mutual incoherence property
         m = rows ? m : m'
 		inf = 0
 
@@ -167,7 +167,7 @@
     end
 
     ##-----------------------------------------------------------------------------------
-    function mut_incoherent{T<:Number, N<:Integer}(vl::Array{Array{T, 1}}, p::N = 2)
+    function mut_inch{T<:Number, N<:Integer}(vl::Array{Array{T, 1}}, p::N = 2)
         inf = 0
 
         @inbounds for x = 2:lenght(vl), y = 1:(x-1)

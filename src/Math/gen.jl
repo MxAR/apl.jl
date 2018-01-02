@@ -130,7 +130,7 @@
 	##===================================================================================
     ## random vectors (colour/stochastic/orthonormal)
     ##===================================================================================
-    export rand_colour_vec, rand_sto_vec, rand_orthonormal_vec
+    export rand_rgb_vec, rand_sto_vec, rand_orth_vec
 
     ##-----------------------------------------------------------------------------------
     rand_colour_vec(rgba = false) = rand(0:1:255, rgba ? 4 : 3)
@@ -144,7 +144,7 @@
     end
 
     ##-----------------------------------------------------------------------------------
-    function rand_orthonormal_vec{T<:Number}(v::Array{T, 1})
+    function rand_orth_vec{T<:Number}(v::Array{T, 1})
         u = [rand(), rand(), 0]
         u[3] = (v[1] * u[1] + v[2] * u[2]) / (-1 * (v[3] == 0 ? 1 : v[3]))
         return normalize(u)

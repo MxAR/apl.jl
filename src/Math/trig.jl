@@ -63,29 +63,29 @@
 	##===================================================================================
 	## angle
 	##===================================================================================
-	export angle, ccentral_angle, scentral_angle, tcentral_angle, central_angle,
-		hcentral_angle, vincenty_central_angle
+	export angle, ccntrl_angle, scntrl_angle, tcntrl_angle, cntrl_angle,
+		hcntrl_angle, vincenty_cntrl_angle
 
 	##-----------------------------------------------------------------------------------
 	angle{T<:AbstractFloat}(u::Array{T, 1}, v::Array{T, 1}, bias::T = T(0)) = @. acosd((abs(bdot(u, v))/(bnrm(v)*bnrm(u)))+bias)
 
 	##-----------------------------------------------------------------------------------
-	ccentral_angle{T<:AbstractFloat}(u::Array{T, 1}, v::Array{T, 1}) = @. acos(bdot(u, v))           			# returns radians | u&v = normal vectors on the circle
+	ccntrl_angle{T<:AbstractFloat}(u::Array{T, 1}, v::Array{T, 1}) = @. acos(bdot(u, v))           				# returns radians | u&v = normal vectors on the circle
 
 	##-----------------------------------------------------------------------------------
-	scentral_angle{T<:AbstractFloat}(u::Array{T, 1}, v::Array{T, 1}) = @. asin(bnrm(cross(u, v)))     			# returns radians | u&v = normal vectors on the circle
+	scntrl_angle{T<:AbstractFloat}(u::Array{T, 1}, v::Array{T, 1}) = @. asin(bnrm(cross(u, v)))     			# returns radians | u&v = normal vectors on the circle
 
 	##-----------------------------------------------------------------------------------
-	tcentral_angle{T<:AbstractFloat}(u::Array{T, 1}, v::Array{T, 1}) = @. atan(bnrm(cross(u, v))/bdot(u, v))  	# returns radians | u&v = normal vectors on the circle
+	tcntrl_angle{T<:AbstractFloat}(u::Array{T, 1}, v::Array{T, 1}) = @. atan(bnrm(cross(u, v))/bdot(u, v))  	# returns radians | u&v = normal vectors on the circle
 
 	##-----------------------------------------------------------------------------------
-	central_angle{T<:AbstractFloat}(pla::T, plo::T, sla::T, slo::T) = acos((sin(pla)*sin(sla))+(cos(pla)*cos(sla)*cos(abs(plo-slo)))) 						# returns radians | pla/sla = primary/secondary latitude / plo/slo = primary/secondary longitude
+	cntrl_angle{T<:AbstractFloat}(pla::T, plo::T, sla::T, slo::T) = acos((sin(pla)*sin(sla))+(cos(pla)*cos(sla)*cos(abs(plo-slo)))) 						# returns radians | pla/sla = primary/secondary latitude / plo/slo = primary/secondary longitude
 
 	##-----------------------------------------------------------------------------------
-	hcentral_angle{T<:AbstractFloat}(pla::T, plo::T, sla::T, slo::T) = 2*asin(sqrt(havsin(abs(pla-sla))+cos(pla)*cos(sla)*havsin(abs(plo-slo)))) 	# returns radians | pla/sla = primary/secondary latitude / plo/slo = primary/secondary longitude
+	hcntrl_angle{T<:AbstractFloat}(pla::T, plo::T, sla::T, slo::T) = 2*asin(sqrt(havsin(abs(pla-sla))+cos(pla)*cos(sla)*havsin(abs(plo-slo)))) 				# returns radians | pla/sla = primary/secondary latitude / plo/slo = primary/secondary longitude
 
 	##-----------------------------------------------------------------------------------
-	function vcentral_angle{T<:AbstractFloat}(pla::T, plo::T, sla::T, slo::T)
+	function vcntrl_angle{T<:AbstractFloat}(pla::T, plo::T, sla::T, slo::T)
 		longitude_delta = abs(plo-slo)                                                                                      								# returns radians | pla/sla = primary/secondary latitude / plo/slo = primary/secondary longitude
 		return atan2(sqrt((cos(sla)*sin(longitude_delta))^2+((cos(pla)*sin(sla))-(sin(pla)*cos(sla)*cos(longitude_delta)))^2), (sin(pla)*sin(sla)+cos(pla)*cos(sla)*cos(longitude_delta)))
 	end

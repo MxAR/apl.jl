@@ -5,7 +5,7 @@
 	export save_pkg_list
 
 	##-----------------------------------------------------------------------------------
-	function save_pkg_list()
+	function spkg_list()
 		p = *(homedir(), "/.julia/pkg_list")
 		isfile(p) && rm(p; force=true)
 		IO = open(p, true, true, true, false, false)
@@ -20,7 +20,7 @@
 	export install_pkg_from_list
 
 	##-----------------------------------------------------------------------------------
-	function install_pkg_from_list()
+	function ipkg_list()
 		p = *(homedir(), "/.julia/pkg_list"); @assert isfile(p)
 		IO = open(p, true, false, false, false, false)
 		d = split(readstring(IO), "+")

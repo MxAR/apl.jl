@@ -100,21 +100,21 @@
     ##===================================================================================
     ## radial basis functions
     ##===================================================================================
-    export rbf_gaussian, rbf_gaussian_d_lambda, rbf_gaussian_d_delta, rbf_triang, rbf_cos_decay,
-        rbf_psq, rbf_inv_psq, rbf_inv_sq, rbf_exp, rbf_thin_plate_spline
+    export rbf_gauss, rbf_gaussdl, rbf_gaussdd, rbf_triang, rbf_cos_decay,
+        rbf_psq, rbf_inv_psq, rbf_inv_sq, rbf_exp, rbf_tps
 
     ##-----------------------------------------------------------------------------------
-    rbf_gaussian(delta, lambda::Float64 = 1) = @. exp(-(delta/(2*lambda))^2)
+    rbf_gauss(delta, lambda::Float64 = 1) = @. exp(-(delta/(2*lambda))^2)
 
     ##-----------------------------------------------------------------------------------
-    function rbf_gaussian_d_lambda(delta, lambda::Float64 = 1)
+    function rbf_gaussdl(delta, lambda::Float64 = 1)
         @. delta ^= 2
         lam = lambda^2
         return @. (delta/(lam*lambda))*exp(-delta/lam)
     end
 
     ##-----------------------------------------------------------------------------------
-    function rbf_gaussian_d_delta(delta, lambda::Float64 = 1)
+    function rbf_gaussdd(delta, lambda::Float64 = 1)
         @. lambda ^= 2
         return @. (delta./lambda) .* exp(-(delta.^2)./(2*lambda))
     end
@@ -156,7 +156,7 @@
     rbf_exp(delta, expt::Float64 = 2) = delta.^expt
 
     ##-----------------------------------------------------------------------------------
-    rbf_thin_plate_spline(delta, expt::Float64 = 2) = @. (delta^expt)*log(delta)
+    rbf_tps(delta, expt::Float64 = 2) = @. (delta^expt)*log(delta)
 
 
     ##===================================================================================
@@ -201,13 +201,13 @@
     ##===================================================================================
     ## sine saturation
     ##===================================================================================
-    export sine_saturation, sine_saturation_d
+    export sinesat, sinesatd
 
     ##-----------------------------------------------------------------------------------
-    sine_saturation(x, eta, sigma = pi/2) = prison(x, (x) -> (sin(x-eta)+1)/2, eta-sigma, eta+sigma)
+    sinesat(x, eta, sigma = pi/2) = prison(x, (x) -> (sin(x-eta)+1)/2, eta-sigma, eta+sigma)
 
     ##-----------------------------------------------------------------------------------
-    sine_saturation_d(x, eta, sigma = pi/2) = (x > eta+sigma || x < eta-sigma) ? 0 : cos(x-eta)/2
+    sinesatd(x, eta, sigma = pi/2) = (x > eta+sigma || x < eta-sigma) ? 0 : cos(x-eta)/2
 
 
     ##===================================================================================
@@ -334,14 +334,14 @@
     ##===================================================================================
     ## levi civita tensor
     ##===================================================================================
-    export lecit, index_permutations_count
+    export lecit, ipc
 
     ##-----------------------------------------------------------------------------------
     lecit{T<:Number}(v::Array{T, 1}) = 0 == index_permutations_count(v) % 2 ? 1 : -1
 
     ##-----------------------------------------------------------------------------------
-    function index_permutations_count{T<:Any}(v::Array{T, 1})                           # [3,4,5,2,1] -> [1,2,3,4,5]
-        s = size(v, 1)                                                            		# 3 inversions needed
+    function ipc{T<:Any}(v::Array{T, 1})                                                # index permutations count [3,4,5,2,1] -> [1,2,3,4,5]
+        s = size(v, 1)                                                            		# 3 permutations needed
         t = linspace(1, s, s)
 		c = 0
 

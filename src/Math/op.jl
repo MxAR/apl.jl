@@ -243,7 +243,7 @@
     ##===================================================================================
     ## apply
     ##===================================================================================
-    export apply, apply_parallel, apply_parallel_shared, apply_tri_upper, apply_tri_lower
+    export apply, apply_parallel, apply_parallel_shared, apply_triu, apply_tril
 
     ##-----------------------------------------------------------------------------------
     function apply(g::Function, m)
@@ -275,7 +275,7 @@
     end
 
     ##------------------------------------------------------------------------------------
-    function apply_tri_upper{T<:Number}(g::Function, m::Array{T, 2})
+    function apply_triu{T<:Number}(g::Function, m::Array{T, 2})
         @inbounds for j = 2:size(m, 2), i = 1:j-1
             m[i, j] = g(m[i, j])
         end
@@ -284,7 +284,7 @@
     end
 
     ##------------------------------------------------------------------------------------
-    function apply_tri_lower{T<:Number}(g::Function, m::Array{T, 2})
+    function apply_tril{T<:Number}(g::Function, m::Array{T, 2})
         @inbounds for i = 2:size(m, 2), j = 1:i-1
             m[i, j] = g(m[i, j])
         end
