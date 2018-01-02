@@ -40,7 +40,7 @@
 		v = f.vl_rand(t_sp, 1)[1]; w = deepcopy(v)
 		@testset "mut_default function tests" begin
 			v = abs.(eva.mut_default(v, v, t_sp, t_max_delta, t_sp.alpha + t_sp.delta).-w)
-			@test f.AND(v.<=t_max_delta)
+			@test op.AND(v.<=t_max_delta)
 			@test sum(v) != 0.
 		end
 	end
