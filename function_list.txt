@@ -79,8 +79,6 @@
 
 # f	(math function collection)
 	t tncbd
-	f tanh	(trigonometric)
-	f tanhd	(trigonometric)
 	f std 	standard deviation)
 	f std	(standard deviation with given mean)
 	f vandermonde	(linAlg)
@@ -172,7 +170,6 @@
 	f mut_incoherent	(mutual incoherence for a vector list)
 	f step	(step function)
 	f stepd	(step function derivate)
-
 	f normalize_s	(normalizes matrix rows so that mean = 0 and variance = 1)
 	f normalize_sp	(normalizes matrix rows so that mean = 0 and variance = 1 (parallel))
 	f normalize_sps	(normalizes matrix rows so that mean = 0 and variance = 1 (parallel)(shared))
@@ -271,6 +268,8 @@
 	f apply_dia	(apply lambda on all elements of diagonal matrix)
 
 # trig
+	f tanh	(trigonometric)
+	f tanhd	(trigonometric)
 	f sin2	(trigonometric)
 	f cos2	(trigonometric)
 	f versin	(trigonometric)
