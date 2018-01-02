@@ -370,4 +370,57 @@
         l = convert(Int, round(size(r, 1)/2))
         return (r[1:l, :], r[(l+1):end, :])
     end
+	
+
+	##===================================================================================
+	##  general evaluation matrix
+	##      l = [(x)->1, (x)->x, (x)->x^2] for polynomial of degree two
+	##===================================================================================
+	export gevamat
+
+	##-----------------------------------------------------------------------------------
+	function gevamat{T<:AbstractFloat}(l::Array{Function, 1}, v::Array{T, 1})
+		m = map(l[1], v)
+
+		@inbounds for i = 2:size(l, 1)
+			m = hcat(m, map(l[i], v))
+		end
+
+		return m
+	end
+
+
+	##===================================================================================
+	##  ordinary least squares
+	##===================================================================================
+	export ols
+
+	##-----------------------------------------------------------------------------------
+	ols{T<:AbstractFloat}(m::Array{T, 2}, y::Array{T, 1}) = (m'*m)\(m'*y)
+
+
+	##===================================================================================
+	##  householder reflection
+	##      reflects v about a hyperplane given by u
+	##===================================================================================
+	export hh_rfl, hh_mat
+
+	##-----------------------------------------------------------------------------------
+	hh_rfl{T<:AbstractFloat}(v::Array{T, 1}, u::Array{T, 1}) = u-(v*(2.0*bdot(u, v))) 	# hh reflection (u = normal vector)
+
+	##-----------------------------------------------------------------------------------
+	function hh_mat{T<:AbstractFloat}(v::Array{T, 1})
+		s = size(v, 1)
+		m = Array{T, 2}(s, s)
+
+		@inbounds for i=1:s, j=1:s
+			if i == j
+				m[i, j]= 1-(2*v[i]*v[j])
+			else
+				m[i, j]= -2*v[i]*v[j]
+			end
+		end
+
+		return m
+	end
 end
