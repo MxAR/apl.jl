@@ -63,6 +63,7 @@
         #println((pinv(hcat(A, ones(s))) * out))
         return trbfn(hl_ltwm, hl_th, (pinv(hcat(A, ones(s))) * out)', rbf, rbf_derivate_lamda, rbf_derivate_dist, df, df_derivate)
     end
+    
 
     ##===================================================================================
     ##  integrate and fire
