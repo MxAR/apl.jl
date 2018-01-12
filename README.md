@@ -2,6 +2,9 @@
 apl is an advanced processing library, that adds many (in my opinion) missing functions to julia
 
 # function list
+t = type
+f = function
+* = needs to be done
 
 ### graph
 	t tgraph
