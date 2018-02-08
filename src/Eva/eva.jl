@@ -3,13 +3,13 @@
 	##	using directives
 	##===================================================================================
 	using op
-	using f
+	using gen
 
 	##===================================================================================
 	##	types
 	##===================================================================================
 	type topt_prb																		# optimization problem
-		sp::f.tncbd																		# search space
+		sp::gen.tncbd																		# search space
 		ff::Function																	# fitness function
 	end
 
@@ -62,7 +62,7 @@
 	##		max_delta = the maximal change that can occure through muation
 	## 		supremum = the supremum of the n dim cubiod represented in optp.sp
 	##===================================================================================
-	function mut_default{T<:AbstractFloat}(child::Array{T, 1}, parent::Array{T, 1}, ncbd::f.tncbd, max_delta::Array{T, 1}, supremum::Array{T, 1})
+	function mut_default{T<:AbstractFloat}(child::Array{T, 1}, parent::Array{T, 1}, ncbd::gen.tncbd, max_delta::Array{T, 1}, supremum::Array{T, 1})
 		@inbounds for i=1:ncbd.n																		# mutate each value inside the vector
 			child[i] = parent[i] + prison(2*(rand()-.5)*max_delta[i], ncbd.alpha[i], supremum[i])	# random mutation inside the given n dim intervall
 		end

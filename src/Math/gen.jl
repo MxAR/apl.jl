@@ -1,9 +1,13 @@
 @everywhere module gen
 	##===================================================================================
-	##	using directives
+	##  types
 	##===================================================================================
-	using f
-	
+	type tncbd{T<:AbstractFloat, N<:Integer}	# n dimensional cuboid
+		alpha::Array{T, 1}						# infimum (point)
+		delta::Array{T, 1}						# diference between supremum and infimum	(s-i)
+		n::N									# n
+	end
+
 
 	##===================================================================================
 	## fill (square matrix, diagonal matrix, triangular)
@@ -209,7 +213,7 @@
     end
 
     ##-----------------------------------------------------------------------------------
-	function vl_rand(ncbd::f.tncbd, l::Integer)
+	function vl_rand(ncbd::tncbd, l::Integer)
 		vl = Array{Array{Float64, 1}, 1}(l)												# create an empty vl of length l
 		set_zero_subnormals(true)														# to save computing time
 		@inbounds for i = 1:l															# fill the list

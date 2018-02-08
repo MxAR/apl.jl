@@ -1,4 +1,4 @@
-@everywhere module APL
+#@everywhere module APL
     # Packages
     include("Packages/require.jl")
     include("Packages/pkg.jl")
@@ -21,10 +21,10 @@
 
     # Math
     include("Math/op.jl")
+    include("Math/gen.jl")
     include("Math/f/f.jl")
     include("Math/bin.jl")
     include("Math/bla.jl")
-    include("Math/gen.jl")
     include("Math/mean.jl")
     include("Math/sta.jl")
     include("Math/trig.jl")
@@ -56,4 +56,4 @@
 
     # init.jl
     #include("init.jl")
-end
+#end
