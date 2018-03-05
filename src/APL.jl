@@ -33,7 +33,6 @@
     include("Math/mpa.jl")
     include("Math/vq.jl")
     include("Math/yamartino.jl")
-    include("Math/mpt.jl")co
 
     # MarketIndicators
     include("MarketIndicators/macd.jl")
