@@ -38,7 +38,7 @@
     ##===================================================================================
     ##  number of perumtations (selecting k out of n
     ##===================================================================================
-    export perm
+    export perm, permr
 
     ##-----------------------------------------------------------------------------------
     function perm{N<:Integer}(n::N, k::N)
@@ -50,7 +50,23 @@
 
         return r
     end
-    
+
+    ##-----------------------------------------------------------------------------------
+    ##  rep = array where each element indicates how often an element is present in the
+    ##          set that will be permutated | rep length need to be equal to n
+    ##-----------------------------------------------------------------------------------
+    function permr{N<:Integer}(n::N, rep::Array{N, 1})
+        r = [N(1), N(factorial(rep[1]))]
+        l = size(rep, 1)
+
+        @inbounds for i = n:-1:2
+            r[1] *= i
+            r[2] *= i > l ? 1 : rep[i]
+        end
+
+        return N(r[1]/r[2])
+    end
+
 
     ##===================================================================================
     ##  collatz conjecture
