@@ -277,12 +277,32 @@
         k = a+(d/2)
         r = R(0)
 
-        for i = 1:n
+        @inbounds for i = 1:n
             r += f(k)
             k += d
         end
 
         return d*r
+    end
+
+
+    ##===================================================================================
+    ## simpson's rule
+    ##===================================================================================
+    export simpsonr
+
+    ##-----------------------------------------------------------------------------------
+    function simpsonr{R<:AbstractFloat, N<:Integer}(a::R, b::R, f::Function, n::N)
+        @assert(n%2==0, "n is not even")
+        d = (b-a)/n; di = 2*d; r = R(0)
+        j = Array{R, 1}([a, a+d, a+di])
+
+        @inbounds for i = 1:N(n/2)
+            r += f(j[1])+4*f(j[2])+f(j[3])
+            j += di
+        end
+
+        return (d*r)/3
     end
 
 
