@@ -141,7 +141,7 @@
 	##===================================================================================
 	## difference operator
 	##===================================================================================
-	export diff
+	export diff, ndiff
 
 	##-----------------------------------------------------------------------------------
 	function diff{N<:Integer, R<:AbstractFloat}(t::Array{R, 1}, tau::N = 1)
@@ -155,6 +155,21 @@
 		return r
 	end
 
+	##-----------------------------------------------------------------------------------
+	function ndiff{N<:Integer, R<:AbstractFloat}(t::Array{R, 1}, tau::N = 1, ord::N = 1)
+		l = size(t, 1)
+		r0 = deepcopy(t)
+		r1 = zeros(R, l)
+
+		@inbounds for j = 1:ord
+			for i = (tau+1):l
+				r1[i] = r0[i] - r0[i-tau]
+			end
+			r0 = deepcopy(r1)
+		end
+
+		return r0
+	end
 
 	##===================================================================================
 	## [augumented] dickey fuller test for stationarity
