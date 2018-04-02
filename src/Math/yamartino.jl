@@ -1,5 +1,4 @@
 @everywhere module yamartino
-    import Base.deepcopy
     export IYamartResult, TYamartState, YamartResult,
     CalcYamart, PCalcYamart
 
