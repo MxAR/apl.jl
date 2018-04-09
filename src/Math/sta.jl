@@ -23,6 +23,31 @@
 
 
 	##===================================================================================
+	## mad (median average deviation)
+	##===================================================================================
+	export mad
+
+	##-----------------------------------------------------------------------------------
+	function mad{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, l::N, inx::N)
+		m = median(v)
+		r = zeros(l)
+		s = inx * l
+		j = N(1)
+
+		@assert(s <= size(v, 1), "out of bonds error");
+		@inbounds for i = 1:inx:(inx*l)
+			r[j] = v[i]
+			j += 1
+		end
+
+		return median(r)
+	end
+
+	##-----------------------------------------------------------------------------------
+	mad{T<:AbstractFloat}(v::Array{T, 1}) = mad(v, size(v, 1), 1)
+
+
+	##===================================================================================
 	##  chi distribution
 	##===================================================================================
 	export chi
@@ -411,17 +436,4 @@
 
 		return log(u)/(1-p)
 	end
-
-
-	##===================================================================================
-    ## samples
-    ##===================================================================================
-    export samples
-
-    ##-----------------------------------------------------------------------------------
-    function samples{T<:Any}(data::Array{T, 1}, size::Integer)
-        L = length(data)
-        @assert(size < L, "The number of samples musn't be bigger than the data!")
-        return shuffle(getindex(data, sort(sample(1:L, size, replace = false))))
-    end
 end

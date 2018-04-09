@@ -6,7 +6,6 @@
 	# base usings
 	using Base.LinAlg
 	using Base.Test
-	using StatsBase
 
     # atomic modules
 	include("ADT/graph.jl")
