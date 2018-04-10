@@ -48,6 +48,47 @@
 
 
 	##===================================================================================
+	## pca (principal component analysis)
+	##		mat: matrix of data points where each column presents a point
+	##		len: number of data points that shall be considered
+	##		inc: index distnance of the data points
+	## 		trn: wether or not the matrix is transposed
+	##===================================================================================
+	export pca
+
+	##-----------------------------------------------------------------------------------
+	function pca{T<:AbstractFloat, N<:Integer}(m::Array{T, 2}, l::N, inc::N = 1)
+		s = size(m)
+		x = Array{T}(s[1], l)
+		k = l*inc
+		j = N(1)
+
+		@assert(k <= s[2], "out of bounds error")
+		@inbounds for i = 1:inc:k
+			x[:, j] = m[:, i]
+			j += 1
+		end
+
+		k = copy(x[:, 1])
+		@inbounds for i = 2:l
+			k .+= x[:, i]
+		end
+
+		k /= l
+		@inbounds for i = 1:l
+			x[:, i] .-= k 
+		end
+		
+		k = eig(mcov(x))[2]
+		@inbounds for i = 1:l
+			k[:, i] /= BLAS.nrm2(j[1], k[:, 1], 1)
+		end 
+
+		return k
+	end
+
+
+	##===================================================================================
 	##  chi distribution
 	##===================================================================================
 	export chi
@@ -341,23 +382,25 @@
 
 
     ##===================================================================================
-    ## covariance matrices from observations
+    ## covariance matrices of observation matrix
+	##	m: matrix
+	##	t: indicator whether or not m is transposed
+	##	p: indicator whether or not the population covariance shall be computed
     ##===================================================================================
-    export covp, covs
+    export mcov
 
     ##-----------------------------------------------------------------------------------
-    function covp{T<:AbstractFloat}(m::Array{T, 2}, column::Bool = true)                # cov population
-        s = size(x, (column ? 1 : 2))
-        v = BLAS.gemv((column ? 'T' : 'N'), m, ones(T, s))
-		return column ? BLAS.gemm('T', 'N', 1/s, m, m) - (bnrm(v)/v)^2 : BLAS.gemm('N', 'T', 1/s, m, m) - (bnrm(v)/v)^2
-    end
+    function mcov{T<:AbstractFloat}(m::Array{T, 2}, t::Bool = false, p::Bool = true)
+		s = size(m)
 
-    ##-----------------------------------------------------------------------------------
-    function covs{T<:AbstractFloat}(m::Array{T, 2}, column::Bool = true)                # cov sample
-        s = size(m, (column ? 1 : 2))
-        v = BLAS.gemv((column ? 'T' : 'N'), m, ones(T, s))
-        return column ? BLAS.gemm('T', 'N', 1/(s-1), m, m) - (bdot(v, v) / (v*(v-1))) : BLAS.gemm('N', 'T', 1/(s-1), m, m) - (bdot(v, v) / (v*(v-1)))
-    end
+		if t
+			x = m .- BLAS.gemm('N', 'T', 1/s[2], ones(T, s[2], s[2]), m)
+			return (x*x')/(p ? s[2] : s[2] - 1)
+		else
+			x = m .- BLAS.gemm('N', 'N', 1/s[1], ones(T, s[1], s[1]), m)
+			return (x*x')/(p ? s[1] : s[2] - 1)
+		end
+	end
 
 
     ##===================================================================================
