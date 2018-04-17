@@ -84,4 +84,17 @@
 	function rpareto{R<:Number, N<:Integer}(a::R, b::R, d::N... = (1))
 		return a.*(rand(d)^(-1/b))
 	end
+
+
+	##===================================================================================
+	##	uniform distribution
+	##		a: left interval border
+	##		b: right interval border
+	##===================================================================================
+	export runi
+
+	##---------------------------------------------------------------------------------
+	function runi{R<:Number, N<:Integer}(a::R, b::R, d::N... = (1))
+		return a.+((b-a).*rand(d))
+	end 
 end
