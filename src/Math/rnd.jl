@@ -62,4 +62,15 @@
 	function rexpp{R<:Number, N<:Integer}(a::R, b::R, d::N... = (1))
 			return (log.(1-log.(1-rand(d)))/a).^(1/b)
 	end
+
+
+	##===================================================================================
+	##	compertz distribution
+	##===================================================================================
+	export rcompertz
+
+	##-----------------------------------------------------------------------------------
+	function rcompertz{R<:Number, N<:Integer}(a::R, b::R, d::N... = (1))
+		return log.(1-(log.(rand(d))*log(b)./a))./log(b)
+	end
 end
