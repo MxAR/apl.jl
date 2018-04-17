@@ -7,8 +7,7 @@
 
 	##-----------------------------------------------------------------------------------
 	function rexp{R<:AbstractFloat, N<:Integer}(a::R, d::N...)
-		r = isempty(d)?rand():rand(d)
-		return -a*log.(r)
+		return -a*log.(isempty(d)?rand():rand(d))
 	end
 
 
@@ -41,5 +40,17 @@
 	##-----------------------------------------------------------------------------------
 	function rstri{N<:Integer}(d::N...)
 		return isempty(d)?(rand()-rand()):(rand(d)-rand(d))
+	end
+
+
+	##===================================================================================
+	##	standard power distribution
+	##		a: power exponent
+	##===================================================================================
+	export rspow
+
+	##----------------------------------------------------------------------------------
+	function rspow{R<:AbstractFloat, N<:Integer}(a::R, d::N...)
+		return (isempty(d)?rand():rand(d))^(1/a)
 	end
 end
