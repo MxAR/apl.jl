@@ -6,8 +6,8 @@
 	export rexp
 
 	##-----------------------------------------------------------------------------------
-	function rexp{R<:AbstractFloat, N<:Integer}(a::R, d::N...)
-		return -a*log.(isempty(d)?rand():rand(d))
+	function rexp{R<:Number, N<:Integer}(a::R, d::N... = (1))
+		return -a*log.(rand(d))
 	end
 
 
@@ -19,16 +19,12 @@
 	export rhexp
 	
 	##-----------------------------------------------------------------------------------
-	function rhexp{R<:AbstractFloat, N<:Integer}(a::R, n::N, d::N...)
-		if isempty(d)
-			@inbounds return -a*sum([log(rand()) for i = 1:n])	
-		else
-			r = zeros(R, d)
-			@inbounds for i = 1:n
-				r += log.(rand(d))
-			end
-			return -a*r
-		end 
+	function rhexp{R<:Number, N<:Integer}(a::R, n::N, d::N... = (1))
+		r = zeros(R, d)
+		@inbounds for i = 1:n
+			r += log.(rand(d))
+		end
+		return -a*r
 	end 
 
 
@@ -38,8 +34,8 @@
 	export rstri
 
 	##-----------------------------------------------------------------------------------
-	function rstri{N<:Integer}(d::N...)
-		return isempty(d)?(rand()-rand()):(rand(d)-rand(d))
+	function rstri{N<:Integer}(d::N... = (1))
+		return rand(d).-rand(d)
 	end
 
 
@@ -50,8 +46,8 @@
 	export rspow
 
 	##-----------------------------------------------------------------------------------
-	function rspow{R<:AbstractFloat, N<:Integer}(a::R, d::N...)
-		return (isempty(d)?rand():rand(d))^(1/a)
+	function rspow{R<:Number, N<:Integer}(a::R, d::N... = (1))
+		return rand(d).^(1/a)
 	end
 
 
@@ -61,11 +57,7 @@
 	export rexpp
 
 	##-----------------------------------------------------------------------------------
-	function rexpp{R<:AbstractFloat, N<:Integer}(a::R, b::R, d::N...)
-		if isempty(d)
-			return (log(1-log(1-rand()))/a)^(1/b)
-		else
+	function rexpp{R<:Number, N<:Integer}(a::R, b::R, d::N... = (1))
 			return (log.(1-log.(1-rand(d)))).^(1/b)
-		end
 	end
 end

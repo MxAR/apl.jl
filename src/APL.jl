@@ -22,6 +22,7 @@
 	include("Math/bla.jl")
 	include("Math/dist.jl")
 	include("Math/gen.jl")
+	include("Math/rnd.jl")
 	include("Math/mean.jl")
 	include("Math/op.jl")
 	include("Math/trig.jl")
@@ -42,6 +43,7 @@
 	using bla
 	using dist
 	using gen
+	using rnd
 	using mean
 	using op
 	using trig
