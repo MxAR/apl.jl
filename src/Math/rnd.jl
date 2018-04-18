@@ -164,4 +164,22 @@
 	function rhsec{N<:Integer}(d::N... = (1))
 		return log.(abs.(randn(d)./randn(d)))
 	end
+
+
+	##===================================================================================
+	##	chi distribution
+	##		a: number of additions
+	##===================================================================================
+	export rchi
+
+	##-----------------------------------------------------------------------------------
+	function rchi{N<:Integer}(a::N, d::N... = (1))
+		r = zeros(d)
+
+		@inbounds for i = 1:a
+			r .+= randn(d).^2
+		end
+
+		return sqrt.(r)
+	end
 end
