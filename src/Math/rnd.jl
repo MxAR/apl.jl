@@ -20,7 +20,7 @@
 
 	##-----------------------------------------------------------------------------------
 	function rexp{R<:Number, N<:Integer}(a::R, d::N... = (1))
-		return -a*log.(rand(d))
+		return -a*log.(rand(R, d))
 	end
 
 
@@ -35,7 +35,7 @@
 	function rhexp{R<:Number, N<:Integer}(a::R, n::N, d::N... = (1))
 		r = zeros(R, d)
 		@inbounds for i = 1:n
-			r += log.(rand(d))
+			r += log.(rand(R, d))
 		end
 		return -a*r
 	end 
@@ -60,7 +60,7 @@
 
 	##-----------------------------------------------------------------------------------
 	function rspow{R<:Number, N<:Integer}(a::R, d::N... = (1))
-		return rand(d).^(1/a)
+		return rand(R, d).^(1/a)
 	end
 
 
@@ -73,7 +73,7 @@
 
 	##-----------------------------------------------------------------------------------
 	function rexpp{R<:Number, N<:Integer}(a::R, b::R, d::N... = (1))
-			return (log.(1-log.(1-rand(d)))/a).^(1/b)
+			return (log.(1-log.(1-rand(R, d)))/a).^(1/b)
 	end
 
 
@@ -84,7 +84,7 @@
 
 	##-----------------------------------------------------------------------------------
 	function rcompertz{R<:Number, N<:Integer}(a::R, b::R, d::N... = (1))
-		return log.(1-(log.(rand(d))*log(b)./a))./log(b)
+		return log.(1-(log.(rand(R, d))*log(b)./a))./log(b)
 	end
 
 
@@ -95,7 +95,7 @@
 
 	##-----------------------------------------------------------------------------------
 	function rpareto{R<:Number, N<:Integer}(a::R, b::R, d::N... = (1))
-		return a.*(rand(d)^(-1/b))
+		return a.*(rand(R, d)^(-1/b))
 	end
 
 
@@ -108,7 +108,7 @@
 
 	##-----------------------------------------------------------------------------------
 	function runi{R<:Number, N<:Integer}(a::R, b::R, d::N... = (1))
-		return a.+((b-a).*rand(d))
+		return a.+((b-a).*rand(R, d))
 	end
 
 
@@ -130,7 +130,7 @@
 
 	##-----------------------------------------------------------------------------------
 	function rllog{R<:Number, N<:Integer}(a::R, b::R, d::N... = (1))
-		r = rand(d)
+		r = rand(R, d)
 		return ((((1).-r)./r).^(1/b))/a
 	end
 
@@ -164,7 +164,7 @@
 
 	##-----------------------------------------------------------------------------------
 	function rcauchy{R<:Number, N<:Integer}(a::R, b::R, d::N... = (1))
-		return a.+(b.*(randn(d)./randn(d)))
+		return a.+(b.*(randn(R, d)./randn(R, d)))
 	end
 
 
@@ -226,8 +226,8 @@
 		r2 = zeros(d)
 
 		@inbounds for i = 1:a
-			r1 .+= randn(d).^2
-			r2 .+= randn(d).^2
+			r1 .+= randn(d, d1).^2
+			r2 .+= randn(d, d2).^2
 		end 
 
 		return (r1./d1)./(r2./d2)
