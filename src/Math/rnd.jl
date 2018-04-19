@@ -210,7 +210,7 @@
 		r = zeros(d)
 
 		@inbounds for i = 1:a
-			r .+= (randn(R, d).-m)./s 
+			r .+= ((randn(R, d).-m)./s).^2 
 		end 
 
 		return sqrt.(r)
@@ -248,7 +248,7 @@
 		r = zeros(d)
 
 		@inbounds for i = 1:a
-			r .+= (randn(R, d).-m)./s
+			r .+= ((randn(R, d).-m)./s).^2
 		end 
 
 		return r
@@ -271,5 +271,24 @@
 		end 
 
 		return (r1./d1)./(r2./d2)
-	end 
+	end
+
+
+	##===================================================================================
+	##	noncentral F distribution
+	##===================================================================================
+	export rnf
+	
+	##----------------------------------------------------------------------------------
+	function rnf{R<:Number, N<:Integer}(d1::R, d2::R, a::N, m::R, s::R, d::N... = (1))
+		r1 = zeros(d)
+		r2 = zeros(d)
+
+		@inbounds for i = 1:a
+			r1 .+= ((randn(R, d).-m)./s).^2
+			r2 .+= ((randn(R, d).-m)./s).^2
+		end
+
+		return (r1./d1)./(r2./d2)
+	end
 end
