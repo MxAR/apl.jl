@@ -411,4 +411,16 @@
 	end
 
 	##-----------------------------------------------------------------------------------
+	function naffine{N<:Integer}(s::N)
+		@assert(s > 0, "out of bounds error")
+		r = randn(s, s)
+		d = det(r)
+
+		while d == 0
+			r = randn(s, s)
+			d = det(r)
+		end
+
+		return r./(abs(d)^(1/s))
+	end 
 end
