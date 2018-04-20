@@ -304,7 +304,7 @@
 	export redh
 
 	##-----------------------------------------------------------------------------------
-	function redh{N<:Integer}(s::Integer)
+	function redh{N<:Integer}(s::N)
 		m = eye(s)
 
 		@inbounds for i = 2:s
@@ -405,7 +405,7 @@
 		while d == 0
 			r = rand(s, s)
 			d = det(r)
-		end
+		end 
 
 		return r./(abs(d)^(1/s))
 	end
@@ -420,6 +420,10 @@
 			r = randn(s, s)
 			d = det(r)
 		end
+
+		if d < 0 
+			r[1, :] .*= -1
+		end 
 
 		return r./(abs(d)^(1/s))
 	end 
