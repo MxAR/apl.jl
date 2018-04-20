@@ -387,4 +387,28 @@
 
 		return m
 	end
+
+
+	##===================================================================================
+	##	random affince matrix
+	##		r: uniform distribution
+	##		n: normal distribution
+	##===================================================================================
+	export raffine, naffine
+
+	##-----------------------------------------------------------------------------------
+	function raffine{N<:Integer}(s::N)
+		@assert(s > 0, "out of bounds error")
+		r = rand(s, s)
+		d = det(r)
+
+		while d == 0
+			r = rand(s, s)
+			d = det(r)
+		end
+
+		return r./(abs(d)^(1/s))
+	end
+
+	##-----------------------------------------------------------------------------------
 end
