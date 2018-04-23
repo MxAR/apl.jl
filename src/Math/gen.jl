@@ -391,13 +391,13 @@
 
 	##===================================================================================
 	##	random affince matrix
-	##		r: uniform distribution
+	##		u: uniform distribution
 	##		n: normal distribution
 	##===================================================================================
-	export raffine, naffine
+	export uaffine, naffine
 
 	##-----------------------------------------------------------------------------------
-	function raffine{N<:Integer}(s::N)
+	function uaffine{N<:Integer}(s::N)
 		@assert(s > 0, "out of bounds error")
 		r = rand(s, s)
 		d = det(r)
@@ -426,5 +426,68 @@
 		end 
 
 		return r./(abs(d)^(1/s))
+	end
+
+
+	##===================================================================================
+	##	random hermitian matrix
+	##		u: uniform distributed
+	##		n: normal distributed
+	##===================================================================================
+	export uhermitian, nhermitian
+
+	##-----------------------------------------------------------------------------------
+	function uhermitian{N<:Integer}(n::N, d::Bool = true)
+		t0 = d?Complex128:Complex64
+		t1 = d?Float64:Float32
+		r = zeros(t0,n,n)
+		i = N(1)
+
+		while i<=n
+			r[i, i] = rand(t1)
+			i += 1
+		end
+
+		j = N(0)
+		i = 1
+
+		while i<=n
+			j = i+1
+			while j<=n
+				r[i, j] = rand(t0)
+				r[j, i] = r[i, j]'
+				j += 1
+			end
+			i += 1
+		end
+
+		return r
+	end
+
+	##-----------------------------------------------------------------------------------
+	function nhermitian{N<:Integer}(n::N, d::Bool = true)
+		r = zeros(d?Complex128:Complex64,n,n)
+		t = d?Float64:Float32
+		i = N(1)
+
+		while i<=n
+			r[i, i] = randn(t)
+			i += 1
+		end
+
+		j = N(0)
+		i = 1
+
+		while i<=n
+			j = i+1
+			while j<=n
+				r[i, j] = randn(t)+randn(t)im
+				r[j, i] = r[i, j]'
+				j += 1
+			end
+			i += 1
+		end
+
+		return r
 	end 
 end
