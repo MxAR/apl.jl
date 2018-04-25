@@ -8,7 +8,7 @@
 	gamean{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, l::N, n::N) = gfmean(v, (x) -> x, (x) -> x, l, n)					# arithmetic mean
 
 	##-----------------------------------------------------------------------------------
-	function gamean{T<:AbstractFloat}(v::Arrray{T, 1}) 
+	function gamean{T<:AbstractFloat}(v::Array{T, 1}) 
 		s = size(v, 1)
 		r = T(0)
 
