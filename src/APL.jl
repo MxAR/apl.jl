@@ -54,10 +54,10 @@
 	include("Eva/eva.jl") 					# op/gen
 	include("MarketIndicators/bb.jl") 		# sta
 	include("MarketIndicators/macd.jl") 	# mean	
-	include("Math/f/f.jl")					# StatsBase/cnv/gen/op
 	include("Math/mpa.jl")					# f
 	include("Math/rg.jl")					# f
 	include("Math/sta.jl")					# mean/bla	
+	include("Math/f/f.jl")					# cnv/gen/op
 	include("Math/vq.jl")					# f
 	include("Percepton/mlp.jl")				# f
 	include("Percepton/pct.jl")				# f
@@ -65,8 +65,8 @@
 	include("RBFNetworks/rbfn.jl")			# f
 
 	# composite usings
-	using f
 	using sta
+	using f
 	using eva
 	using bb
 	using macd
