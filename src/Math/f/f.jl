@@ -21,7 +21,7 @@
 			d += (t[i]-m)^2
 		end
 
-		d = k*sqrt(d)
+		d = k*sqrt(d/s)
 
 		@inbounds for i = 1:s
 			if abs(t[i]-m) >= d
@@ -62,7 +62,7 @@
 		end
 
 		i = Int(1)
-		d = k*sqrt(d)
+		d = k*sqrt(d/s)
 
 		@inbounds while i <= s
 			if abs(a[i]-m) >= d
