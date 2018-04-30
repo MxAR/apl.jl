@@ -48,6 +48,17 @@
 
 
 	##===================================================================================
+	##	poission distribution
+	##===================================================================================
+	export pois
+
+	##-----------------------------------------------------------------------------------
+	function pois{T<:Number}(k::T, l::T)
+		return exp(k*log(l)-l-lgamma(k+1))
+	end 
+
+
+	##===================================================================================
 	## pca (principal component analysis)
 	##		mat: matrix of data points where each column presents a point
 	##		len: number of data points that shall be considered
