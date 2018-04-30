@@ -5,28 +5,47 @@
 	export dctdnoise
 
 	##-----------------------------------------------------------------------------------
-	function dctdnoise{R<:AbstractFloat}(v::Array{R, 1}, k = R(3))
+	function dctdnoise{R<:AbstractFloat}(v::Array{R, 1}, k = R(3), lowpass::Bool = true, highpass::Bool = true)
 		s = size(v, 1)
 		t = dct(v)
+		i = Int(1)
 		m = R(0)
 		d = R(0)
 
-		@inbounds for i = 1:s
+		@inbounds while i <= s
 			m += t[i]
+			i += 1
 		end 
 
+		i = Int(1)
 		m /= s
 
-		@inbounds for i = 1:s
+		@inbounds while i <= s
 			d += (t[i]-m)^2
+			i += 1
 		end
 
+		i = Int(1)
 		d = k*sqrt(d/s)
+		t .-= m
 
-		@inbounds for i = 1:s
-			if abs(t[i]-m) >= d
-				t[i] = R(0)
+		if highpass
+			@inbounds while i <= s
+				if t[i] <= -d
+					t[i] = R(0)
+				end
+				i += 1
 			end
+			i = Int(1)
+		end
+
+		if lowpass
+			@inbounds while i <= s
+				if t[i] >= d
+					t[i] = R(0)
+				end 
+				i += 1
+			end 
 		end
 
 		return idct(t)
