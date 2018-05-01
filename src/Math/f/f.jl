@@ -188,6 +188,44 @@
 
         return c
     end
+	
+
+	##===================================================================================
+	##	extended binomial coefficient calculation
+	##===================================================================================
+	export binom
+
+	##-----------------------------------------------------------------------------------
+	function binom{T<:Number}(n::T, k::T)
+		if T <: Integer 
+			if k < 0
+				return 0
+			elseif n < 0
+				return (k%2==0?1:-1)*(factorial(k-n-1))/(factorial(k)*factorial(-n-1))		
+			end
+		end
+		
+		if n < 0
+			r0 = T(1)
+			r1 = T(2)
+
+			@inbounds for i = 0:(n-1)
+				r0 *= (n-i)
+			end 
+
+			@inbounds for i = 3:k
+				r1 *= i
+			end
+
+			return r0/r1
+		end 
+
+		if n > 0
+			return ggamma(n+T(1))/(ggamma(k+T(1))ggamma(n-k+T(1)))
+		else
+			return T(1)
+		end
+	end 
 
 
 	##===================================================================================
@@ -198,13 +236,14 @@
 	##-----------------------------------------------------------------------------------
 	function ggamma{T<:Number}(x::T)
 		if x >= 0
-			return gamma(x)
+			if T <: Integer
+				return factorial(x-1)
+			else
+				return gamma(x)
+			end
 		else
-			println(x)
 			d = Int(ceil(abs(x)))
 			r = gamma(x+d)
-
-			println(x+d)
 
 			@inbounds for i = 0:(d-1)
 				r /= (x+i)
