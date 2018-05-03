@@ -1,5 +1,46 @@
 @everywhere module f
     ##===================================================================================
+	##	random cnn matrix
+	##===================================================================================
+	export rcnnm
+
+	##-----------------------------------------------------------------------------------
+	function rcnnm{N<:Integer, R<:AbstractFloat}(inrn::N, onrn::N, trh::R = -.5, hnrn::Array{N, 1} = Array{N, 1}())
+		s = size(hnrn, 1)
+		if s == 0
+			r = zeros(R, onrn+1, inrn+1)
+			r[1:onrn, 1:inrn] = randn(R, onrn, inrn)./3
+			r[1:onrn, end] = trh
+			r[end, end] = R(1)
+			return r
+		else
+			append!(hnrn, onrn)
+			op = hnrn[1]
+			ip = inrn
+
+			r = zeros(R, op+1, ip+1)
+			r[1:op, 1:ip] = randn(R, op, ip)./3
+			r[1:op, end] = trh
+			r[end, end] = R(1)
+
+			@inbounds for i = 2:(s+1)
+				ip = op
+				op = hnrn[i]
+				
+				t = zeros(R, op+1, ip+1)
+				t[1:op, 1:ip] = randn(R, op, ip)./3
+				t[1:op, end] = trh
+				t[end, end] = R(1)
+
+				r = t*r
+			end
+
+			return r
+		end
+	end 
+
+
+	##===================================================================================
 	##	nth fibonacci number
 	##===================================================================================
 	export fib
