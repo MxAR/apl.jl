@@ -47,6 +47,7 @@
 	using op
 	using yamartino
 	using pkg
+					
 
 	# composite modules
 	include("Math/trig.jl")					# bla
@@ -54,9 +55,9 @@
 	include("MarketIndicators/bb.jl") 		# sta
 	include("MarketIndicators/macd.jl") 	# mean	
 	include("Math/mpa.jl")					# f
-	include("Math/rg.jl")					# f
 	include("Math/sta.jl")					# mean/bla	
 	include("Math/f.jl")					# cnv/gen/op
+	include("Math/lalg.jl")					# mean/bla
 	include("Math/vq.jl")					# f
 	include("Percepton/mlp.jl")				# f
 	include("Percepton/pct.jl")				# f
@@ -71,7 +72,7 @@
 	using bb
 	using macd
 	using mpa
-	using rg
+	using lalg
 	using vq
 	using mlp
 	using pct
