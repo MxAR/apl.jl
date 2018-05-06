@@ -1,4 +1,4 @@
-#@everywhere module APL
+@everywhere module APL
 	# base imports
 	import Base.deepcopy
 	import Base.print
@@ -25,7 +25,6 @@
 	include("Math/rnd.jl")
 	include("Math/mean.jl")
 	include("Math/op.jl")
-	include("Math/trig.jl")
 	include("Math/yamartino.jl")
 	include("Packages/pkg.jl")
 
@@ -46,11 +45,11 @@
 	using rnd
 	using mean
 	using op
-	using trig
 	using yamartino
 	using pkg
 
 	# composite modules
+	include("Math/trig.jl")					# bla
 	include("Eva/eva.jl") 					# op/gen
 	include("MarketIndicators/bb.jl") 		# sta
 	include("MarketIndicators/macd.jl") 	# mean	
@@ -65,6 +64,7 @@
 	include("RBFNetworks/rbfn.jl")			# f
 
 	# composite usings
+	using trig
 	using sta
 	using f
 	using eva
@@ -77,4 +77,4 @@
 	using pct
 	using wfc
 	using rbfn
-#end
+end

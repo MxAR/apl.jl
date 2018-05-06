@@ -1,9 +1,14 @@
 @everywhere module trig
 	##===================================================================================
+	##	using directives
+	##===================================================================================
+	using bla
+
+	##===================================================================================
 	## basic
 	##===================================================================================
-	export sin2, cos2, versin, aversin, vercos, avercos, coversin, acoversin, covercos, acovercos,
-		havsin, ahavsin, havcos, ahavcos, hacoversin, hacovercos, tanh, tanhd
+	export sin2, cos2, versin, aversin, vercos, avercos, coversin, acoversin, covercos
+	export acovercos, havsin, ahavsin, havcos, ahavcos, hacoversin, hacovercos, tanh, tanhd
 
 	##-----------------------------------------------------------------------------------
 	sin2(alpha) = @. sin(alpha)^2
@@ -63,11 +68,13 @@
 	##===================================================================================
 	## angle
 	##===================================================================================
-	export angle, ccntrl_angle, scntrl_angle, tcntrl_angle, cntrl_angle,
-		hcntrl_angle, vincenty_cntrl_angle
+	export angle, ccntrl_angle, scntrl_angle, tcntrl_angle 
+	export cntrl_angle, hcntrl_angle, vincenty_cntrl_angle
 
 	##-----------------------------------------------------------------------------------
-	angle{T<:AbstractFloat}(u::Array{T, 1}, v::Array{T, 1}, bias::T = T(0)) = @. acosd((abs(bdot(u, v))/(bnrm(v)*bnrm(u)))+bias)
+	function angle{T<:AbstractFloat}(u::Array{T, 1}, v::Array{T, 1}, bias::T = T(0)) 
+		return acosd((abs(bdot(u, v))/(bnrm(v)*bnrm(u)))+bias)
+	end
 
 	##-----------------------------------------------------------------------------------
 	ccntrl_angle{T<:AbstractFloat}(u::Array{T, 1}, v::Array{T, 1}) = @. acos(bdot(u, v))           				# returns radians | u&v = normal vectors on the circle
