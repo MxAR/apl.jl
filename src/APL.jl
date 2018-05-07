@@ -57,7 +57,7 @@
 	include("Math/mpa.jl")					# f
 	include("Math/sta.jl")					# mean/bla	
 	include("Math/f.jl")					# cnv/gen/op
-	include("Math/lalg.jl")					# mean/bla
+	include("Math/lalg.jl")					# mean/bla/op
 	include("Math/vq.jl")					# f
 	include("Percepton/mlp.jl")				# f
 	include("Percepton/pct.jl")				# f
