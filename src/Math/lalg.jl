@@ -106,41 +106,21 @@
 
 	##===================================================================================	
 	## pca (principal component analysis)												
-	##		mat: matrix of data points where each column presents a point
-	##		len: number of data points that shall be considered
-	##		inc: index distnance of the data points
-	## 		trn: wether or not the matrix is transposed
+	##		mat: matrix of data points where each row presents a point
+	## 		t: wether or not the matrix is transposed
 	##===================================================================================
 	export pca
 
 	##-----------------------------------------------------------------------------------
-	function pca{T<:AbstractFloat, N<:Integer}(m::Array{T, 2}, l::N, inc::N = 1)
-		s = size(m)
-		x = Array{T}(s[1], l)
-		k = l*inc
-		j = N(1)
+	function pca{T<:AbstractFloat}(m::Array{T, 2}, t::Bool = false)
+		if t; m = m' end 
+		s = size(m, 1)
+		d = svd(m)
 
-		@assert(k <= s[2], "out of bounds error")
-		@inbounds for i = 1:inc:k
-			x[:, j] = m[:, i]
-			j += 1
-		end
-
-		k = copy(x[:, 1])
-		@inbounds for i = 2:l
-			k .+= x[:, i]
-		end
-
-		k /= l
-		@inbounds for i = 1:l
-			x[:, i] .-= k 
+		@inbounds for i = 1:s, j = 1:s
+			d[1][j, i] *= d[2][i] 	
 		end
 		
-		k = eig(mcov(x))[2]
-		@inbounds for i = 1:l
-			k[:, i] /= BLAS.nrm2(j[1], k[:, 1], 1)
-		end 
-
-		return k
+		return d[1]
 	end
 end
