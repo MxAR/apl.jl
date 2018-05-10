@@ -1,4 +1,63 @@
 @everywhere module f
+	##===================================================================================
+	##	cleaning of covariance matrices (i = k)
+	##		m: covariance matrix
+	##		t: number of observations
+	##===================================================================================
+	export ccovm
+
+	##-----------------------------------------------------------------------------------
+	function ccovm{R<:Number, N<:Integer}(m::Array{R, 2}, t::N)
+		s = size(m)[1]
+		q = s/t
+
+		dq = 1 - q
+		eg = eig(m)
+		ln = eg[1][1]
+
+		vr = ln / (1 - q^0.5)^2
+		lp = vr * (1 + q^0.5)^2
+		dvr = 2 * vr
+
+		z = zeros(Complex, s)
+		a = im/(s^.5)
+
+		@inbounds for i = 1:s
+			z[i] = eg[1][i] - a
+		end
+
+		x = zeros(R, s)
+		b = Complex(0)
+		g = R(0)
+
+		@inbounds for i = 1:s
+			@inbounds for j = 1:(i-1)
+				b = b + 1 / (z[i] - eg[1][j])
+			end
+
+			@inbounds for j = (i+1):s
+				b = b + 1 / (z[i] - eg[1][j])
+			end
+
+
+			x[i] = eg[1][i] / abs(dq + q * z[i] * (b  / s))^2
+			g = abs(dq + (z[i] - vr * dq - ((z[i] - ln)*(z[i] - lp))^.5) / dvr)^2 * vr / eg[1][i]
+			if g > 1
+				x[i] = x[i] * g
+			end 
+
+			b = Complex(0)
+			g = R(0)
+		end
+
+		r = x[1] * eg[2][:, 1] * eg[2][:, 1]'
+		@inbounds for i = 2:s
+			r = r + x[i] * eg[2][:, i] * eg[2][:, i]'
+		end
+
+		return r
+	end
+
     ##===================================================================================
 	##	convert price matrix of assets to return matrix
 	##		npmtrm: normalizes the return matrix
