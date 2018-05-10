@@ -1,5 +1,69 @@
 @everywhere module f
     ##===================================================================================
+	##	convert price matrix of assets to return matrix
+	##		npmtrm: normalizes the return matrix
+	##===================================================================================
+	export pmtrm, npmtrm
+
+	##-----------------------------------------------------------------------------------
+	function pmtrm{R<:Number}(m::Array{R, 2})
+		s = size(m)
+		l = s[1] - 1
+		n = s[2]
+		
+		r = zeros(R, l, n)
+		@inbounds for i = 1:l
+			@inbounds for j = 1:n
+				r[i, j] = m[i + 1, j] / m[i, j] - 1
+			end
+		end
+
+		return r
+	end 
+
+	##-----------------------------------------------------------------------------------
+	function npmtrm{R<:Number}(m::Array{R, 2})
+		s = size(m)
+		l = s[1] - 1
+		n = s[2]
+
+		r = zeros(R, l, n)
+		d = zeros(R, n)
+		a = zeros(R, n)
+
+		@inbounds for i = 1:l
+			@inbounds for j = 1:n
+				r[i, j] = m[i + 1, j] / m[i, j] - 1
+				a[j] = a[j] + r[i, j] 
+			end
+		end
+
+		@inbounds for i = 1:n
+			a[i] = a[i] / l
+		end
+
+		@inbounds for i = 1:l
+			@inbounds for j = 1:n
+				r[i, j] = r[i, j] - a[j]
+				d[j] = d[j] + r[i, j]^2
+			end
+		end
+
+		@inbounds for i = 1:n
+			d[i] = d[i]^0.5
+		end
+
+		@inbounds for i = 1:l
+			@inbounds for j = 1:n
+				r[i, j] = r[i, j] / d[j]
+			end
+		end
+
+		return r
+	end 
+
+
+	##===================================================================================
 	##	random cnn matrix
 	##===================================================================================
 	export rcnnm
