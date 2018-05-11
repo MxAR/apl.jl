@@ -3,23 +3,26 @@
 	##	cleaning of covariance matrices (i = k)
 	##		m: covariance matrix
 	##		t: number of observations
+	##		d: flag whether or not double or single precision complex numbers shall be used
 	##===================================================================================
 	export ccovm
 
 	##-----------------------------------------------------------------------------------
-	function ccovm{R<:Number, N<:Integer}(m::Array{R, 2}, t::N)
+	function ccovm{R<:Number, N<:Integer}(m::Array{R, 2}, t::N, d::Bool = true)
+		F = d ? Float64 : Float32
+		C = Complex{F}
 		s = size(m)[1]
 		q = s/t
 
 		dq = 1 - q
 		eg = eig(m)
-		ln = eg[1][1]
+		ln = F(eg[1][1])
 
 		vr = ln / (1 - q^0.5)^2
 		lp = vr * (1 + q^0.5)^2
 		dvr = 2 * vr
 
-		z = zeros(Complex, s)
+		z = zeros(C, s)
 		a = im/(s^.5)
 
 		@inbounds for i = 1:s
