@@ -8,9 +8,9 @@
 	
 	##===================================================================================
 	##	phi (transform n dimensional points into their polar form)
-	##		first column represents the radius
+	##		- first column represents the radius
 	##===================================================================================
-	export phi
+	export phi, iphi
 
 	##-----------------------------------------------------------------------------------
 	function phi{T<:Real}(m::Array{T, 2})
@@ -24,13 +24,30 @@
 		@inbounds for i = 1:s[1]
 			a = 1.
 			@inbounds for j = 2:s[2]
-				r[i, j] = acosd(m[i, j]/(a*r[i, 1]))
+				r[i, j] = acosd(m[i, j-1]/(a*r[i, 1]))
 				a = a * sind(r[i, j])
 			end
 		end
 
 		return r
 	end
+
+	##-----------------------------------------------------------------------------------
+	function iphi{T<:Real}(m::Array{T, 2})
+		s = size(m)
+		r = zeros(s[1], s[2])
+
+		@inbounds for i = 1:s[1]
+			a = 1.
+			@inbounds for j = 1:(s[2]-1)
+				r[i, j] = m[i, 1]*a*cosd(m[i, j+1])
+				a  = a * sind(m[i, j+1])
+			end
+			r[i, s[2]] = m[i, 1]*a
+		end
+
+		return r
+	end 
 
 
 	##===================================================================================	
