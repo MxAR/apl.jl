@@ -5,7 +5,33 @@
 	using mean
 	using bla
 	using op
-	
+
+
+	##===================================================================================
+	##	normalize matrix columns
+	##===================================================================================
+	export normalize
+
+	##-----------------------------------------------------------------------------------
+	function normalize!{T<:Number}(m::Array{T, 2})
+		s = size(m)
+		r = zeros(s[1], s[2])
+
+		@inbounds for i = 1:s[2]
+			a = 0.
+			@inbounds for j = 1:s[1]
+				a = a + m[j, i]^2
+			end 
+
+			a = a^.5
+			@inbounds for j = 1:s[1]
+				r[j, i] = m[j, i] / a
+			end
+		end
+
+		return r
+	end
+
 	##===================================================================================
 	##	phi (transform n dimensional points into their polar form)
 	##		- first column represents the radius
