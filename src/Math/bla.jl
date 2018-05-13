@@ -7,29 +7,30 @@
     
 	##===================================================================================
 	##	BLAS wrapper
+	##		l = length of the vector
 	##===================================================================================
 	export bdot, bdotu, bdotc, bnrm
 
 	##-----------------------------------------------------------------------------------
-	bdot{T<:AbstractFloat, N<:Integer}(l::N, v::Array{T, 1}, u::Array{T, 1}) = BLAS.dot(l, v, 1, u, 1)	# l = length of the vectors
+	bdot{T<:AbstractFloat, N<:Integer}(l::N, v::Array{T, 1}, u::Array{T, 1}) = BLAS.dot(l, v, 1, u, 1)
 
 	##-----------------------------------------------------------------------------------
 	bdot{T<:AbstractFloat}(v::Array{T, 1}, u::Array{T, 1}) = BLAS.dot(size(v, 1), v, 1, u, 1)
 
 	##-----------------------------------------------------------------------------------
-	bdotu{C<:Complex, N<:Integer}(l::N, v::Array{C, 1}, u::Array{C, 1}) = BLAS.dotu(l, v, 1, u, 1)		# l = length of the vectors
+	bdotu{C<:Complex, N<:Integer}(l::N, v::Array{C, 1}, u::Array{C, 1}) = BLAS.dotu(l, v, 1, u, 1)
 
 	##-----------------------------------------------------------------------------------
 	bdotu{C<:Complex}(v::Array{C, 1}, u::Array{C, 1}) = BLAS.dotu(size(v, 1), v, 1, u, 1)
 
 	##-----------------------------------------------------------------------------------
-	bdotc{C<:Complex, N<:Integer}(l::N, v::Array{C, 1}, u::Array{C, 1}) = BLAS.dotc(l, v, 1, u, 1)		# l = length of the vectors
+	bdotc{C<:Complex, N<:Integer}(l::N, v::Array{C, 1}, u::Array{C, 1}) = BLAS.dotc(l, v, 1, u, 1)
 
 	##-----------------------------------------------------------------------------------
 	bdotc{C<:Complex}(v::Array{C, 1}, u::Array{C, 1}) = BLAS.dotc(size(v, 1), v, 1, u, 1)
 
 	##-----------------------------------------------------------------------------------
-	bnrm{T<:AbstractFloat, N<:Integer}(l::N, v::Array{T, 1}) = BLAS.nrm2(l, v, 1)                       # l = length of the vector
+	bnrm{T<:AbstractFloat, N<:Integer}(l::N, v::Array{T, 1}) = BLAS.nrm2(l, v, 1)
 
 	##-----------------------------------------------------------------------------------
 	bnrm{T<:AbstractFloat}(v::Array{T, 1}) = BLAS.nrm2(size(v, 1), v, 1)
@@ -297,11 +298,12 @@
 
 	##===================================================================================
     ##	Cofactor Matrix of a Matrix
+	##		TODO needs better time complexity
     ##===================================================================================
     export cof
 
     ##-----------------------------------------------------------------------------------
-    function cof{T<:AbstractFloat}(m::Array{T, 2})										# TODO needs better performance
+    function cof{T<:AbstractFloat}(m::Array{T, 2})
 		s = size(m)
 		n = zeros(T, s[1]-1, s[2]-1)
 		r = zeros(T, s)
@@ -392,11 +394,12 @@
 	##===================================================================================
 	##  householder reflection
 	##      reflects v about a hyperplane given by u
+	##		hh_rfl: u = normal vector
 	##===================================================================================
 	export hh_rfl, hh_mat
 
 	##-----------------------------------------------------------------------------------
-	hh_rfl{T<:AbstractFloat}(v::Array{T, 1}, u::Array{T, 1}) = u-(v*(2.0*bdot(u, v))) 	# hh reflection (u = normal vector)
+	hh_rfl{T<:AbstractFloat}(v::Array{T, 1}, u::Array{T, 1}) = u-(v*(2.0*bdot(u, v)))
 
 	##-----------------------------------------------------------------------------------
 	function hh_mat{T<:AbstractFloat}(v::Array{T, 1})
@@ -562,7 +565,7 @@
     export rg_log
 
     ##-----------------------------------------------------------------------------------
-    function rg_log{T<:AbstractFloat}(X::Array{T, 2})                                      #
+    function rg_log{T<:AbstractFloat}(X::Array{T, 2})
         reve = zeros(T, 2, 1)
         coeff = zeros(T, 2, 2)
         rows = size(X, 1)
