@@ -8,6 +8,7 @@
 	
 	##===================================================================================
 	##	phi (transform n dimensional points into their polar form)
+	##		first column represents the radius
 	##===================================================================================
 	export phi
 
