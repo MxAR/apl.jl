@@ -19,7 +19,6 @@
 	include("MarketIndicators/rsi.jl")
 	include("MarketIndicators/stosc.jl")
 	include("Math/bin.jl")
-	include("Math/bla.jl")
 	include("Math/dist.jl")
 	include("Math/gen.jl")
 	include("Math/rnd.jl")
@@ -39,7 +38,6 @@
 	using rsi
 	using stosc
 	using bin
-	using bla
 	using dist
 	using gen
 	using rnd
@@ -50,14 +48,14 @@
 					
 
 	# composite modules
-	include("Math/trig.jl")					# bla
 	include("Eva/eva.jl") 					# op/gen
 	include("MarketIndicators/bb.jl") 		# sta
 	include("MarketIndicators/macd.jl") 	# mean	
 	include("Math/mpa.jl")					# f
 	include("Math/sta.jl")					# mean/bla	
 	include("Math/f.jl")					# cnv/gen/op
-	include("Math/lalg.jl")					# mean/bla/op
+	include("Math/bla.jl")					# mean/op
+	include("Math/trig.jl")					# bla
 	include("Math/vq.jl")					# f
 	include("Percepton/mlp.jl")				# f
 	include("Percepton/pct.jl")				# f
@@ -65,14 +63,14 @@
 	include("RBFNetworks/rbfn.jl")			# f
 
 	# composite usings
-	using trig
 	using sta
 	using f
 	using eva
 	using bb
 	using macd
 	using mpa
-	using lalg
+	using bla
+	using trig
 	using vq
 	using mlp
 	using pct
