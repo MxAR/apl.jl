@@ -5,6 +5,32 @@
 	using mean
 	using bla
 	using op
+	
+	##===================================================================================
+	##	phi (transform n dimensional points into their polar form)
+	##===================================================================================
+	export phi
+
+	##-----------------------------------------------------------------------------------
+	function phi{T<:Real}(m::Array{T, 2})
+		s = size(m)
+		r = zeros(s[1], s[2])
+
+		@inbounds for i = 1:s[1]
+			r[i, 1] = BLAS.nrm2(s[2], m[i, :], 1)
+		end
+
+		@inbounds for i = 1:s[1]
+			a = 1.
+			@inbounds for j = 2:s[2]
+				r[i, j] = acosd(m[i, j]/(a*r[i, 1]))
+				a = a * sind(r[i, j])
+			end
+		end
+
+		return r
+	end
+
 
 	##===================================================================================	
 	##	scalar projection 
