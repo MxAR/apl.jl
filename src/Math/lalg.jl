@@ -6,14 +6,13 @@
 	using bla
 	using op
 
-
 	##===================================================================================
 	##	normalize matrix columns
 	##===================================================================================
 	export normalize
 
 	##-----------------------------------------------------------------------------------
-	function normalize!{T<:Number}(m::Array{T, 2})
+	function normalize{T<:Number}(m::Array{T, 2})
 		s = size(m)
 		r = zeros(s[1], s[2])
 
@@ -32,9 +31,11 @@
 		return r
 	end
 
+
 	##===================================================================================
 	##	phi (transform n dimensional points into their polar form)
 	##		- first column represents the radius
+	##		- iphi is the inverse of phi
 	##===================================================================================
 	export phi, iphi
 
