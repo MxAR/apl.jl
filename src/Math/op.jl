@@ -2,17 +2,17 @@
     ##===================================================================================
     ## aggregations
     ##===================================================================================
-    export PI, imp_add, lr_imp_add, imp_sub, lr_imp_sub
+    export mul, imp_add, lr_imp_add, imp_sub, lr_imp_sub
 
     ##-----------------------------------------------------------------------------------
-    function PI{T<:Number}(N::Array{T, 1})
-        p = N[1]
+    function mul{T<:Number}(v::Array{T, 1})
+        r = v[1]
 
-        @inbounds for i = 2:size(N, 1)
-            p *= N[i]
+        @inbounds for i = 2:size(v, 1)
+            r = r * v[i]
         end
 
-        return p
+        return r
     end
 
     ##-----------------------------------------------------------------------------------
