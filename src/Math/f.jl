@@ -1,6 +1,28 @@
 @everywhere module f
 	##===================================================================================
-	##	cleaning of covariance matrices (i = k)
+	##	nth root of matrix
+	##		m: must be a square matrix
+	##===================================================================================
+	export nroot
+
+	##-----------------------------------------------------------------------------------
+	function nroot{C<:Number, Z<:Integer}(m::Array{C, 2}, n::Z = 2)
+		s = size(m, 1)
+		g = eig(m)
+		p = 1/n
+
+		r = zeros(Complex, s, s)
+		@inbounds for i = 1:s
+			r[i, i] = g[1][i]^p
+		end
+		
+		r = g[2]*r*(g[2]^-1)
+		return r
+	end 
+
+
+	##===================================================================================
+	##	cleaning of covariance matrices (RIE)
 	##		m: covariance matrix
 	##		t: number of observations
 	##		d: flag whether or not double or single precision complex numbers shall be used
