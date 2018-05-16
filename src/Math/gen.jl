@@ -11,6 +11,8 @@
 
 	##===================================================================================
 	##	fill (square matrix, diagonal matrix, triangular)
+	##		l: length (when l is a parameter)
+	##		d: dimension (when d is a paramter)
 	##		z: zeros
 	##		o: ones
 	##		f: fill
@@ -68,7 +70,7 @@
 	end
 
 	##-----------------------------------------------------------------------------------
-	function zvl{N<:Integer}(l::N, d::N)                                               # l = length of vl | d = dimension of the vectors
+	function zvl{N<:Integer}(l::N, d::N)
 		v = zeros(d)
 		vl = []
 
@@ -80,7 +82,7 @@
 	end
 
 	##-----------------------------------------------------------------------------------
-	function ovl{N<:Integer}(l::N, d::N)                                               # l = length of vl | d = dimension of the vectors
+	function ovl{N<:Integer}(l::N, d::N)
 		v = ones(d)
 		vl = []
 
@@ -92,7 +94,7 @@
 	end
 
 	##-----------------------------------------------------------------------------------
-	function rvl{N<:Integer}(l::N, d::N)                                               # l = length of vl | d = dimension of the vectors
+	function rvl{N<:Integer}(l::N, d::N)
 		vl = []
 
 		@inbounds for i = 1:l
@@ -103,7 +105,7 @@
 	end
 
 	##-----------------------------------------------------------------------------------
-	function rnvl{N<:Integer}(l::N, d::N)                                               # l = length of vl | d = dimension of the vectors
+	function rnvl{N<:Integer}(l::N, d::N)
 		vl = []
 
 		@inbounds for i = 1:l
