@@ -434,9 +434,9 @@
 	##===================================================================================
 	##	random hermitian matrix
 	##		u: uniform distributed
-	##		n: normal distributed
+	##		_: normal distributed
 	##===================================================================================
-	export uhermitian, nhermitian
+	export uhermitian, hermitian
 
 	##-----------------------------------------------------------------------------------
 	function uhermitian{N<:Integer}(n::N, d::Bool = true)
@@ -467,7 +467,7 @@
 	end
 
 	##-----------------------------------------------------------------------------------
-	function nhermitian{N<:Integer}(n::N, d::Bool = true)
+	function hermitian{N<:Integer}(n::N, d::Bool = true)
 		r = zeros(d?Complex128:Complex64,n,n)
 		t = d?Float64:Float32
 		i = N(1)
