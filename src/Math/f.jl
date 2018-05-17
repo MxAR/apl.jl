@@ -1,5 +1,78 @@
 @everywhere module f
 	##===================================================================================
+	##	orthorgonal complement
+	##		(each row represents a vector)
+	##===================================================================================
+	export orthc
+
+	##-----------------------------------------------------------------------------------
+	function orthc{N<:Number}(m::Array{N, 2})
+		x = Array{(N<:Real ? Float64 : Complex128), 2}(lufact(m)[:U])
+		s = size(m)
+		d = s[2]-s[1]
+
+		i = 0
+		@inbounds while x[s[1]-i, s[2]] == 0
+			d = d + 1 
+			i = i + 1
+		end
+
+		i = s[2] - d
+		@inbounds while i > 1
+			j = i
+
+			while j <= s[2]
+				x[i, j] = x[i, j] / x[i, i]
+
+				k = i-1
+				while k >= 1
+					x[i-k, j] = x[i-k, j] - x[i-k, i] * x[i, j] 	
+					k = k - 1
+				end 
+				
+				j = j + 1
+			end
+
+			i = i - 1
+		end
+
+		@inbounds while i <= s[2]
+			x[1, i] = x[1, i] / x[1, 1]
+			i = i + 1
+		end 
+
+		n = zeros(d, s[2])
+		i = s[1]+1
+		j = 1
+
+		@inbounds while j <= d
+			n[j, i] = 1
+			i = i + 1
+			j = j + 1
+		end
+
+		i = s[1]+1
+		j = 1
+		k = 1 
+		l = 1
+
+		@inbounds while j <= s[2]-d
+			while i <= s[2]
+				n[k, l] = -x[j, i]
+				i = i + 1
+				k = k + 1
+			end
+			i = s[1]+1
+			k = 1
+			j = j + 1
+			l = l + 1
+		end
+
+		return n
+	end 
+
+
+	##===================================================================================
 	##	nth root of matrix
 	##		m: must be a square matrix
 	##===================================================================================
