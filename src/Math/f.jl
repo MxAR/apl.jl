@@ -76,22 +76,61 @@
 	##	nth root of matrix
 	##		m: must be a square matrix
 	##===================================================================================
-	export nroot
+	export nroot, nroot_posdef
 
 	##-----------------------------------------------------------------------------------
 	function nroot{C<:Number, Z<:Integer}(m::Array{C, 2}, n::Z = 2)
+		T = Complex128
+		g = Base.LinAlg.Eigen{T,T,Array{T,2},Array{T,1}}(eigfact(m; permute=false, scale=false))
 		s = size(m, 1)
-		g = eig(m)
-		p = 1/n
+		p = T(1/n)
+		
+		r = Array{T, 2}(s, s)
+		i = 1
 
-		r = zeros(Complex, s, s)
-		@inbounds for i = 1:s
-			r[i, i] = g[1][i]^p
+		@inbounds while i <= s
+			j = 1
+
+			while j < i 
+				r[i, j] = T(0)
+				r[j, i] = r[i, j]
+				j = j + 1
+			end 
+
+			r[i, i] = g[:values][i]^p
+			i = i + 1
 		end
 		
-		r = g[2]*r*(g[2]^-1)
+		r = g[:vectors]*r*inv(g[:vectors])
 		return r
 	end 
+
+	##-----------------------------------------------------------------------------------
+	function nroot_posdef{C<:Number, Z<:Integer}(m::Array{C, 2}, n::Z = 2)
+		T = Float64
+		g = Base.LinAlg.Eigen{T,T,Array{T,2},Array{T,1}}(eigfact(m; permute=false, scale=false))
+		s = size(m, 1)
+		p = T(1/n)
+
+		r = Array{T, 2}(s, s)
+		i = 1
+
+		@inbounds while i <= s
+			j = 1
+
+			while j < i
+				r[i, j] = T(0)
+				r[j, i] = r[i, j]
+				j = j + 1
+			end
+
+			@fastmath r[i, i] = g[:values][i]^p
+			i = i + 1
+		end
+
+		r = g[:vectors]*r*inv(g[:vectors])
+		return r
+	end
 
 
 	##===================================================================================
