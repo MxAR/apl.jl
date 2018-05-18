@@ -207,11 +207,17 @@
 		l = s[1] - 1
 		n = s[2]
 		
-		r = zeros(R, l, n)
-		@inbounds for i = 1:l
-			@inbounds for j = 1:n
-				r[i, j] = m[i + 1, j] / m[i, j] - 1
+		r = Array{R, 2}(l, n)
+		i = 1
+		j = 1
+
+		while i <= l
+			while j <= n
+				@inbounds r[i, j] = m[i + 1, j] / m[i, j] - 1
+				j = j + 1
 			end
+			j = 1
+			i = i + 1
 		end
 
 		return r
