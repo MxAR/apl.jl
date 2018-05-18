@@ -135,61 +135,73 @@
 
 	##===================================================================================
 	##	cleaning of covariance matrices (RIE)
-	##		m: covariance matrix
+	##		m: covariance matrix (remember m has to be positive definite)
 	##		t: number of observations
 	##		d: flag whether or not double or single precision complex numbers shall be used
 	##===================================================================================
 	export ccovm
 
 	##-----------------------------------------------------------------------------------
-	function ccovm{R<:Number, N<:Integer}(m::Array{R, 2}, t::N, d::Bool = true)
-		F = d ? Float64 : Float32
-		C = Complex{F}
-		s = size(m)[1]
-		q = s/t
+	function ccovm{T<:Number, N<:Integer}(m::Array{T, 2}, t::N)
+		C = Complex128
+		R = Float64
 
-		dq = 1 - q
-		eg = eig(m)
-		ln = F(eg[1][1])
+		s = size(m, 1)
+		q = s / t
+		c = 1 - q
 
-		vr = ln / (1 - q^0.5)^2
-		lp = vr * (1 + q^0.5)^2
-		dvr = 2 * vr
+		g = Base.LinAlg.Eigen{R,R,Array{R,2},Array{R,1}}(eigfact(m; permute=false, scale=false))
+		@inbounds ln = g[:values][1]
+		@fastmath vr = ln / (1 - q^0.5)^2
+		@fastmath lp = vr * (1 + q^0.5)^2
+		@fastmath a = im / (s^.5)
+		d = 2 * vr
 
-		z = zeros(C, s)
-		a = im/(s^.5)
+		z = Array{C, 1}(s)
+		x = Array{R, 1}(s)
+		i = 1
 
-		@inbounds for i = 1:s
-			z[i] = eg[1][i] - a
+		while i <= s
+			@inbounds z[i] = g[:values][i] - a
+			i = i + 1
 		end
 
-		x = zeros(R, s)
-		b = Complex(0)
-		g = R(0)
+		b = C(0)
+		h = R(0)
+		i = 1
 
-		@inbounds for i = 1:s
-			@inbounds for j = 1:(i-1)
-				b = b + 1 / (z[i] - eg[1][j])
+		while i <= s
+			j = 1
+			while j <= i-1
+				@inbounds b = b + 1 / (z[i] - g[:values][j])
+				j = j + 1
 			end
 
-			@inbounds for j = (i+1):s
-				b = b + 1 / (z[i] - eg[1][j])
+			j = j + 2
+			while j <= s
+				@inbounds b = b + 1 / (z[i] - g[:values][j])
+				j = j + 1
 			end
 
+			@inbounds x[i] = g[:values][i] / abs2(c + q * z[i] * (b / s))
+			@inbounds @fastmath h = abs2(c + (z[i] - vr * c - ((z[i] - ln)*(z[i] - lp))^.5) / d)
+			@inbounds h = h * vr / g[:values][i]
 
-			x[i] = eg[1][i] / abs(dq + q * z[i] * (b  / s))^2
-			g = abs(dq + (z[i] - vr * dq - ((z[i] - ln)*(z[i] - lp))^.5) / dvr)^2 * vr / eg[1][i]
-			if g > 1
-				x[i] = x[i] * g
-			end 
+			if h > 1
+				@inbounds x[i] = x[i] * h
+			end
 
-			b = Complex(0)
-			g = R(0)
+			i = i + 1
+			b = C(0)
+			h = R(0)
 		end
 
-		r = x[1] * eg[2][:, 1] * eg[2][:, 1]'
-		@inbounds for i = 2:s
-			r = r + x[i] * eg[2][:, i] * eg[2][:, i]'
+		@inbounds r = x[1] * g[:vectors][:, 1] * g[:vectors][:, 1]'
+		i = 2
+
+		while i <= s
+			@inbounds r = r + x[i] * g[:vectors][:, i] * g[:vectors][:, i]'
+			i = i + 1
 		end
 
 		return r
