@@ -229,7 +229,7 @@
 		l = s[1] - 1
 		n = s[2]
 
-		r = zeros(R, l, n)
+		r = Array{R, 2}(l, n)
 		d = zeros(R, n)
 		a = zeros(R, n)
 
