@@ -227,32 +227,58 @@
 		d = zeros(R, n)
 		a = zeros(R, n)
 
-		@inbounds for i = 1:l
-			@inbounds for j = 1:n
-				r[i, j] = m[i + 1, j] / m[i, j] - 1
-				a[j] = a[j] + r[i, j] 
+		i = 1
+		j = 1
+
+		while i <= l
+			while j <= n
+				@inbounds begin 
+					r[i, j] = m[i + 1, j] / m[i, j] - 1
+					a[j] = a[j] + r[i, j]
+				end 
+				j = j + 1
 			end
+			j = 1
+			i = i + 1
 		end
 
-		@inbounds for i = 1:n
-			a[i] = a[i] / l
+		i = 1
+
+		while i <= n
+			@inbounds a[i] = a[i] / l
+			i = i + 1 
 		end
 
-		@inbounds for i = 1:l
-			@inbounds for j = 1:n
-				r[i, j] = r[i, j] - a[j]
-				d[j] = d[j] + r[i, j]^2
+		i = 1
+
+		while i <= l
+			while j <= n
+				@inbounds begin 
+					r[i, j] = r[i, j] - a[j]		
+					d[j] = d[j] + r[i, j]^2
+				end
+				j = j + 1
 			end
+			j = 1
+			i = i + 1
 		end
 
-		@inbounds for i = 1:n
-			d[i] = d[i]^0.5
+		i = 1
+
+		while i <= n
+			@inbounds @fastmath d[i] = d[i]^.5
+			i = i + 1
 		end
 
-		@inbounds for i = 1:l
-			@inbounds for j = 1:n
-				r[i, j] = r[i, j] / d[j]
+		i = 1
+
+		while i <= l
+			while j <= n
+				@inbounds r[i, j] = r[i, j] / d[j]
+				j = j +  1
 			end
+			j = 1
+			i = i + 1
 		end
 
 		return r
