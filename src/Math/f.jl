@@ -352,7 +352,7 @@
 	##-----------------------------------------------------------------------------------
 	function fib{T<:Integer}(n::T)
 		p = 1.61803398874989484820458683437
-		return round(((p^n)-((-p)^(-n)))/(2.23606797749978969640917366873))
+		@fastmath return round(((p^n)-((-p)^(-n)))/(2.23606797749978969640917366873))
 	end 
 
 
@@ -364,36 +364,46 @@
 	##-----------------------------------------------------------------------------------
 	function dctdnoise{R<:AbstractFloat}(v::Array{R, 1}, k = R(3), lowpass::Bool = true, highpass::Bool = true)
 		s = size(v, 1)
-		t = dct(v)
-		i = Int(1)
+		t = Array{R, 1}(s)
+		p = plan_dct(v)
+
+		A_mul_B!(t, p, v)
+
 		m = R(0)
 		d = R(0)
+		i = 1
 
-		@inbounds while i <= s
-			m += t[i]
-			i += 1
+		while i <= s
+			@inbounds m = m + t[i]
+			i = i + 1
 		end 
 
-		i = Int(1)
 		m /= s
+		i = 1
 
-		@inbounds while i <= s
-			d += (t[i]-m)^2
-			i += 1
+		while i <= s
+			@inbounds d = d + (t[i]-m)^2
+			i = i + 1
 		end
 
-		i = Int(1)
-		d = k*sqrt(d/s)
-		t .-= m
+		@fastmath d = k*(d/s)^.5
+		i = 1
+
+		while i <= s
+			@inbounds t[i] = t[i] - m
+			i = i + 1
+		end 
+		
+		i = 1
 
 		if highpass
 			@inbounds while i <= s
 				if t[i] <= -d
 					t[i] = R(0)
 				end
-				i += 1
+				i = i + 1
 			end
-			i = Int(1)
+			i = 1
 		end
 
 		if lowpass
@@ -402,10 +412,12 @@
 					t[i] = R(0)
 				end 
 				i += 1
-			end 
+			end
 		end
 
-		return idct(t)
+		r = Array{R, 1}(s)
+		A_ldiv_B!(r, p, t)
+		return r
 	end
 
 	##===================================================================================
