@@ -546,7 +546,6 @@
 
     ##-----------------------------------------------------------------------------------
     function collatz{T<:Integer}(x::T)
-		@assert(x > 0, "out of bounds error")
 		c = UInt(0)
 
         while x != 1
