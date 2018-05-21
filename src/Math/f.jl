@@ -765,63 +765,56 @@
     ##===================================================================================
     ## radial basis functions
     ##===================================================================================
-    export rbf_gauss, rbf_gaussdl, rbf_gaussdd, rbf_triang, rbf_cos_decay,
-        rbf_psq, rbf_inv_psq, rbf_inv_sq, rbf_exp, rbf_tps
+    export rbf_gauss, rbf_gaussdl, rbf_gaussdd, rbf_triang, rbf_cos_decay
+    export rbf_psq, rbf_inv_psq, rbf_inv_sq, rbf_tps
 
     ##-----------------------------------------------------------------------------------
-    rbf_gauss(delta, lambda::Float64 = 1) = @. exp(-(delta/(2*lambda))^2)
+	function rbf_gauss{T<:Number}(delta::T, lambda::T = T(1))
+		return exp(-(delta / (2 * lambda))^2)
+	end 
 
     ##-----------------------------------------------------------------------------------
-    function rbf_gaussdl(delta, lambda::Float64 = 1)
-        @. delta ^= 2
-        lam = lambda^2
-        return @. (delta/(lam*lambda))*exp(-delta/lam)
+	function rbf_gaussdl{T<:Number}(delta::T, lambda::T = T(1))
+        d = delta^2
+        l = lambda^2
+        return (d / (l * lambda))*exp(-d / l)
     end
 
     ##-----------------------------------------------------------------------------------
-    function rbf_gaussdd(delta, lambda::Float64 = 1)
-        @. lambda ^= 2
-        return @. (delta./lambda) .* exp(-(delta.^2)./(2*lambda))
+	function rbf_gaussdd{T<:Number}(delta::T, lambda::T = T(1))
+        l = lambda^2
+        return (delta / l) * exp(-(delta^2) / (2 * l))
     end
 
     ##-----------------------------------------------------------------------------------
-    rbf_triang(delta::Float64, lambda::Float64 = 1) = delta > lambda ? 0. : (1 - (delta/lambda))
+	function rbf_triang{T<:Number}(delta::T, lambda::T = T(1))
+		return delta > lambda ? T(0) : T(1 - (delta / lambda))
+	end
 
     ##-----------------------------------------------------------------------------------
-    function rbf_triang(delta::Array{Float64, 1}, lambda::Float64 = 1)
-        if AND(delta .> lambda)
-            return zeros(delta)
-        else
-            return (1.-(delta./lambda))
-        end
-    end
+	function rbf_cos_decay{T<:Number}(delta::T, lambda::T = (1)) 
+		@fastmath return delta > lambda ? T(0) : T(((cos((pi * delta) / (2 * lambda))) + 1) / 2)
+	end
 
     ##-----------------------------------------------------------------------------------
-    rbf_cos_decay(delta::Float64, lambda::Float64 = 1) = delta > lambda ? 0. : ((cos((pi*delta)/(2*lambda)))+1)/2
+	function rbf_psq{T<:Number}(delta::T, lambda::T = T(1))
+		@fastmath return sqrt(1 + (lambda * delta)^2)
+	end 
 
     ##-----------------------------------------------------------------------------------
-    function rbf_cos_decay(delta::Array{Float64, 1}, lambda::Float64 = 1)
-        if AND(delta .> lambda)
-            return zeros(delta)
-        else
-            return @. ((cos((pi*delta)/(2*lambda))).+1)/2
-        end
-    end
+	function rbf_inv_psq{T<:Number}(delta::T, lambda::T = T(1)) 
+		@fastmath return (1 + (lambda * delta)^2)^-.5
+	end 
 
     ##-----------------------------------------------------------------------------------
-    rbf_psq(delta, lambda::Float64 = 1) = @. sqrt(1+(lambda*delta)^2)
+	function rbf_inv_sq{T<:Number}(delta::T, lambda::T = T(1))
+		@fastmath return 1/(1 + (lambda * delta)^2)
+	end
 
     ##-----------------------------------------------------------------------------------
-    rbf_inv_psq(delta, lambda::Float64 = 1) = @. 1/sqrt(1+(lambda*delta)^2)
-
-    ##-----------------------------------------------------------------------------------
-    rbf_inv_sq(delta, lambda::Float64 = 1) = @. 1/(1+(lambda*delta)^2)
-
-    ##-----------------------------------------------------------------------------------
-    rbf_exp(delta, expt::Float64 = 2) = delta.^expt
-
-    ##-----------------------------------------------------------------------------------
-    rbf_tps(delta, expt::Float64 = 2) = @. (delta^expt)*log(delta)
+	function rbf_tps{T<:Number}(delta::T, expt::T = T(2))
+		@fastmath return (delta^expt)*log(delta)
+	end
 
 
     ##===================================================================================
