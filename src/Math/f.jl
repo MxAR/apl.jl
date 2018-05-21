@@ -304,7 +304,7 @@
 
 
 	##===================================================================================
-	##	random cnn matrix
+	##	random cnn matrix (not yet optimized)
 	##===================================================================================
 	export rcnnm
 
@@ -560,18 +560,10 @@
 	##===================================================================================
 	##	extended binomial coefficient calculation
 	##===================================================================================
-	export binom
+	export binomf, binomi
 
 	##-----------------------------------------------------------------------------------
-	function binom{T<:Number}(n::T, k::T)
-		if T <: Integer 
-			if k < 0
-				return 0
-			elseif n < 0
-				return (k%2==0?1:-1)*(factorial(k-n-1))/(factorial(k)*factorial(-n-1))		
-			end
-		end
-		
+	function binomf{T<:AbstractFloat}(n::T, k::T)
 		if n < 0
 			r0 = T(1)
 			r1 = T(2)
@@ -592,7 +584,37 @@
 		else
 			return T(1)
 		end
-	end 
+	end
+
+	##-----------------------------------------------------------------------------------
+	function binomi{T<:Integer}(n::T, k::T)
+		r = T(NaN)
+
+		if k < 0
+			r = 0
+		elseif n < 0
+			b = -n + k -1
+			i = -n
+			r = 1
+
+			while i <= b
+				r = r * i
+				i = i + 1
+			end
+
+			b = 1
+			i = 2
+
+			while i <= k
+				b = b * i
+				i = i + 1
+			end
+
+			r = (k%2==0?1:-1) * T(r / b)
+		end
+
+		return r
+	end
 
 
 	##===================================================================================
@@ -604,16 +626,16 @@
 	function ggamma{T<:Number}(x::T)
 		if x >= 0
 			if T <: Integer
-				return factorial(x-1)
+				return AbstractFloat(factorial(x - 1))
 			else
 				return gamma(x)
 			end
 		else
 			d = Int(ceil(abs(x)))
-			r = gamma(x+d)
+			r = gamma(x + d)
 
 			@inbounds for i = 0:(d-1)
-				r /= (x+i)
+				r = r / (x + i)
 			end
 
 			return r
