@@ -743,8 +743,25 @@
     export normd
 
     ##-----------------------------------------------------------------------------------
-    nromd(v::Array{Float64, 1}, p::Int64 = 2) = @. sign(v)*(abs(v)/ifelse(iszero(v), 1, norm(v, p)))^(p-1)
+	function normd{C<:Number, N<:Integer}(v::Array{C, 1}, p::N = N(2)) 
+		s = size(v, 1)
+		r = Array{C, 1}(s)
+		i = 1
 
+		while i <= s
+			@inbounds begin 
+				r[i] = v[i]
+				if r[i] != C(0)
+					r[i] = r[i] / norm(v, p)
+				end
+				@fastmath r[i] = r[i]^(p - 1)
+			end
+			i = i + 1
+		end 
+
+		return r		
+		#sign(v)*(abs(v)/ifelse(iszero(v), 1, norm(v, p)))^(p-1)
+	end 
 
     ##===================================================================================
     ## radial basis functions
