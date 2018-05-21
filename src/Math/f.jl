@@ -711,7 +711,9 @@
 	export king
 
 	##-----------------------------------------------------------------------------------
-	king{T<:AbstractFloat, N<:Integer}(p::T, ca::T, cs::T, c::N) = ((p^(sqrt(2*(c+1))))/(1-p))x*(0.5)*((ca^2)+(cs^2))
+	function king{T<:AbstractFloat, N<:Integer}(x::T, p::T, ca::T, cs::T, c::N)
+		@fastmath return (p^sqrt(2*c+2))*x*((ca^2)+(cs^2))/(2-2*p)
+	end
 
 
     ##===================================================================================
