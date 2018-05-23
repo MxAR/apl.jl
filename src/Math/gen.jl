@@ -173,6 +173,45 @@
 
 
 	##===================================================================================
+	## random hadamard matrix
+	##	- remember s has to be a multiple of two bigger than zero
+	##===================================================================================
+	export rhadamard
+
+	##-----------------------------------------------------------------------------------
+	function rhadamard{Z<:Integer}(s::Z)
+		r = Array{Z, 2}(s, s)
+		i = 1
+
+		while i <= s
+			@inbounds r[i, 1] = rand(-1:2:1)
+			i = i + 1
+		end
+
+		k = Z(s/2)
+		i = 2
+
+		@inbounds while i <= s
+			j = 1
+			while j <= k
+				r[j, i] = r[j, i-1] == 1 ? -1 : 1
+				j = j + 1
+			end
+
+			j = k + 1
+			while j <= s
+				r[j, i] = r[j, i-1]
+				j = j + 1
+			end
+
+			i = i + 1
+		end
+
+		return r
+	end
+
+
+	##===================================================================================
     ## random circulant matrix
     ##===================================================================================
 	export rcircm, rncircm
