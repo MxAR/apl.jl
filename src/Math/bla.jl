@@ -1,10 +1,4 @@
-@everywhere module bla
-	##===================================================================================
-	##	using directives
-	##===================================================================================
-	using mean
-	using op
-    
+@everywhere module bla    
 	##===================================================================================
 	##	BLAS wrapper
 	##		l = length of the vector
@@ -68,48 +62,55 @@
 	##-----------------------------------------------------------------------------------
 	function qrd_sq{T<:AbstractFloat}(m::Array{T, 2})
 		s = size(m, 1)
-		t = zeros(T, s, s)
-		v = zeros(T, s)
+		t = Array{T, 2}(s, s)
+		v = Array{T, 1}(s)
 		r = copy(m)
 		w = T(0)
 
-		@inbounds for i=1:(s-1)
+		@inbounds for i = 1:(s-1)
 			w = 0.
-			for j=i:s
+			for j = i:s
 				v[j] = r[j, i]
-				w += v[j]*v[j]
+				w = w + v[j]*v[j]
 			end
 
-			v[i] += (r[i, i] >= 0 ? 1. : -1.)*sqrt(w)
+			v[i] = v[i] + (r[i, i] >= 0 ? 1. : -1.)*sqrt(w)
 			w = 0.
 
-			for j=i:s w += v[j]*v[j] end
-			w = 2.0/w
+			for j = i:s 
+				w = w + v[j]*v[j] 
+			end
+			
+			w = 2.0 / w
 
-			for j=1:s, k=1:s
-				t[j, k] = k == j ? 1. : 0.
-				if j>=i && k>=i
-					t[j, k] -= w*v[j]*v[k]
+			for j = 1:s
+				for k = 1:s
+					t[j, k] = k == j ? 1. : 0.
+					if j>=i && k>=i
+						t[j, k] = t[j, k] - w*v[j]*v[k]
+					end
 				end
 			end
 
-			for j=1:s
-				for k=1:s
+			for j = 1:s
+				for k = 1:s
 					v[k] = r[k, j]
 				end
 
-				for l=1:s
+				for l = 1:s
 					w = 0.
-					for h=1:s
-						w += v[h]*t[l, h]
+					for h = 1:s
+						w = w + v[h]*t[l, h]
 					end
 					r[l, j] = w
 				end
 			end
 		end
 
-		for j=1:(s-1), k=(j+1):s
-			r[k, j] = 0.
+		for j = 1:(s-1)
+			for k = (j+1):s
+				r[k, j] = 0.
+			end
 		end
 
 		return (m*inv(r), r)
