@@ -26,7 +26,6 @@
 	include(string(path, "apl.jl/src/MarketIndicators/stosc.jl"))
 	include(string(path, "apl.jl/src/Math/bin.jl"))
 	include(string(path, "apl.jl/src/Math/dist.jl"))
-	include(string(path, "apl.jl/src/Math/gen.jl"))
 	include(string(path, "apl.jl/src/Math/rnd.jl"))
 	include(string(path, "apl.jl/src/Math/mean.jl"))
 	include(string(path, "apl.jl/src/Math/op.jl"))
@@ -45,7 +44,6 @@
 	using stosc
 	using bin
 	using dist
-	using gen
 	using rnd
 	using mean
 	using op
@@ -54,6 +52,7 @@
 					
 
 	# composite modules
+	include(string(path, "apl.jl/src/Math/gen.jl"))					# bin
 	include(string(path, "apl.jl/src/Eva/eva.jl"))					# op/gen
 	include(string(path, "apl.jl/src/MarketIndicators/bb.jl")) 		# sta
 	include(string(path, "apl.jl/src/MarketIndicators/macd.jl")) 	# mean	
@@ -69,6 +68,7 @@
 	include(string(path, "apl.jl/src/RBFNetworks/rbfn.jl"))			# f
 
 	# composite usings
+	using gen
 	using sta
 	using f
 	using eva

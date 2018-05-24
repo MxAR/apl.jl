@@ -5,7 +5,7 @@
 	export bit_dot
 
 	##-----------------------------------------------------------------------------------
-	function bit_dot{N<:Integer}(a::N, b::N)
+	function bit_dot{N<:Unsigned}(a::N, b::N)
 		p = bits(a)
 		q = bits(b)
 		c = 0

@@ -176,34 +176,22 @@
 	## random hadamard matrix
 	##	- remember s has to be a multiple of two bigger than zero
 	##===================================================================================
-	export rhadamard
+	import bin.bit_dot
+	export hadamard
 
 	##-----------------------------------------------------------------------------------
-	function rhadamard{Z<:Integer}(s::Z)
+	function hadamard{Z<:Integer}(s::Z)
 		r = Array{Z, 2}(s, s)
-		i = 1
+		i = UInt(1)
+		k = UInt(0)
 
 		while i <= s
-			@inbounds r[i, 1] = rand(-1:2:1)
-			i = i + 1
-		end
-
-		k = Z(s/2)
-		i = 2
-
-		@inbounds while i <= s
-			j = 1
-			while j <= k
-				r[j, i] = r[j, i-1] == 1 ? -1 : 1
-				j = j + 1
-			end
-
-			j = k + 1
+			j = UInt(1)
 			while j <= s
-				r[j, i] = r[j, i-1]
+				@inbounds r[i, j] = bit_dot(k, j - 1) % 2 == 0 ? 1 : -1
 				j = j + 1
 			end
-
+			k = k + 1
 			i = i + 1
 		end
 
