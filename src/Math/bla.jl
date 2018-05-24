@@ -123,55 +123,84 @@
 		v = Array{T, 1}(s)
 		r = copy(m)
 		w = T(0)
+		i = 1
 
-		@inbounds for i = 1:(s-1)
+		@inbounds while i <= (s-1)
 			w = 0.
-			for j = i:s
+			j = i
+			
+			while j <= s
 				v[j] = r[j, i]
 				w = w + v[j]*v[j]
+				j = j + 1
 			end
 
 			v[i] = v[i] + (r[i, i] >= 0 ? 1. : -1.) * sqrt(w)
 			w = 0.
+			j = i
 
-			for j = i:s 
-				w = w + v[j]*v[j] 
+			while j <= s 
+				w = w + v[j]*v[j]
+				j = j + 1
 			end
 
-			w = 2.0/w
+			w = 2.0 / w
+			j = 1
 
-			for j=1:s 
-				for k=1:s
+			while j <= s
+				k = 1
+				while k <= s
 					t[j, k] = k == j ? 1. : 0.
+					
 					if j>=i && k>=i
 						t[j, k] = t[j, k] - w * v[j] * v[k]
 					end
+					
+					k = k + 1
 				end
+				j = j + 1
 			end
 
 			if i == 1
 				r = t * r
 			else
-				for j = 1:s
-					for k = 1:s
+				j = 1
+				while j <= s
+					k = 1
+					while k <= s
 						v[k] = r[k, j]
+						k = k + 1
 					end
 
-					for l = 1:s
+					k = 1
+					while k <= s
 						w = 0.
-						for h = 1:s
-							w = w + v[h] * t[l, h]
+						l = 1
+
+						while l <= s
+							w = w + v[l] * t[k, l]
+							l = l + 1
 						end
-						r[l, j] = w
+
+						r[k, j] = w
+						k = k + 1
 					end
+
+					j = j + 1
 				end
 			end
+
+			i = i + 1
 		end
 
-		for j = 1:(s-1)
-			for k = (j+1):s
-				r[k, j] = 0.
+		i = 1
+		while i <= (s-1)
+			k = i + 1
+			while k <= s
+				r[k, i] = 0.
+				k = k + 1
 			end
+			i = i + 1
 		end
 
 		return (m*inv(r), r)
