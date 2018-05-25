@@ -247,9 +247,20 @@
 	function minor{T<:AbstractFloat, N<:Integer}(m::Array{T, 2}, p::Tuple{N, N} = (1, 1))
 		s = size(m)
 		r = Array{T, 2}(s[1]-p[1], s[2]-p[1])
+		i = 1 + p[1]
+		a = 1 + p[2]
+		k = 1
 
-		@inbounds for i=(1+p[1]):s[1], j=(1+p[2]):s[2]
-			r[i-p[1], j-p[2]] = m[i, j]
+		while i <= s[1]
+			j = a
+			l = 1
+			while j <= s[2]
+				@inbounds r[k, l] = m[i, j]
+				j = j + 1
+				l = l + 1
+			end
+			i = i + 1
+			k = k + 1
 		end
 
 		return r
