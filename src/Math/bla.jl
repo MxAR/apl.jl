@@ -276,9 +276,15 @@
 	function otr{T<:AbstractFloat}(v::Array{T, 1}, w::Array{T, 1})
 		s = (size(v, 1), size(w, 1))
 		m = Array{T, 2}(s)
+		i = 1
 
-		@inbounds for i=1:s[1], j=1:s[2]
-			m[i, j] = v[i] * w[j]
+		while i <= s[1]
+			j = 1
+			while j <= s[2]
+				@inbounds m[i, j] = v[i] * w[j]
+				j = j + 1
+			end
+			i = i + 1
 		end
 
 		return m
