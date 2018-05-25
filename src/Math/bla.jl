@@ -209,20 +209,29 @@
 
 	##===================================================================================
 	## diagonal expansion of matrices
+	##	- ul: upper left
 	##===================================================================================
 	export ul_x_expand
 
 	##-----------------------------------------------------------------------------------
-	function ul_x_expand{T<:AbstractFloat, N<:Integer}(m::Array{T, 2}, s::Tuple{N, N}, x::T = 1.0)# ul = upper left
-		d = (s[1]-size(m, 1), s[2]-size(m,2))
-		r = zeros(T, s)
+	function ul_x_expand{T<:Number, N<:Integer}(m::Array{T, 2}, s::Tuple{N, N}, x::T = 1.0)
+		d = (s[1] - size(m, 1), s[2] - size(m,2))
+		r = Array{T, 2}(s[1], s[2])
+		i = 1
 
-		@inbounds for i = 1:s[1], j = 1:s[2]
-			if i>d[1] && j>d[2]
-				r[i, j] = m[i-d[1], j-d[2]]
-			elseif i == j
-				r[i, j] = x
+		while i <= s[1]
+			j = 1
+			while j <= s[2]
+				if i > d[1] && j > d[2]
+					@inbounds r[i, j] = m[i-d[1], j-d[2]]
+				elseif i == j
+					@inbounds r[i, j] = x
+				else
+					@inbounds r[i, j] = T(0)
+				end 
+				j = j + 1
 			end
+			i = i + 1 
 		end
 
 		return r
