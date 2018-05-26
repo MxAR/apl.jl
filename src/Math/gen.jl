@@ -10,6 +10,29 @@
 
 
 	##===================================================================================
+	##	allocates a random vector of unique integers
+	##===================================================================================
+	export urand
+
+	##-----------------------------------------------------------------------------------
+	function urand{Z<:Integer}(q::UnitRange{Z}, s::Z)
+		j = abs(q[end] - q[1] + 1)
+		r = Array{Z, 1}(s)
+		w = Array{Z, 1}(q)
+		i = 1
+		
+		@inbounds while i <= s
+			k = rand(1:j)
+			r[i] = w[k]
+			w = vcat(w[1:(k - 1)], w[(k + 1):j])
+			j = j - 1
+			i = i + 1
+		end
+
+		return r
+	end
+
+	##===================================================================================
 	##	fill (square matrix, diagonal matrix, triangular)
 	##		l: length (when l is a parameter)
 	##		d: dimension (when d is a paramter)
