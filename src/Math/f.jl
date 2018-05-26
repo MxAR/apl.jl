@@ -1,5 +1,51 @@
 @everywhere module f
 	##===================================================================================
+	## prime factorisation 
+	##	- not determinitistic
+	##	- using an augumented Pollard-Strassen method)
+	##===================================================================================
+	export pfactor
+
+	##-----------------------------------------------------------------------------------
+	function pfactor{Z<:Integer}(x::Z)
+		r = Array{Z, 1}()
+		n = UInt(abs(x))
+		T = UInt
+
+		if x < 0
+			append!(r, -1)
+		end
+
+		while true
+			if n % 2 == 0
+				append!(r, 2)
+				n = n >> 1
+			else
+				a = T(rand(1:9999))
+				b = T(rand(1:9999))
+				c = T(1)
+
+				while c == 1
+					a = T((1 + a^2) % n)
+					b = T((1 + ((1 + b^2) % n)^2) % n)
+					c = f.gcd(abs(a - b), n)
+				end
+
+				if c == n
+					append!(r, n)
+					break
+				else
+					append!(r, c)
+					n = T(n / c)
+				end
+			end
+		end
+
+		return r
+	end
+
+
+	##===================================================================================
 	##	orthorgonal complement
 	##		(each row represents a vector)
 	##===================================================================================

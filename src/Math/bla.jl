@@ -298,19 +298,55 @@
 
 	##-----------------------------------------------------------------------------------
 	function grsc{T<:AbstractFloat}(m::Array{T, 2})
-    	s = size(m, 2)
-    	d = zeros(T, s)
-    	ob = []
+    	s = size(m)
+		r = Array{T, 2}(s[1], s[2])
+		d = Array{T, 1}(s[2])
 
-    	@inbounds for i = 1:s
-        		push!(ob, m[:, i])
-        		for j = 1:(i-1)
-            		ob[i] -= (dot(ob[j], ob[i])/d[j])*ob[j]
-        		end
-     		d[i] = dot(ob[i], ob[i])
-   		end
+		i = 1
+		while i <= s[1] 
+			r[i, 1] = m[i, 1]
+			i = i + 1
+		end 
 
-    	return ob
+		i = 1
+		while i <= s[2]
+			j = 1
+			while j <= (i-1)
+				n = T(0)
+				k = 1
+
+				while k <= s[1]
+					n = n + r[k, j] * m[k, i]
+					k = k + 1
+				end
+
+				n = n / d[j]
+				k = 1
+
+				while k <= s[1]
+					r[k, i] = m[k, i] - n * r[k, j]
+					k = k + 1
+				end
+
+				j = j + 1
+			end
+
+			d[i] = 0
+			j = 1
+
+			while j <= s[1]
+				d[i] = d[i] + r[j, i] * r[j, i]
+				j = j + 1
+			end
+
+			println("----")
+			println(i)
+			println("###")
+
+			i = i + 1
+		end
+
+    	return r
 	end
 
     ##-----------------------------------------------------------------------------------
