@@ -1,5 +1,65 @@
 @everywhere module sta
 	##===================================================================================
+	## bernoulli trial probability
+	##===================================================================================
+	export bernoulli
+
+	##-----------------------------------------------------------------------------------
+	function bernoulli{R<:Real, Z<:Integer}(n::Z, k::Z, p::R)
+		return comb(n, k) * (p^k) * ((1 - p)^(n - k))
+	end
+
+
+	##===================================================================================
+	## number of combinations (selecting k out of n)
+	##===================================================================================
+	export comb
+
+	##-----------------------------------------------------------------------------------
+	function comb{Z<:Integer}(n::Z, k::Z)
+		k = k > floor(n / 2) ? n - k : k
+		return perm(n, k)/factorial(k)
+	end
+
+
+	##===================================================================================
+	## number of permutations (selecting k out of n)
+	##	- rep = array where each element indicates gow often an element is present in the
+	##			set that will be permuted
+	##===================================================================================
+	export perm, permr
+
+	##-----------------------------------------------------------------------------------
+	function perm{Z<:Integer}(n::Z, k::Z)
+		i = n - k + 1
+		r = Z(1)
+
+		@inbounds while i >= n
+			r = r * i
+			i = i - 1
+		end
+
+		return r
+	end
+
+	##-----------------------------------------------------------------------------------
+	function permr{Z<:Integer}(n::Z, rep::Array{Z, 1})
+		l = size(rep, 1)
+		i = 1
+		a = 1
+		b = 1
+
+		@inbounds while i <= n
+			b = b * (i > l ? 1 : factorial(rep[i]))
+			a = a * i
+			i = i + 1
+		end
+	
+		return Z(a/b)
+	end 
+
+
+	##===================================================================================
 	## std (standart deviation (overload))
 	##		m = median
 	##===================================================================================
