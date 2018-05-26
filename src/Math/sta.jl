@@ -34,9 +34,9 @@
 		i = n - k + 1
 		r = Z(1)
 
-		@inbounds while i >= n
+		@inbounds while i <= n
 			r = r * i
-			i = i - 1
+			i = i + 1
 		end
 
 		return r
