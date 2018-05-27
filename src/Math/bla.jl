@@ -407,22 +407,51 @@
     export proj, projn
 
     ##-----------------------------------------------------------------------------------
-    function proj{T<:AbstractFloat}(v::Array{T, 1}, m::Array{T, 2})
-    	r = zeros(size(v))
-    	@inbounds for i = 1:size(m, 2)
-        	r += m[:, i]*(bdot(v, m[:, i])/bdot(m[:, i], m[:, i]))
-    	end
-    	return r
+    function proj{T<:Number}(v::Array{T, 1}, m::Array{T, 2})
+		s = size(m)
+		r = Array{T, 1}(s[1])
+		n = T(0)
+		d = T(0)
+
+		i = 1
+		@inbounds while i <= s[1]
+			r[i] = T(0) 
+			i = i + 1
+		end
+
+		i = 1
+		@inbounds while i <= s[2]
+			j = 1
+			while j <= s[1]
+				d = d + m[j, i] * m[j, i]
+				n = n + v[j] * m[j, i]
+				j = j + 1
+			end
+
+			n = n / d
+
+			j = 1
+			while j <= s[1]
+				r[j] = r[j] + n * m[j, i]
+				j = j + 1
+			end 
+
+    		i = i + 1
+			n = T(0)
+			d = T(0)
+		end
+    	
+		return r
     end
 
 	##-----------------------------------------------------------------------------------
-    function proj{T<:Complex}(v::Array{T, 1}, m::Array{T, 2})
-    	r = zeros(size(v))
-    	@inbounds for i = 1:size(m, 2)
-        	r += m[:, i]*(bdotc(v, m[:, i])/bdotc(m[:, i], m[:, i]))
-    	end
-    	return r
-    end
+#    function proj{T<:Complex}(v::Array{T, 1}, m::Array{T, 2})
+#    	r = zeros(size(v))
+#    	@inbounds for i = 1:size(m, 2)
+#        	r += m[:, i]*(bdotc(v, m[:, i])/bdotc(m[:, i], m[:, i]))
+#    	end
+#    	return r
+#    end
 
     ##-----------------------------------------------------------------------------------
     projn{T<:AbstractFloat}(v::Array{T, 1}, m::Array{T, 2}) = m*m'*v
