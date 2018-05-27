@@ -485,19 +485,41 @@
     export cof
 
     ##-----------------------------------------------------------------------------------
-    function cof{T<:AbstractFloat}(m::Array{T, 2})
+    function cof{T<:Number}(m::Array{T, 2})
 		s = size(m)
-		n = zeros(T, s[1]-1, s[2]-1)
-		r = zeros(T, s)
+		n = Array{T, 2}(s[1]-1, s[2]-1)
+		r = Array{T, 2}(s[1], s[2])
 
-		@inbounds for i = 1:s[1], j = 1:s[2]
-			for x = 1:s[1], y = 1:s[2]
-				if x != i && y != j
-					n[(x > i ? x-1 : x), (y > j ? y-1 : y)] = m[x, y]
-				end
+		i = 1
+		@inbounds while i <= s[1]-1
+			j = i
+			while j <= s[2]-1
+				n[i, j] = T(0)
+				n[j, i] = T(0)
+				j = j + 1
 			end
+			i = i + 1
+		end 
 
-			r[i, j] = det(n)*(i+j % 2 == 0 ? 1. : -1)
+		i = 1
+		@inbounds while i <= s[1]
+			j = 1
+			while j <= s[2]
+				x = 1
+				while x <= s[1]
+					y = 1
+					while y <= s[2]
+						if x != i && y != j
+							n[(x > i ? x-1 : x), (y > j ? y-1 : y)] = m[x, y]
+						end
+						y = y + 1
+					end
+					x = x + 1
+				end
+				r[i, j] = det(n) * (i + j % 2 == 0 ? T(1) : T(-1))
+				j = j + 1
+			end
+			i = i + 1
 		end
 
 		return r
