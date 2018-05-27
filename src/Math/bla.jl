@@ -444,20 +444,38 @@
 		return r
     end
 
-	##-----------------------------------------------------------------------------------
-#    function proj{T<:Complex}(v::Array{T, 1}, m::Array{T, 2})
-#    	r = zeros(size(v))
-#    	@inbounds for i = 1:size(m, 2)
-#        	r += m[:, i]*(bdotc(v, m[:, i])/bdotc(m[:, i], m[:, i]))
-#    	end
-#    	return r
-#    end
-
     ##-----------------------------------------------------------------------------------
-    projn{T<:AbstractFloat}(v::Array{T, 1}, m::Array{T, 2}) = m*m'*v
+    function projn{T<:AbstractFloat}(v::Array{T, 1}, m::Array{T, 2})
+		s = size(m)
+		r = Array{T, 1}(s[1])
+		n = T(0)
 
-	##-----------------------------------------------------------------------------------
-    projn{T<:Complex}(v::Array{T, 1}, m::Array{T, 2}) = m*m.'*v
+		i = 1
+		@inbounds while i <= s[1]
+			r[i] = T(0)
+			i = i + 1
+		end
+
+		i = 1
+		@inbounds while i <= s[2]
+			j = 1
+			while j <= s[2]
+				n = n + v[j] * m[j, i]
+				j = j + 1
+			end
+
+			j = 1
+			while j <= s[1]
+				r[j] = r[j] + n * m[j, i]
+				j = j + 1
+			end
+
+			i = i + 1
+			n = T(0)
+		end
+
+		return r
+	end
 
 
 	##===================================================================================
