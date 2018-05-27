@@ -332,8 +332,8 @@
 			end
 
 			d[i] = 0
-
 			j = 1
+
 			while j <= s[1]
 				d[i] = d[i] + r[j, i] * r[j, i]
 				j = j + 1
@@ -347,17 +347,57 @@
 
     ##-----------------------------------------------------------------------------------
    	function grscn{T<:AbstractFloat}(m::Array{T, 2})
-    	ob = []
+    	s = size(m)
+		r = Array{T, 2}(s[1], s[2])
+		d = T(0)
 
-    	@inbounds for i = 1:size(m, 2)
-        		push!(ob, m[:, i])
-        		for j = 1:(i-1)
-            		ob[i] -= dot(ob[j], ob[i])*ob[j]
-        		end
-        		normalize!(ob[i])
-    	end
+		i = 1
+		@inbounds while i <= s[2]
+			j = 1
+			while j <= s[1]
+				r[j, i] = m[j, i]
+				j = j + 1
+			end
 
-    	return ob
+			j = 1
+			while j <= (i - 1)
+				n = T(0)
+				
+				k = 1
+				while k <= s[1]
+					n = n + r[k, j] * m[k, i]
+					k = k + 1
+				end
+
+				k = 1
+				while k <= s[1]
+					r[k, i] = r[k, i] - n * r[k, j]
+					k = k + 1
+				end
+
+				j = j + 1
+			end 
+
+			d = T(0)
+			
+			j = 1
+			while j <= s[1]
+				d = d + r[j, i] * r[j, i]
+				j = j + 1
+			end
+			
+			d = sqrt(d)
+
+			j = 1
+			while j <= s[1]
+				r[j, i] = r[j, i] / d[i]
+				j = j + 1
+			end
+
+			i = i +1
+		end
+
+    	return r
     end
 
 
