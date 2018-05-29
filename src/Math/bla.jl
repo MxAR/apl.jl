@@ -6,28 +6,44 @@
 	export bdot, bdotu, bdotc, bnrm
 
 	##-----------------------------------------------------------------------------------
-	bdot{T<:AbstractFloat, N<:Integer}(l::N, v::Array{T, 1}, u::Array{T, 1}) = BLAS.dot(l, v, 1, u, 1)
+	function bdot{T<:AbstractFloat, N<:Integer}(l::N, v::Array{T, 1}, u::Array{T, 1}) 
+		return BLAS.dot(l, v, 1, u, 1)
+	end
 
 	##-----------------------------------------------------------------------------------
-	bdot{T<:AbstractFloat}(v::Array{T, 1}, u::Array{T, 1}) = BLAS.dot(size(v, 1), v, 1, u, 1)
+	function bdot{T<:AbstractFloat}(v::Array{T, 1}, u::Array{T, 1}) 
+		return BLAS.dot(size(v, 1), v, 1, u, 1)
+	end
 
 	##-----------------------------------------------------------------------------------
-	bdotu{C<:Complex, N<:Integer}(l::N, v::Array{C, 1}, u::Array{C, 1}) = BLAS.dotu(l, v, 1, u, 1)
+	function bdotu{C<:Complex, N<:Integer}(l::N, v::Array{C, 1}, u::Array{C, 1}) 
+		return BLAS.dotu(l, v, 1, u, 1)
+	end
 
 	##-----------------------------------------------------------------------------------
-	bdotu{C<:Complex}(v::Array{C, 1}, u::Array{C, 1}) = BLAS.dotu(size(v, 1), v, 1, u, 1)
+	function bdotu{C<:Complex}(v::Array{C, 1}, u::Array{C, 1}) 
+		return BLAS.dotu(size(v, 1), v, 1, u, 1)
+	end
 
 	##-----------------------------------------------------------------------------------
-	bdotc{C<:Complex, N<:Integer}(l::N, v::Array{C, 1}, u::Array{C, 1}) = BLAS.dotc(l, v, 1, u, 1)
+	function bdotc{C<:Complex, N<:Integer}(l::N, v::Array{C, 1}, u::Array{C, 1}) 
+		return BLAS.dotc(l, v, 1, u, 1)
+	end
 
 	##-----------------------------------------------------------------------------------
-	bdotc{C<:Complex}(v::Array{C, 1}, u::Array{C, 1}) = BLAS.dotc(size(v, 1), v, 1, u, 1)
+	function bdotc{C<:Complex}(v::Array{C, 1}, u::Array{C, 1}) 
+		return BLAS.dotc(size(v, 1), v, 1, u, 1)
+	end
 
 	##-----------------------------------------------------------------------------------
-	bnrm{T<:AbstractFloat, N<:Integer}(l::N, v::Array{T, 1}) = BLAS.nrm2(l, v, 1)
+	function bnrm{T<:AbstractFloat, N<:Integer}(l::N, v::Array{T, 1}) 
+		BLAS.nrm2(l, v, 1)
+	end
 
 	##-----------------------------------------------------------------------------------
-	bnrm{T<:AbstractFloat}(v::Array{T, 1}) = BLAS.nrm2(size(v, 1), v, 1)
+	function bnrm{T<:AbstractFloat}(v::Array{T, 1})
+		BLAS.nrm2(size(v, 1), v, 1)
+	end
 
 
 	##===================================================================================
@@ -36,22 +52,34 @@
 	export soq, soqu, soqc
 
 	##-----------------------------------------------------------------------------------
-	soq{T<:AbstractFloat, N<:Integer}(l::N, v::Array{T, 1}, n::N = 1) = BLAS.dot(l, v, n, v, n)
+	function soq{T<:AbstractFloat, N<:Integer}(l::N, v::Array{T, 1}, n::N = 1) 
+		return BLAS.dot(l, v, n, v, n)
+	end
 
 	##-----------------------------------------------------------------------------------
-	soq{T<:AbstractFloat}(v::Array{T, 1}) = bdot(v, v)
+	function soq{T<:AbstractFloat}(v::Array{T, 1}) 
+		return bdot(v, v)
+	end
 
 	##-----------------------------------------------------------------------------------
-	soqu{C<:Complex, N<:Integer}(l::N, v::Array{C, 1}, n::N = N(1)) = BLAS.dot(l, v, n, v, n)
+	function soqu{C<:Complex, N<:Integer}(l::N, v::Array{C, 1}, n::N = N(1)) 
+		return BLAS.dot(l, v, n, v, n)
+	end
 
 	##-----------------------------------------------------------------------------------
-	soqu{C<:Complex}(v::Array{C, 1}) = bdotu(v, v)
+	function soqu{C<:Complex}(v::Array{C, 1})
+		return bdotu(v, v)
+	end
 
 	##-----------------------------------------------------------------------------------
-	soqc{C<:Complex, N<:Integer}(l::N, v::Array{C, 1}, n::N = 1) = bdotc(l, v, n, v, n)
+	function soqc{C<:Complex, N<:Integer}(l::N, v::Array{C, 1}, n::N = 1) 
+		return bdotc(l, v, n, v, n)
+	end
 
 	##-----------------------------------------------------------------------------------
-	soqc{C<:Complex}(v::Array{C, 1}) = bdotc(v, v)
+	function soqc{C<:Complex}(v::Array{C, 1}) 
+		return bdotc(v, v)
+	end
 
 
 	##===================================================================================
@@ -543,6 +571,20 @@
 	##-----------------------------------------------------------------------------------
 	function nul{T<:AbstractFloat}(m::Array{T, 2})
 		s = size(m)
+
+		#if s[1] >= s[2]
+		#	r = Array{T, 1}(s[2])
+		#	
+		#	i = 1
+		#	while i <= s[2]
+		#		r[i] = T(0)
+		#		i = i + 1
+		#	end
+		#
+		#	return r
+		#else
+		#	r = Array{T, 1}(s[2] - s[1])
+		#end
 
 		if s[1] >= s[2]
 			return zeros(T, s[2])
