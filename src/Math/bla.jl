@@ -586,45 +586,68 @@
 	##===================================================================================
 	##	Nullspace of a matrix
 	##===================================================================================
-	export nul
+	export ker
 
 	##-----------------------------------------------------------------------------------
-	function nul{T<:AbstractFloat}(m::Array{T, 2})
+	function ker{T<:AbstractFloat}(m::Array{T, 2})
 		s = size(m)
+		d = s[2] - s[1]
 
-		#if s[1] >= s[2]
-		#	r = Array{T, 1}(s[2])
-		#	
-		#	i = 1
-		#	while i <= s[2]
-		#		r[i] = T(0)
-		#		i = i + 1
-		#	end
-		#
-		#	return r
-		#else
-		#	r = Array{T, 1}(s[2] - s[1])
-		#end
-
-		if s[1] >= s[2]
-			return zeros(T, s[2])
-		end
-
-		r = zeros(T, s[2], s[2]-s[1])
-
-		@inbounds for i = 1:s[1]
-			for j = 1:s[1]
-				if i != j
-					m[j,:] -= (m[j,i]/m[i,i]) * m[i,:]
-				end
+		if d <= 0
+			r = Array{T, 2}(1, s[2])
+			
+			i = 1
+			@inbounds while i <= s[2]
+				r[i] = T(0)
+				i = i + 1
 			end
-			m[i,:] /= m[i,i]
+		
+			return r
+		else
+			x = Array{T, 2}(lufact(m)[:U])
+			r = Array{T, 2}(s[1] + d, d)
+			xi = inv(x[1:s[1], 1:s[1]])
+
+			i = s[1] + 1
+			j = 1
+
+			set_zero_subnormals(true)
+			@inbounds while i <= s[2]
+				k = 1
+				while k <= s[1]
+					r[k, j] = BLAS.dot(s[1], xi[k, :], 1, x[:, i], 1)
+					k = k + 1
+				end
+
+				i = i + 1
+				j = j + 1
+			end
+			set_zero_subnormals(false)
+
+			i = s[1] + 1
+			k = 1
+
+			@inbounds while i <= s[2]
+				j = 1
+				while j <= (k - 1)
+					r[i, j] = T(0)
+					j = j + 1
+				end
+
+				j = k + 1
+				while j <= d
+					r[i, j] = T(0)
+					j = j + 1
+				end
+
+				r[i, k] = T(-1)
+
+				i = i + 1
+				k = k + 1
+			end
+
+			return r 
 		end
-
-		r[1:s[1], :] = -m[:,(s[1]+1):s[2]]
-		r[(s[1]+1):end, :] = eye(s[2]-s[1])
-
-		return r
 	end
 
 
