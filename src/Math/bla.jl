@@ -91,8 +91,14 @@
 	function snorm{N<:Number}(m::Array{N, 2})
 		T = Complex{Float64}
 		a = Base.LinAlg.Eigen{T,T,Array{T,2},Array{T,1}}(eigfact(m; scale=false, permute=false))
-		r = Array{T, 1}(a[:values])	
-		return T(sqrt(r[1]))
+		return sqrt(a[:values][1])
+	end
+
+	##-----------------------------------------------------------------------------------
+	function snorm_posdef{N<:Number}(m::Array{N, 2})
+		T = Float64
+		a = Base.LinAlg.Eigen{T,T,Array{T,2},Array{T,1}}(eigfact(m; scale=false, permute=false))
+		return sqrt(a[:values][1])
 	end
 
 
