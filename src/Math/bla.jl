@@ -84,23 +84,103 @@
 	##===================================================================================
 	## k statistics
 	##===================================================================================
-	#export kstat, kstart_1, kstat_2, kstat_3, kstart_4
+	export kstat, kstat_1, kstat_2, kstat_3, kstat_4
+	import mean.gamean
 
 	##-----------------------------------------------------------------------------------
-	#function kstat{R<:Real, N<:Integer}(v::Array{R, 1}, k::N)
-	#	m = gamean(S)
-	#	
-	#	if k == 1
-	#		return m
-	#	else
-	#		u = AbstractFloat()
-	#	end
-	#end
+	function kstat{R<:Real, N<:Integer}(v::Array{R, 1}, k::N)
+		if k == 1
+			return kstat_1(v)
+		elseif k == 2
+			return kstat_2(v)	
+		elseif k == 3
+			return kstat_3(v)
+		elseif k == 4
+			return kstat_4(v)
+		end
+	end
 	
 	##-----------------------------------------------------------------------------------
-	#function kstat_1{R<:Real}(v::Array{R, 1})
-	#	r = AbstractFloat(v[1])
-	#end
+	function kstat_1{R<:Real}(v::Array{R, 1})
+		return gamean(v)
+	end
+
+	##-----------------------------------------------------------------------------------
+	function kstat_2{R<:Real}(v::Array{R, 1})
+		m = AbstractFloat(v[1])
+		s = size(v, 1)
+
+		i = 2
+		@inbounds while i <= s
+			m = m + v[i]
+			i = i + 1
+		end
+
+		m = m / s
+		@fastmath r = AbstractFloat((v[1] - m)^2)
+
+		i = 2
+		@inbounds while i <= s
+			@fastmath r = r + (v[i] - m)^2 
+			i = i + 1
+		end
+
+		r = r / (s - 1)
+		return r
+	end
+
+	##-----------------------------------------------------------------------------------
+	function kstat_3{R<:Real}(v::Array{R, 1})
+		m = AbstractFloat(v[1])
+		s = size(v, 1)
+
+		i = 2
+		@inbounds while i <= s
+			m = m + v[i]
+			i = i + 1
+		end
+
+		m = m / s
+		@fastmath r = AbstractFloat((v[1] - m)^3)
+
+		i = 2
+		@inbounds while i <= s
+			@fastmath r = r + (v[i] - m)^3
+			i = i + 1
+		end
+
+		r = (r * s) / ((s - 1) * (s - 2))
+		return r
+	end
+
+	##-----------------------------------------------------------------------------------
+	function kstat_4{R<:Real}(v::Array{R, 1})
+		m = AbstractFloat(v[1])
+		s = size(v, 1)
+
+		i = 2
+		@inbounds while i <= s
+			m = m + v[i]
+			i = i + 1
+		end
+
+		m = m / s
+		@fastmath r0 = AbstractFloat((v[1] - m)^2)
+		@fastmath r1 = AbstractFloat(r0^2)
+		x = AbstractFloat(0)
+
+		i = 2
+		@inbounds while i <= s
+			@fastmath x = (v[i] - m)^2
+			r0 = r0 + x
+			@fastmath r1 = r1 + x^2
+			i = i + 1
+		end
+
+		r = (s * (((s + 1) * r1) - ((s - 1) * (r0 / s)))) / ((s - 1) * (s - 2) * (s - 3))
+		return r
+	end
+
 
 	##===================================================================================
 	## kth moment
