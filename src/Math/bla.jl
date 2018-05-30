@@ -102,6 +102,21 @@
 		return r
 	end
 
+	##-----------------------------------------------------------------------------------
+	function moment{C<:Complex, N<:Integer}(v::Array{C, 1}, k::N)
+		s = size(v, 1)
+		r = C(v[1]^k)
+
+		i = 2
+		@inbounds while i <= s
+			@fastmath r = r + v[i]^k
+			i = i + 1
+		end
+
+		r = r / s
+		return r
+	end
+
 
 	##===================================================================================
 	## spectral norm
