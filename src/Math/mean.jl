@@ -1,11 +1,19 @@
 @everywhere module mean
 	##===================================================================================
 	##	generalized mean
+	##		ga = arthimetic mean
+	##		gh = harmonic mean
+	##		gg = geometric mean
+	##		gp = power mean
+	##		gr = root squared mean
+	##		gf = f mean
 	##===================================================================================
 	export gamean, ghmean, ggmean, gpmean, gfmean, grmean
 
 	##-----------------------------------------------------------------------------------
-	gamean{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, l::N, n::N) = gfmean(v, (x) -> x, (x) -> x, l, n)					# arithmetic mean
+	function gamean{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, l::N, n::N) 
+		return gfmean(v, (x) -> x, (x) -> x, l, n)
+	end
 
 	##-----------------------------------------------------------------------------------
 	function gamean{T<:AbstractFloat}(v::Array{T, 1}) 
@@ -20,19 +28,27 @@
 	end
 
 	##-----------------------------------------------------------------------------------
-	ghmean{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, l::N, n::N) = gfmean(v, (x) -> 1/x, (x) -> 1/x, l, n)				# harmonic mean
+	function ghmean{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, l::N, n::N)
+		return gfmean(v, (x) -> 1/x, (x) -> 1/x, l, n)
+	end
 
 	##-----------------------------------------------------------------------------------
-	ggmean{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, l::N, n::N) = gfmean(v, (x) -> log(x), (x) -> exp(x), l, n)		# geometric mean
+	function ggmean{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, l::N, n::N)
+		return gfmean(v, (x) -> log(x), (x) -> exp(x), l, n)
+	end
 
 	##-----------------------------------------------------------------------------------
-	gpmean{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, l::N, n::N, p::T) = gfmean(v, (x) -> x^p, (x) -> x^(1/p), l, n)	# power mean
+	function gpmean{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, l::N, n::N, p::T) 
+		return gfmean(v, (x) -> x^p, (x) -> x^(1/p), l, n)
+	end
 
 	##-----------------------------------------------------------------------------------
-	grmean{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, l::N, n::N, p::T) = gfmean(v, (x) -> x^2, (x) -> sqrt(x), l, n)  		# root squared mean
+	function grmean{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, l::N, n::N, p::T)
+		return gfmean(v, (x) -> x^2, (x) -> sqrt(x), l, n)
+	end
 
 	##-----------------------------------------------------------------------------------
-	function gfmean{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, g::Function, g_inv::Function, l::N, n::N) 				# generalized f mean
+	function gfmean{T<:AbstractFloat,N<:Integer,F<:Function}(v::Array{T, 1},g::F,gi::F,l::N,n::N)
 		@assert(size(v, 1) >= (n*l), "out of bounds error")
 		u = Float64(0)
 
@@ -40,7 +56,7 @@
 			u += g(v[i])
 		end
 
-		return g_inv(u/l)
+		return gi(u/l)
 	end
 	
 
@@ -56,7 +72,7 @@
     end
 
     ##-----------------------------------------------------------------------------------
-    function mamean{T<:AbstractFloat}(arr::Array{T, 2}, weights::Array{T, 1}, column::Bool = true)
+    function mamean{T<:AbstractFloat}(arr::Array{T, 2}, weights::Array{T,1}, column::Bool = true)
         n = size(arr, (column ? 1 : 2))
         return BLAS.gemv((column ? 'N' : 'T'), 1/n, weights.*arr, ones(T, n))
     end
@@ -93,7 +109,7 @@
 	export lma
 
 	##-----------------------------------------------------------------------------------
-	function lma{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, pivot_weight::T, slope::T, p::N, n::N, start::N, stop::N)
+	function lma{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, pivot_weight::T, slope::T,p::N, n::N, start::N, stop::N)
 		@assert(start <= stop && stop <= size(v, 1), "out of bounds error")
 		@assert(start > 0 && stop > 0, "out of bounds error")
 		r = zeros(T, stop-start+1)
