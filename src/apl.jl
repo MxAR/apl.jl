@@ -56,10 +56,10 @@
 	include(string(path, "apl.jl/src/Eva/eva.jl"))					# op/gen
 	include(string(path, "apl.jl/src/MarketIndicators/bb.jl")) 		# sta
 	include(string(path, "apl.jl/src/MarketIndicators/macd.jl")) 	# mean	
-	include(string(path, "apl.jl/src/Math/mpa.jl"))					# f
-	include(string(path, "apl.jl/src/Math/sta.jl"))					# mean/bla	
+	include(string(path, "apl.jl/src/Math/mpa.jl"))					# f	
 	include(string(path, "apl.jl/src/Math/f.jl"))					# cnv/gen/op
 	include(string(path, "apl.jl/src/Math/bla.jl"))					# mean/op
+	include(string(path, "apl.jl/src/Math/sta.jl"))					# mean/bla
 	include(string(path, "apl.jl/src/Math/trig.jl"))				# bla
 	include(string(path, "apl.jl/src/Math/vq.jl"))					# f
 	include(string(path, "apl.jl/src/Percepton/mlp.jl"))			# f
@@ -69,13 +69,13 @@
 
 	# composite usings
 	using gen
-	using sta
 	using f
 	using eva
 	using bb
 	using macd
 	using mpa
 	using bla
+	using sta
 	using trig
 	using vq
 	using mlp
