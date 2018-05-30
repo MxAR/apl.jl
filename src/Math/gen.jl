@@ -196,8 +196,8 @@
 
 
 	##===================================================================================
-	## random hadamard matrix
-	##	- remember s has to be a multiple of two bigger than zero
+	## hadamard matrix
+	##	- remember s has to be a multiple of two and bigger than zero
 	##===================================================================================
 	import bin.bit_dot
 	export hadamard
@@ -443,41 +443,49 @@
 
 	##===================================================================================
 	##	random affine matrix
-	##		u: uniform distribution
-	##		n: normal distribution
 	##===================================================================================
-	export uaffine, naffine
+	export raffine, rnaffine
 
 	##-----------------------------------------------------------------------------------
-	function uaffine{N<:Integer}(s::N)
-		@assert(s > 0, "out of bounds error")
+	function raffine{N<:Integer}(s::N)
 		r = rand(s, s)
 		d = det(r)
-
-		while d == 0
+		
+		@inbounds while d == 0
 			r = rand(s, s)
 			d = det(r)
 		end 
 
-		return r./(abs(d)^(1/s))
+		d = 1 / d
+		i = 1
+
+		@inbounds while i <= s
+			r[i, 1] = r[i, 1] * d
+			i = i + 1
+		end
+
+		return r
 	end
 
 	##-----------------------------------------------------------------------------------
-	function naffine{N<:Integer}(s::N)
-		@assert(s > 0, "out of bounds error")
+	function rnaffine{N<:Integer}(s::N)
 		r = randn(s, s)
 		d = det(r)
 
-		while d == 0
+		@inbounds while d == 0
 			r = randn(s, s)
 			d = det(r)
 		end
 
-		if d < 0 
-			r[1, :] .*= -1
-		end 
+		d = 1 / d
+		i = 1
 
-		return r./(abs(d)^(1/s))
+		@inbounds while i <= s
+			r[i, 1] = r[i, 1] * d
+			i = i + 1
+		end
+
+		return r
 	end
 
 
