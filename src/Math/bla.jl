@@ -81,11 +81,31 @@
 		return bdotc(v, v)
 	end
 
+	##===================================================================================
+	## k statistics
+	##===================================================================================
+	#export kstat, kstart_1, kstat_2, kstat_3, kstart_4
+
+	##-----------------------------------------------------------------------------------
+	#function kstat{R<:Real, N<:Integer}(v::Array{R, 1}, k::N)
+	#	m = gamean(S)
+	#	
+	#	if k == 1
+	#		return m
+	#	else
+	#		u = AbstractFloat()
+	#	end
+	#end
+	
+	##-----------------------------------------------------------------------------------
+	#function kstat_1{R<:Real}(v::Array{R, 1})
+	#	r = AbstractFloat(v[1])
+	#end
 
 	##===================================================================================
 	## kth moment
 	##===================================================================================
-	export moment
+	export moment, central_moment
 
 	##-----------------------------------------------------------------------------------
 	function moment{R<:Real, N<:Integer}(v::Array{R, 1}, k::N)
@@ -110,6 +130,36 @@
 		i = 2
 		@inbounds while i <= s
 			@fastmath r = r + v[i]^k
+			i = i + 1
+		end
+
+		r = r / s
+		return r
+	end
+
+	##-----------------------------------------------------------------------------------
+	function central_moment{R<:Real, N<:Integer}(v::Array{R, 1}, c::R, k::N)
+		@fastmath r = AbstractFloat((v[1] - c)^k)
+		s = size(v, 1)
+
+		i = 2
+		@inbounds while i <= s
+			@fastmath r = r + (v[i] - c)^k
+			i = i + 1
+		end
+
+		r = r / s
+		return r
+	end
+
+	##-----------------------------------------------------------------------------------
+	function central_moment{C<:Complex, N<:Integer}(v::Array{C, 1}, c::C, k::N)
+		r = C((v[i] - c)^k)
+		s = size(v, 1)
+
+		i = 2
+		@inbounds while i <= s
+			@fastmath r = r + (v[i] - c)^k
 			i = i + 1
 		end
 
