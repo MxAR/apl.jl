@@ -77,16 +77,15 @@
 		i = lb - 1
 		r = N(0)
 
-		while i <= (ub - 1)
+		@inbounds while i <= (ub - 1)
 			r = r + (N(1) << i)
 			i = i + 1
 		end
 
 		r = Base.xor_int(r, x)
 		return r
-		
-		#return N(xor(sum([T(1) << x for x = (lb-1):(ub-1)]), x))
 	end
+
 
 	##===================================================================================
 	##	exchange bit range
@@ -94,10 +93,17 @@
 	export ebit_range
 
 	##-----------------------------------------------------------------------------------
-	function ebit_range{T<:Unsigned}(x::T, y::T, lb::Integer, ub::Integer)
-		c = sum([T(1) << i for i = (lb-1):(ub-1)])
-		d = ~c
-		return (T(xor((x & d), (y & c))), T(xor((y & d), (x & c))))
+	function ebit_range{N<:Unsigned, Z<:Integer}(x::N, y::N, lb::Z, ub::Z)
+		i = lb - 1
+		c = N(0)
+
+		@inbounds while i <= (ub - 1)
+			c = c + (N(1) << i)
+			i = i + 1
+		end
+
+		d = Base.not_int(c)
+		return (Base.xor_int((x & d), (y & c)), Base.xor_int((x & c), (y & d)))
 	end
 	
 
