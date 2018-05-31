@@ -124,7 +124,9 @@
 	export sbit
 
 	##-----------------------------------------------------------------------------------
-	sbit{T<:Unsigned}(x::T, i::Integer, v::Bool) = (nbit_on(x, i) == v) ? x : xor(x, T(1 << (i-1)))
+	function sbit{N<:Unsigned, Z<:Integer}(x::N, i::Z, v::Bool) 
+		return ((x >> (i - 1)) & N(1) == v) ? x : Base.xor_int(x, N(1 << (i - 1)))
+	end
 
 
 	##===================================================================================
