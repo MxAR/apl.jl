@@ -9,11 +9,14 @@
 		p = bits(a)
 		q = bits(b)
 		c = 0
+		i = 1
 
-		@inbounds for i = 1:length(q)
+		s = length(q)
+		@inbounds while i <= s
 			if p[i] == q[i] && p[i] == '1'
 				c = c + 1
 			end
+			i = i + 1
 		end
 
 		return c
