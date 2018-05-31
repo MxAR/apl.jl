@@ -46,7 +46,13 @@
 
 	##-----------------------------------------------------------------------------------
 	function bprint{T<:Integer}(x::T, bigendian::Bool = true)
-		println(bigendian ? reverse(bits(x)) : bits(x))
+		r = bits(x)
+
+		if bigendian
+			r = reverse(r)
+		end
+
+		println(STDOUT, r)
 	end
 
 
