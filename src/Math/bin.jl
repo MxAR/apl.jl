@@ -73,8 +73,20 @@
 	export ibit_range
 
 	##-----------------------------------------------------------------------------------
-	ibit_range{T<:Unsigned}(x::T, lb::Integer, ub::Integer) = T(xor(sum([T(1) << x for x = (lb-1):(ub-1)]), x))
+	function ibit_range{N<:Unsigned, Z<:Integer}(x::N, lb::Z, ub::Z)
+		i = lb - 1
+		r = N(0)
 
+		while i <= (ub - 1)
+			r = r + (N(1) << i)
+			i = i + 1
+		end
+
+		r = Base.xor_int(r, x)
+		return r
+		
+		#return N(xor(sum([T(1) << x for x = (lb-1):(ub-1)]), x))
+	end
 
 	##===================================================================================
 	##	exchange bit range
