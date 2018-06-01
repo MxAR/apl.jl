@@ -967,9 +967,9 @@
 	export phi, iphi
 
 	##-----------------------------------------------------------------------------------
-	function phi{T<:AbstractFloat}(m::Array{T, 2})
+	function phi{R<:AbstractFloat}(m::Array{R, 2})
 		s = size(m)
-		r = Array{T, 2}(s[1], s[2])
+		r = Array{R, 2}(s[1], s[2])
 
 		i = 1
 		@inbounds while i <= s[1]
@@ -979,10 +979,10 @@
 
 		i = 1
 		@inbounds while i <= s[1]
-			a = T(1)
+			a = R(1)
 			j = 2
 			while j <= s[2]
-				r[i, j] = acosd(m[i, j-1]/(a*r[i, 1]))
+				r[i, j] = acosd(m[i, j - 1] / (a * r[i, 1]))
 				a = a * sind(r[i, j])
 				j = j + 1
 			end
@@ -993,17 +993,21 @@
 	end
 
 	##-----------------------------------------------------------------------------------
-	function iphi{T<:Real}(m::Array{T, 2})
+	function iphi{R<:Real}(m::Array{R, 2})
 		s = size(m)
-		r = zeros(s[1], s[2])
+		r = Array{R, 2}(s[1], s[2])
 
-		@inbounds for i = 1:s[1]
-			a = 1.
-			@inbounds for j = 1:(s[2]-1)
-				r[i, j] = m[i, 1]*a*cosd(m[i, j+1])
-				a  = a * sind(m[i, j+1])
+		i = 1
+		@inbounds while i <= s[1]
+			a = R(1)
+			j = 1
+			@inbounds while j <= (s[2] - 1)
+				r[i, j] = m[i, 1] * a * cosd(m[i, j + 1])
+				a = a * sind(m[i, j + 1])
+				j = j +1
 			end
-			r[i, s[2]] = m[i, 1]*a
+			r[i, s[2]] = m[i, 1] * a
+			i = i + 1
 		end
 
 		return r
