@@ -828,10 +828,8 @@
     end
 
     ##-----------------------------------------------------------------------------------
-    function msplit_half{T<:Number}(m::Array{T, 2}, lrows::Bool = true)
-        r = lrows ? m : m'
-        l = convert(Int, round(size(r, 1)/2))
-        return (r[1:l, :], r[(l+1):end, :])
+    function msplit_half{T<:Number}(m::Array{T, 2}, by_rows::Bool = true)
+		return msplit(m, convert(Int, round(size(m, by_rows ? 1 : 2)/2)), by_rows)
     end
 
 
