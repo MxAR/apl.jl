@@ -869,12 +869,20 @@
 		s = size(v, 1)
 		m = Array{T, 2}(s, s)
 
-		@inbounds for i=1:s, j=1:s
-			if i == j
-				m[i, j]= 1-(2*v[i]*v[j])
-			else
-				m[i, j]= -2*v[i]*v[j]
+		i = 1
+		@inbounds while i <= s
+			j = 1
+			while j <= s
+				m[i, j] = T(-2) * v[i] * v[j]
+				j = j + 1
 			end
+			i = i + 1
+		end
+
+		i = 1
+		@inbounds while i <= s
+			m[i, i] = m[i, i] + 1
+			i = i + 1
 		end
 
 		return m
