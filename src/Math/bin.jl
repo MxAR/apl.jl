@@ -29,13 +29,13 @@
 	export nbit_on, nbit_off
 
 	##-----------------------------------------------------------------------------------
-	function nbit_on{T<:Integer}(x::T, i::T) 
-		return (x >> (i-1)) & T(1) == T(1)
+	function nbit_on{N<:Unsigned, Z<:Integer}(x::N, i::Z) 
+		return (x >> (i - 1)) & N(1) == N(1)
 	end
 
 	##-----------------------------------------------------------------------------------
-	function nbit_off{T<:Integer}(x::T, i::T) 
-		return xor((x >> (i-1)), T(1)) == T(1)
+	function nbit_off{N<:Unsigned, Z<:Integer}(x::N, i::Z) 
+		return xor((x >> (i - 1)), N(1)) == N(1)
 	end
 
 
@@ -230,45 +230,56 @@
 
 
 	##===================================================================================
-	##	hilbert curve (forward/backward)
+	##	hilbert curve
+	##		i = inverse
+	##		TODO support for different output types is needed
 	##===================================================================================
-	export hilbert_cf, hilbert_cb
+	export hilbertc, ihilbertc
 
 	##-----------------------------------------------------------------------------------
-	function hilbert_cf{T<:Unsigned}(v::Array{T, 1})									# TODO support for different output types is needed
-		b = sizeof(T)*8
+	function hilbertc{N<:Unsigned}(v::Array{N, 1})
+		b = Base.mul_int(sizeof(N), 8)
 		r = deepcopy(v)
+		s = size(r, 1)
 
-		for i = (b-1):-1:1, j = 1:size(r, 1)
-			if nbit_on(r[j], i)
-				r[1] = ibit_range(r[1], i+1, b-1)
-			else
-				s = ebit_range(r[1], r[j], i+1, b-1)
-				r[1] = s[1]
-				r[j] = s[2]
+		i = b - 1
+		@inbounds while i >= 1
+			j = 1
+			while j <= s
+				if Bool((r[j] >> (i- 1)) & N(1))
+					r[1] = ibit_range(r[1], i+1, b-1)
+				else
+					a = ebit_range(r[1], r[j], i+1, b-1)
+					r[1] = a[1]
+					r[j] = a[2]
+				end
+				j = j + 1
 			end
-			println(r)
+			i = i - 1
 		end
 
-		return grayf(cb_merge(r))
+		return gray(cb_merge(r))
 	end
 
 	##-----------------------------------------------------------------------------------
-	function hilbert_cb{T<:Unsigned}(v::T, d::Integer)
-		r = cb_split(grayb(v), d)
-		b = sizeof(T)*8
-
-		println(r)
-
-		for i = 1:b, j = d:-1:1
-			if nbit_on(r[j], i)
-				r[1] = ibit_range(r[1], i+1, b)
-			else
-				s = ebit_range(r[1], r[j], i+1, b)
-				r[1] = s[1]
-				r[j] = s[2]
+	function ihilbertc{N<:Unsigned, Z<:Integer}(x::N, d::Z)
+		b = Base.mul_int(sizeof(N), 8)
+		r = cb_split(igray(x), d)
+		
+		i = 1
+		@inbounds while i <= b
+			j = d
+			while j >= 1
+				if Bool((r[j] >> (i- 1)) & N(1))
+					r[1] = ibit_range(r[1], i+1, b)
+				else
+					a = ebit_range(r[1], r[j], i+1, b)
+					r[1] = a[1]
+					r[j] = a[2]
+				end
+				j = j - 1
 			end
-			println(r)
+			i = i + 1
 		end
 
 		return r
