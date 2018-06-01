@@ -967,20 +967,26 @@
 	export phi, iphi
 
 	##-----------------------------------------------------------------------------------
-	function phi{T<:Real}(m::Array{T, 2})
+	function phi{T<:AbstractFloat}(m::Array{T, 2})
 		s = size(m)
-		r = zeros(s[1], s[2])
+		r = Array{T, 2}(s[1], s[2])
 
-		@inbounds for i = 1:s[1]
+		i = 1
+		@inbounds while i <= s[1]
 			r[i, 1] = BLAS.nrm2(s[2], m[i, :], 1)
+			i = i + 1
 		end
 
-		@inbounds for i = 1:s[1]
-			a = 1.
-			@inbounds for j = 2:s[2]
+		i = 1
+		@inbounds while i <= s[1]
+			a = T(1)
+			j = 2
+			while j <= s[2]
 				r[i, j] = acosd(m[i, j-1]/(a*r[i, 1]))
 				a = a * sind(r[i, j])
+				j = j + 1
 			end
+			i = i + 1
 		end
 
 		return r
