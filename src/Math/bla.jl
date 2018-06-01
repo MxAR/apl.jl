@@ -820,15 +820,15 @@
 	##===================================================================================
     ## split
     ##===================================================================================
-    export msplit, msplit_half
+    export split, splith
 
     ##-----------------------------------------------------------------------------------
-    function msplit{T<:Number, Z<:Integer}(m::Array{T, 2}, i::Z, by_rows::Bool = true)
+    function split{T<:Number, Z<:Integer}(m::Array{T, 2}, i::Z, by_rows::Bool = true)
 		return by_rows ? (m[1:i, :], m[(i+1):end, :]) : (m[:, 1:i], m[:, (i+1):end]) 
     end
 
     ##-----------------------------------------------------------------------------------
-    function msplit_half{T<:Number}(m::Array{T, 2}, by_rows::Bool = true)
+    function splith{T<:Number}(m::Array{T, 2}, by_rows::Bool = true)
 		return msplit(m, convert(Int, round(size(m, by_rows ? 1 : 2)/2)), by_rows)
     end
 
