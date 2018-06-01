@@ -902,7 +902,7 @@
 		
 		i = 1
 		x = 0
-		@inbounds while i <= sm[1]
+		while i <= sm[1]
 			j = 1
 			y = 0
 			while j <= sm[2]
@@ -932,20 +932,27 @@
 	export normalize
 
 	##-----------------------------------------------------------------------------------
-	function normalize{T<:Number}(m::Array{T, 2})
+	function normalize{R<:Real}(m::Array{R, 2})
+		T = AbstractFloat
 		s = size(m)
-		r = zeros(s[1], s[2])
+		r = Array{T, 2}(s[1], s[2])
 
-		@inbounds for i = 1:s[2]
-			a = 0.
-			@inbounds for j = 1:s[1]
+		i = 1
+		@inbounds while i <= s[2]
+			a = T(m[1, i])
+			j = s[1]
+			while j >= 2
 				a = a + m[j, i]^2
+				j = j - 1
 			end 
 
-			a = a^.5
-			@inbounds for j = 1:s[1]
-				r[j, i] = m[j, i] / a
+			@fastmath a = a^-.5
+			while j <= s[1]
+				r[j, i] = m[j, i] * a
+				j = j + 1 
 			end
+
+			i = i + 1
 		end
 
 		return r
