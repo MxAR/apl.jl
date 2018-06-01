@@ -845,15 +845,27 @@
 	##===================================================================================
 	##  householder reflection
 	##      reflects v about a hyperplane given by u
-	##		hh_rfl: u = normal vector
+	##		hhr: u = normal vector
 	##===================================================================================
-	export hh_rfl, hh_mat
+	export hhr, hhm
 
 	##-----------------------------------------------------------------------------------
-	hh_rfl{T<:AbstractFloat}(v::Array{T, 1}, u::Array{T, 1}) = u-(v*(2.0*bdot(u, v)))
+	function hhr{T<:AbstractFloat}(v::Array{T, 1}, u::Array{T, 1})
+		s = size(u, 1)
+		r = Array{T, 1}(s)
+		a = T(2) * BLAS.dot(s, v, 1, u, 1)
+		
+		i = 1
+		@inbounds while i <= s
+			r[i] = u[i] - a * v[i]
+			i = i + 1
+		end
+
+		return r
+	end
 
 	##-----------------------------------------------------------------------------------
-	function hh_mat{T<:AbstractFloat}(v::Array{T, 1})
+	function hhm{T<:AbstractFloat}(v::Array{T, 1})
 		s = size(v, 1)
 		m = Array{T, 2}(s, s)
 
