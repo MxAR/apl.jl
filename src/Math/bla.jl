@@ -850,10 +850,10 @@
 	export hhr, hhm
 
 	##-----------------------------------------------------------------------------------
-	function hhr{T<:AbstractFloat}(v::Array{T, 1}, u::Array{T, 1})
+	function hhr{R<:AbstractFloat}(v::Array{R, 1}, u::Array{R, 1})
 		s = size(u, 1)
-		r = Array{T, 1}(s)
-		a = T(2) * BLAS.dot(s, v, 1, u, 1)
+		r = Array{R, 1}(s)
+		a = R(2) * BLAS.dot(s, v, 1, u, 1)
 		
 		i = 1
 		@inbounds while i <= s
@@ -865,15 +865,15 @@
 	end
 
 	##-----------------------------------------------------------------------------------
-	function hhm{T<:AbstractFloat}(v::Array{T, 1})
+	function hhm{R<:AbstractFloat}(v::Array{R, 1})
 		s = size(v, 1)
-		m = Array{T, 2}(s, s)
+		m = Array{R, 2}(s, s)
 
 		i = 1
 		@inbounds while i <= s
 			j = 1
 			while j <= s
-				m[i, j] = T(-2) * v[i] * v[j]
+				m[i, j] = R(-2) * v[i] * v[j]
 				j = j + 1
 			end
 			i = i + 1
@@ -881,7 +881,7 @@
 
 		i = 1
 		@inbounds while i <= s
-			m[i, i] = m[i, i] + 1
+			m[i, i] = m[i, i] + R(1)
 			i = i + 1
 		end
 
