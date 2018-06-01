@@ -131,56 +131,76 @@
 
 	##===================================================================================
 	##	column wise binary merge
+	##		r = A B C D E F G H I J K L M N O
+	##			v[1] = A D G J M
+	##			v[2] = B E H K N
+	##			v[3] = C F I L O
 	##===================================================================================
 	export cb_merge
 
 	##-----------------------------------------------------------------------------------
-	function cb_merge{T<:Unsigned}(v::Array{T, 1})
-		s = sizeofb(T)																	# r = A B C D E F G H I J K L M N O
-		c = UInt8(1)																	# 	v[1] = A D G J M
-		f = T(1)																		# 	v[2] = B E H K N
-		r = T(0)																		# 	v[3] = C F I L O
+	function cb_merge{N<:Unsigned}(v::Array{N, 1})
+		s = Base.mul_int(sizeof(N), 8)
+		l = size(v, 1)
+		c = UInt8(1)
+		f = N(1)
+		r = N(0)
 
-		for i = 1:s, j = 1:size(v, 1)
-			if nbit_on(v[j], i)
-				r = xor(r, f)
+		i = 1
+		@inbounds while i <= s && c <= s
+			j = 1
+			while j <= l && c <= s
+				if Bool((v[j] >> (i - 1)) & N(1))
+					r = Base.xor_int(r, f)
+				end
+
+				c = c + UInt8(1)
+				f = f << 1
+				j = j + 1
 			end
-
-			if c == s
-				return r
-			end
-
-			f <<= 1
-			c += 1
+			i = i + 1
 		end
+
+		return r
 	end
 
 
 	##===================================================================================
 	##	split column wise binary merge again (cb_merge reverse)
+	##		d = number of dimensions
 	##===================================================================================
 	export cb_split
 
 	##-----------------------------------------------------------------------------------
-	function cb_split{T<:Unsigned}(x::T, d::Integer)										# d = number of dimensions
-		r = Array{T, 1}(zeros(d))
-		s = sizeofb(T)
+	function cb_split{N<:Unsigned, Z<:Integer}(x::N, d::Z)
+		s = Base.mul_int(sizeof(N), 8)
+		r = Array{N, 1}(d)
 		c = UInt8(1)
-		f = T(1)
+		f = N(1)
 
-		for i = 1:s
-			for j = 1:d
-				if nbit_on(x, c)
+		i = 1
+		@inbounds while i <= d
+			r[i] = N(0)
+			i = i + 1
+		end
+
+
+		i = 1
+		@inbounds while i <= s && c <= s
+			j = 1
+			while j <= d && c <= s
+				if Bool((x >> (c - 1)) & N(1))
 					r[j] = xor(r[j], f)
 				end
-
-				if c == s
-					return r
-				end
-				c += 1
+				
+				c = c + UInt8(1)
+				j = j + 1
 			end
-			f <<= 1
+			f = f << 1
+			i = i + 1
 		end
+
+		return r
 	end
 
 
