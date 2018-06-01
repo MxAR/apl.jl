@@ -1021,10 +1021,18 @@
 	export scal
 
 	##-----------------------------------------------------------------------------------
-	function scal{T<:Number}(a::Array{T, 1}, b::Array{T, 1})
-		l = size(a, 1)
-		c = b ./ BLAS.nrm2(l, b, 1) 
-		return BLAS.dot(l, a, 1, c, 1)
+	function scal{T<:AbstractFloat}(v::Array{T, 1}, u::Array{T, 1})
+		s = size(v, 1)
+		c = Array{T, 1}(s)
+		a = BLAS.nrm2(s, v, 1)
+
+		i = 1
+		@inbounds while i <= s
+			c[i] = v[i] / a
+			i = i + 1
+		end
+ 
+		return BLAS.dot(s, c, 1, u, 1)
 	end
 
 
@@ -1034,10 +1042,25 @@
 	export proj
 
 	##-----------------------------------------------------------------------------------
-	function proj{T<:Number}(a::Array{T, 1}, b::Array{T, 1})
-		l = size(a, 1)
-		c = b ./ BLAS.nrm2(l, b, 1)
-		return c.*BLAS.dot(l, a, 1, c, 1)
+	function proj{T<:Number}(v::Array{T, 1}, u::Array{T, 1})
+		s = size(v, 1)
+		r = Array{T, 1}(s)
+
+		a = BLAS.nrm2(s, v, 1)
+		i = 1
+		@inbounds while i <= s 
+			r[i] = v[i] / a
+			i = i + 1
+		end
+
+		a = BLAS.dot(s, r, 1, u, 1)
+		i = 1
+		@inbounds while i <= s
+			r[i] = r[i] * a
+			i = i + 1
+		end
+
+		return r
 	end
 
 
