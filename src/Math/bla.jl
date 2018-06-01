@@ -1021,9 +1021,9 @@
 	export scal
 
 	##-----------------------------------------------------------------------------------
-	function scal{T<:AbstractFloat}(v::Array{T, 1}, u::Array{T, 1})
+	function scal{R<:AbstractFloat}(v::Array{R, 1}, u::Array{R, 1})
 		s = size(v, 1)
-		c = Array{T, 1}(s)
+		c = Array{R, 1}(s)
 		a = BLAS.nrm2(s, v, 1)
 
 		i = 1
@@ -1042,9 +1042,9 @@
 	export proj
 
 	##-----------------------------------------------------------------------------------
-	function proj{T<:Number}(v::Array{T, 1}, u::Array{T, 1})
+	function proj{R<:AbstractFloat}(v::Array{R, 1}, u::Array{R, 1})
 		s = size(v, 1)
-		r = Array{T, 1}(s)
+		r = Array{R, 1}(s)
 
 		a = BLAS.nrm2(s, v, 1)
 		i = 1
