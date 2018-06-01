@@ -895,18 +895,31 @@
     export kep
 
     ##-----------------------------------------------------------------------------------
-    function kep{T<:AbstractFloat}(m::Array{T, 2}, n::Array{T, 2})
-		sm = size(m); sn = size(n)
-		r = zeros(T, sm[1]^2, sn[1]^2)
-		px = py = T(0)
-
-		@inbounds for i = 1:sm[1], j = 1:sm[2]
-			px = (i-1)*sm[1]
-			py = (j-1)*sm[2]
-
-			for k = 1:sn[1], l = 1:sn[2]
-				r[(px+k), (py+l)] = m[i,j]*n[k,l]
+    function kep{R<:AbstractFloat}(m::Array{R, 2}, n::Array{R, 2})
+		sm = size(m)
+		sn = size(n)
+		r = Array{R, 2}(sm[1]^2, sn[1]^2)
+		
+		i = 1
+		x = 0
+		@inbounds while i <= sm[1]
+			j = 1
+			y = 0
+			while j <= sm[2]
+				k = 1
+				while k <= sn[1]
+					l = 1
+					while l <= sn[2]
+						r[(x + k), (y + l)] = m[i, j] * n[k, l]
+						l = l + 1
+					end
+					k = k + 1
+				end
+				y = y + sm[2]
+				j = j + 1
 			end
+			x = x + sm[1]
+			i = i + 1
 		end
 
 		return r
