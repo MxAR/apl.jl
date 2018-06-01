@@ -823,10 +823,8 @@
     export msplit, msplit_half
 
     ##-----------------------------------------------------------------------------------
-    function msplit{T<:Number, N<:Integer}(m::Array{T, 2}, i::N, lrows::Bool = true)
-        r = lrows ? m : m'
-        @assert(i >= 0 || i <= size(r, 1))
-        return (r[1:i, :], r[(i+1):end, :])
+    function msplit{T<:Number, Z<:Integer}(m::Array{T, 2}, i::Z, by_rows::Bool = true)
+		return by_rows ? (m[1:i, :], m[(i+1):end, :]) : (m[:, 1:i], m[:, (i+1):end]) 
     end
 
     ##-----------------------------------------------------------------------------------
