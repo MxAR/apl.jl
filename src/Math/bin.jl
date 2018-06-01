@@ -205,20 +205,24 @@
 
 
 	##===================================================================================
-	##	gray codes (forward/backward)
+	##	gray codes
+	##		i = inverse
 	##===================================================================================
-	export grayf, grayb
+	export gray, igray
 
 	##-----------------------------------------------------------------------------------
-	grayf{T<:Unsigned}(x::T) = xor(x, (x >> 1))
+	function gray{N<:Unsigned}(x::N)
+		return Base.xor_int(x, (x >> 1))
+	end
 
 	##-----------------------------------------------------------------------------------
-	function grayb{T<:Unsigned}(x::T)
-		y = x; r = x
+	function igray{N<:Unsigned}(x::N)
+		y = x
+		r = x
 
-		while y != T(0)
-			y >>= 1
-			r = xor(r, y)
+		while y != N(0)
+			y = y >> 1
+			r = Base.xor_int(r, y)
 		end
 
 		return r
