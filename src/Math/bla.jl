@@ -983,6 +983,7 @@
 			j = 2
 			while j <= s[2]
 				r[i, j] = acosd(m[i, j - 1] / (a * r[i, 1]))
+				r[i, j] = isnan(r[i, j]) ? 0 : r[i, j]
 				a = a * sind(r[i, j])
 				j = j + 1
 			end
