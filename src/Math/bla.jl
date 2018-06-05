@@ -1084,13 +1084,18 @@
 	export pca
 
 	##-----------------------------------------------------------------------------------
-	function pca{T<:AbstractFloat}(m::Array{T, 2}, t::Bool = false)
-		if t; m = m' end 
+	function pca{T<:AbstractFloat}(m::Array{T, 2})
 		s = size(m, 1)
 		d = svd(m)
-
-		@inbounds for i = 1:s, j = 1:s
-			d[1][j, i] *= d[2][i] 	
+		
+		i = 1
+		@inbounds while i <= s
+			j = 1
+			while j <= s
+				d[1][j, i] = d[1][j, i] * d[2][i]
+				j = j + 1
+			end
+			i = i + 1
 		end
 		
 		return d[1]
