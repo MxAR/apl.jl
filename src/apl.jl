@@ -48,7 +48,7 @@ using mean
 using op
 using yamartino
 using pkg
-					
+			
 
 # composite modules
 include(string(path, "apl.jl/src/Math/gen.jl"))					# bin
