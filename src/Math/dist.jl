@@ -1,5 +1,28 @@
 @everywhere module dist
     ##===================================================================================
+	## itakura-saito distance
+	##	(all values have to be bigger than 0)
+	##===================================================================================
+	export isdist
+
+	##-----------------------------------------------------------------------------------
+	function isdist{R<:AbstractFloat}(m::Array{R}, n::Array{R})
+		s = min(length(m), length(n))
+		r = R(-s)
+		a = R(0)
+		i = 1
+
+		@inbounds while i <= s
+			@fastmath a = m[i] / n[i]
+			@fastmath r = r + a - log(a)
+			i = i + 1
+		end
+
+		return r
+	end
+	
+	
+	##===================================================================================
     ## distance function wrapper (returns upper triangle matrix)
     ##===================================================================================
     export gdist, gdist_p
