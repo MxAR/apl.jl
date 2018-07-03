@@ -84,24 +84,39 @@
 	
 	##===================================================================================
 	## kullback-leibler divergence
+	##	gkld = generalized kld
 	## 	(m and n must be of the exact same size)
 	##	(all elements in m and n must be above zero)
 	##===================================================================================
-	export kld
+	export kld, gkld
 
 	##-----------------------------------------------------------------------------------
-	function kld{R<:AbstractFloat}(m::Array{R, 2}, n::Array{R, 2})
+	function kld{R<:AbstractFloat}(m::Array{R}, n::Array{R})
 		s = length(m)
 		r = R(0)
 		i = 1
 
 		@inbounds while i <= s
-			@fastmath r = r + n[i] - m[i] + ((m[i] * log(m[i])) / n[i])
+			@fastmath r = r + (m[i] * log(m[i] / n[i]))
 			i = i + 1
 		end
 
 		return r
-	end 
+	end
+
+	##-----------------------------------------------------------------------------------
+	function gkld{R<:AbstractFloat}(m::Array{R}, n::Array{R})
+		s = length(m)
+		r = R(0)
+		i = 1
+
+		@inbounds while i <= s
+			@fastmath r = r + n[i] - m[i] + (m[i] * log(m[i] / n[i]))
+			i = i + 1
+		end
+
+		return r
+	end
 
 
 	##===================================================================================
