@@ -11,46 +11,46 @@
 	export gamean, ghmean, ggmean, gpmean, gfmean, grmean
 
 	##-----------------------------------------------------------------------------------
-	function gamean{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, l::N, n::N) 
+	function gamean(v::Array{R, 1}, l::N, n::N) where R<:AbstractFloat where N<:Integer 
 		return gfmean(v, (x) -> x, (x) -> x, l, n)
 	end
 
 	##-----------------------------------------------------------------------------------
-	function gamean{T<:AbstractFloat}(v::Array{T, 1}) 
+	function gamean(v::Array{R, 1}) where R<:AbstractFloat 
 		s = size(v, 1)
-		r = T(0)
+		r = R(0)
 
 		@inbounds for i = 1:s
 			r += v[i]
 		end
 
-		return r/T(s)
+		return r/R(s)
 	end
 
 	##-----------------------------------------------------------------------------------
-	function ghmean{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, l::N, n::N)
+	function ghmean(v::Array{R, 1}, l::N, n::N) where R<:AbstractFloat where N<:Integer
 		return gfmean(v, (x) -> 1/x, (x) -> 1/x, l, n)
 	end
 
 	##-----------------------------------------------------------------------------------
-	function ggmean{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, l::N, n::N)
+	function ggmean(v::Array{R, 1}, l::N, n::N) where R<:AbstractFloat where N<:Integer
 		return gfmean(v, (x) -> log(x), (x) -> exp(x), l, n)
 	end
 
 	##-----------------------------------------------------------------------------------
-	function gpmean{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, l::N, n::N, p::T) 
+	function gpmean(v::Array{R, 1}, l::N, n::N, p::R) where R<:AbstractFloat where N<:Integer 
 		return gfmean(v, (x) -> x^p, (x) -> x^(1/p), l, n)
 	end
 
 	##-----------------------------------------------------------------------------------
-	function grmean{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, l::N, n::N, p::T)
+	function grmean(v::Array{R, 1}, l::N, n::N, p::R) where R<:AbstractFloat where N<:Integer
 		return gfmean(v, (x) -> x^2, (x) -> sqrt(x), l, n)
 	end
 
 	##-----------------------------------------------------------------------------------
-	function gfmean{T<:AbstractFloat,N<:Integer,F<:Function}(v::Array{T, 1},g::F,gi::F,l::N,n::N)
+	function gfmean(v::Array{R, 1}, g::F, gi::F, l::N, n::N) where R<:AbstractFloat where N<:Integer where F<:Function
 		@assert(size(v, 1) >= (n*l), "out of bounds error")
-		u = Float64(0)
+		u = R(0)
 
 		@inbounds for i = 1:n:(n*l)
 			u += g(v[i])
@@ -66,15 +66,15 @@
     export mamean
 
     ##-----------------------------------------------------------------------------------
-    function mamean{T<:AbstractFloat}(arr::Array{T, 2}, column::Bool = true)
+    function mamean(arr::Array{R, 2}, column::Bool = true) where R<:AbstractFloat
         n = size(arr, (column ? 1 : 2))
-        return BLAS.gemv((column ? 'N' : 'T'), 1/n, arr, ones(T, n))
+        return BLAS.gemv((column ? 'N' : 'T'), 1/n, arr, ones(R, n))
     end
 
     ##-----------------------------------------------------------------------------------
-    function mamean{T<:AbstractFloat}(arr::Array{T, 2}, weights::Array{T,1}, column::Bool = true)
+    function mamean(arr::Array{R, 2}, weights::Array{R,1}, column::Bool = true) where R<:AbstractFloat
         n = size(arr, (column ? 1 : 2))
-        return BLAS.gemv((column ? 'N' : 'T'), 1/n, weights.*arr, ones(T, n))
+        return BLAS.gemv((column ? 'N' : 'T'), 1/n, weights.*arr, ones(R, n))
     end
 
 
@@ -84,10 +84,10 @@
 	export sma
 
 	##-----------------------------------------------------------------------------------
-	function sma{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, p::N, n::N, start::N, stop::N)
+	function sma(v::Array{R, 1}, p::N, n::N, start::N, stop::N) where R<:AbstractFloat where N<:Integer
 		@assert(start <= stop && stop <= size(v, 1), "out of bounds error")
 		@assert(start > 0 && stop > 0, "out of bounds error")
-		r = zeros(T, stop-start+1)
+		r = zeros(R, stop-start+1)
 		np = n * p
 		s = N(0)
 
@@ -109,7 +109,7 @@
 	export lma
 
 	##-----------------------------------------------------------------------------------
-	function lma{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, pivot_weight::T, slope::T,p::N, n::N, start::N, stop::N)
+	function lma(v::Array{R, 1}, pivot_weight::R, slope::R, p::N, n::N, start::N, stop::N) where R<:AbstractFloat where N<:Integer
 		@assert(start <= stop && stop <= size(v, 1), "out of bounds error")
 		@assert(start > 0 && stop > 0, "out of bounds error")
 		r = zeros(T, stop-start+1)
@@ -133,7 +133,7 @@
 	export ema
 
 	##-----------------------------------------------------------------------------------
-	function ema{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, pivot_weight::T, slope::T, p::N, n::N, start::N, stop::N)
+	function ema(v::Array{R, 1}, pivot_weight::R, slope::R, p::N, n::N, start::N, stop::N) where R<:AbstractFloat where N<:Integer
 		@assert(start <= stop && stop <= size(v, 1), "out of bounds error")
 		@assert(start > 0 && stop > 0, "out of bounds error")
 		r = zeros(T, stop-start+1)

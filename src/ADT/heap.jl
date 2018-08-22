@@ -1,15 +1,15 @@
-@everywhere module heap
+#@everywhere module heap
     export parent, children, is_heap, heapify, heap_build, heap_sort
 
     ##-----------------------------------------------------------------------------------
-    parent{T<:Integer}(i::T) = convert(T, floor(i/2))
+    parent(i::T) where T<:Integer = convert(T, floor(i/2))
 
     ##-----------------------------------------------------------------------------------
-    children{T<:Integer}(i::T) = (2*i, (2*i)+1)
+    children(i::T) where T<:Integer = (2*i, (2*i)+1)
 
     ##-----------------------------------------------------------------------------------
-    function is_heap{T<:Number}(v::Array{T, 1}, max = true, p = 1)                      # for max c = > || for min c = <
-        c = ifelse(max, >, <)                                                           # p = index (when nodes represent vectors this is the element after which everything is sorted)
+    function is_heap(v::Array{T, 1}, max = true, p = 1) where T<:Number					# for max c = > || for min c = <
+        c = ifelse(max, >, <)                                                          	# p = index (when nodes represent vectors this is the element after which everything is sorted)
 
         for i = size(v, 1):-1:1
             if c(v[i][p], v[Base.max(1, convert(Int, floor(i/2)))][p])
@@ -21,8 +21,9 @@
     end
 
     ##-----------------------------------------------------------------------------------
-    function heapify{T<:Any}(v::Array{T, 1}, n = 1, max = true, p = 1)                  # n = start node
-        c = ifelse(max, <, >); l = length(v)                                            # max = if max heap should be build
+    function heapify(v::Array{T, 1}, n = 1, max = true, p = 1) where T<:Any				# n = start node
+		c = max ? (<;) : (>;)                                            				# max = if max heap should be build
+		l = length(v)
 
         while true                                                                      # p = index (when nodes represent vectors this is the element after which everything is sorted)
             ci = children(n); m = n
@@ -40,15 +41,16 @@
     end
 
     ##-----------------------------------------------------------------------------------
-    function heap_build{T<:Any}(v::Array{T, 1}, max = true, p = 1)                      # p = index (when nodes represent vectors this is the element after which everything is sorted)
+    function heap_build(v::Array{T, 1}, max = true, p = 1) where T<:Any					# p = index (when nodes represent vectors this is the element after which everything is sorted)
         for i in convert(Int, floor(size(v, 1)/2)):-1:1
             v = heapify(v, i, max, p)
         end
+
         return v
     end
 
     ##-----------------------------------------------------------------------------------
-    function heap_sort{T<:Any}(v::Array{T, 1}, ascending = true, p = 1)                 # p = index (when nodes represent vectors this is the element after which everything is sorted)
+    function heap_sort(v::Array{T, 1}, ascending = true, p = 1) where T<:Any			# p = index (when nodes represent vectors this is the element after which everything is sorted)
         v = build_heap(v, ascending, p)
 
         for i = length(v):-1:2
@@ -60,4 +62,4 @@
 
         return v
     end
-end
+#end

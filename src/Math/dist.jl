@@ -1,4 +1,10 @@
 @everywhere module dist
+	##===================================================================================
+	##	using directives
+	##===================================================================================
+	using Distributed
+
+
     ##===================================================================================
 	## itakura-saito distance
 	##	(all values have to be bigger than 0)
@@ -6,7 +12,7 @@
 	export isdist
 
 	##-----------------------------------------------------------------------------------
-	function isdist{R<:AbstractFloat}(m::Array{R}, n::Array{R})
+	function isdist(m::Array{R}, n::Array{R}) where R<:AbstractFloat
 		s = min(length(m), length(n))
 		r = R(-s)
 		a = R(0)
@@ -28,7 +34,7 @@
     export gdist, gdist_p
 
     ##-----------------------------------------------------------------------------------
-    function gdist{T<:Number}(m::Array{T}, df::Function = (x, y) -> norm(x-y))
+    function gdist(m::Array{T}, df::Function = (x, y) -> norm(x-y)) where T<:Number
         s = size(m, 1)
         d = fill(0, s, s)
 
@@ -40,11 +46,11 @@
     end
 
     ##-----------------------------------------------------------------------------------
-    function gdist_p{T<:Number}(m::Array{T}, df::Function = (x, y) -> norm(x-y))
+    function gdist_p(m::Array{T}, df::Function = (x, y) -> norm(x-y)) where T<:Number
         s = size(m, 1);
         d = convert(SharedArray, fill(0, s, s))
 
-        @inbounds @sync @parallel for y = 2:s
+        @inbounds @sync @distributed for y = 2:s
             for x = 1:(y-1)
                 d[x, y] = df(m[x,:], m[y,:])
             end
@@ -60,7 +66,7 @@
     export hdist
 
     ##-----------------------------------------------------------------------------------
-    function hdist{T<:Integer}(x::T, y::T)
+    function hdist(x::Z, y::Z) where Z<:Integer
         xb = bits(x)
         yb = bits(y)
         c = 0
@@ -88,8 +94,8 @@
     export odist
 
     ##-----------------------------------------------------------------------------------
-    function odist{T<:AbstractFloat}(pla::T, plo::T, sla::T, slo::T, radius::T, precision::T = T(1))
-        sigma = T(0)
+    function odist(pla::R, plo::R, sla::R, slo::R, radius::R, precision::R = R(1)) where R<:AbstractFloat
+        sigma = R(0)
 
         if precision == 1
             sigma = central_angle(pla, plo, sla, slo)
@@ -103,10 +109,10 @@
     end
 
     ##-----------------------------------------------------------------------------------
-    function odist{T<:AbstractFloat}(u::Array{T, 1}, v::Array{T, 1}, radius::T, center::Array{T, 1}, precision::T = (1))
+    function odist(u::Array{R, 1}, v::Array{R, 1}, radius::R, center::Array{R, 1}, precision::R = (1)) where R<:AbstractFloat
         u = normalize(u, center)
         v = normalize(v, center)
-        sigma = T(0)
+        sigma = R(0)
 
         if precision == 1
             sigma = acos_central_angle(u, v)
@@ -126,37 +132,37 @@
     export mdist, mdist_dvec, mdist_dcov, mdist_sq, mdist_sq_dvec, mdist_sq_dcov
 
     ##-----------------------------------------------------------------------------------
-    function mdist{T<:AbstractFloat}(X::Array{T, 1}, Y::Array{T, 1}, CovMatrix::Array{T, 2})
+    function mdist(X::Array{R, 1}, Y::Array{R, 1}, CovMatrix::Array{R, 2}) where R<:AbstractFloat
         @fastmath d = X - Y                                                             # the mahalanobis_distance can be used either as
         @fastmath return sqrt(abs(bdot(d, (CovMatrix \ d))))                            # point-point distance (Y == second point) or as a
     end                                                                                 # point-distribution distance (Y == median of the distribution)
 
     ##-----------------------------------------------------------------------------------
-    function mdist_dvec{T<:Real}(X::Array{T, 1}, Y::Array{T, 1}, CovMatrix::Array{T, 2})
+    function mdist_dvec(X::Array{R, 1}, Y::Array{R, 1}, CovMatrix::Array{R, 2}) where R<:Real
         @fastmath d = X - Y                                                             # derivation after X or Y
         p = CovMatrix \ d
         @fastmath return bdot(fill(4.0, length(X)), p) / sqrt(abs(bdot(d, p)))
     end
 
     ##-----------------------------------------------------------------------------------
-    function mdist_dcov{T<:Real}(X::Array{T, 1}, Y::Array{T, 1}, CovMatrix::Array{T, 2})
+    function mdist_dcov(X::Array{R, 1}, Y::Array{R, 1}, CovMatrix::Array{R, 2}) where R<:Real
         @fastmath d = X - Y
         @fastmath return (-2 * bdot(d, (CovMatrix^2 \ d))) / sqrt(abs(bdot(d, (CovMatrix \ d))))
     end
 
     ##-----------------------------------------------------------------------------------
-    function mdist_sq{T<:Real}(X::Array{T, 1}, Y::Array{T, 1}, CovMatrix::Array{T, 2})
+    function mdist_sq(X::Array{R, 1}, Y::Array{R, 1}, CovMatrix::Array{R, 2}) where R<:Real
         @fastmath d = X - Y
         @fastmath return bdot(d, (CovMatrix \ d))
     end
 
     ##-----------------------------------------------------------------------------------
-    function mdist_sq_dvec{T<:Real}(X::Array{T, 1}, Y::Array{T, 1}, CovMatrix::Array{T, 2})
+    function mdist_sq_dvec(X::Array{R, 1}, Y::Array{R, 1}, CovMatrix::Array{R, 2}) where R<:Real
         @fastmath return bdot(fill(2.0, length(X)), (CovMatrix \ (X - Y)))              # derivation after X or Y
     end
 
     ##-----------------------------------------------------------------------------------
-    function mdist_sq_dcov{T<:Real}(X::Array{T, 1}, Y::Array{T, 1}, CovMatrix::Array{T, 2})
+    function mdist_sq_dcov(X::Array{R, 1}, Y::Array{R, 1}, CovMatrix::Array{R, 2}) where R<:Real
         @fastmath d = X - Y
         @fastmath return (-2 * bdot(d, (CovMatrix^2 \ d)))
     end

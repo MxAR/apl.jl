@@ -2,7 +2,7 @@
     ##===================================================================================
     ##  types
     ##===================================================================================
-    type tpda{T<:Int}
+    struct tpda{T<:Int}
         is::Tuple{T, T}                                                                 # initial state (x) and stack symbol (y)
         fs::Array{T, 1}                                                                 # final states
         cs::T                                                                           # current state

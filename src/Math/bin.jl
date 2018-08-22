@@ -5,7 +5,7 @@
 	export bit_dot
 
 	##-----------------------------------------------------------------------------------
-	function bit_dot{N<:Unsigned}(a::N, b::N)
+	function bit_dot(a::N, b::N) where N<:Unsigned
 		p = bits(a)
 		q = bits(b)
 		c = 0
@@ -29,12 +29,12 @@
 	export nbit_on, nbit_off
 
 	##-----------------------------------------------------------------------------------
-	function nbit_on{N<:Unsigned, Z<:Integer}(x::N, i::Z) 
+	function nbit_on(x::N, i::Z) where N<:Unsigned where Z<:Integer
 		return (x >> (i - 1)) & N(1) == N(1)
 	end
 
 	##-----------------------------------------------------------------------------------
-	function nbit_off{N<:Unsigned, Z<:Integer}(x::N, i::Z) 
+	function nbit_off(x::N, i::Z) where N<:Unsigned where Z<:Integer
 		return xor((x >> (i - 1)), N(1)) == N(1)
 	end
 
@@ -45,7 +45,7 @@
 	export bprint
 
 	##-----------------------------------------------------------------------------------
-	function bprint{T<:Integer}(x::T, bigendian::Bool = true)
+	function bprint(x::T, bigendian::Bool = true) where T<:Integer
 		r = bits(x)
 
 		if bigendian
@@ -73,7 +73,7 @@
 	export ibit_range
 
 	##-----------------------------------------------------------------------------------
-	function ibit_range{N<:Unsigned, Z<:Integer}(x::N, lb::Z, ub::Z)
+	function ibit_range(x::N, lb::Z, ub::Z) where N<:Unsigned where Z<:Integer
 		i = lb - 1
 		r = N(0)
 
@@ -93,7 +93,7 @@
 	export ebit_range
 
 	##-----------------------------------------------------------------------------------
-	function ebit_range{N<:Unsigned, Z<:Integer}(x::N, y::N, lb::Z, ub::Z)
+	function ebit_range(x::N, y::N, lb::Z, ub::Z) where N<:Unsigned where Z<:Integer
 		i = lb - 1
 		c = N(0)
 
@@ -113,7 +113,7 @@
 	export fbit
 
 	##-----------------------------------------------------------------------------------
-	function fbit{N<:Unsigned, Z<:Integer}(x::N, i::Z)
+	function fbit(x::N, i::Z) where N<:Unsigned where Z<:Integer
 		return Base.xor_int(x, N(1 << (i - 1)))
 	end
 
@@ -124,7 +124,7 @@
 	export sbit
 
 	##-----------------------------------------------------------------------------------
-	function sbit{N<:Unsigned, Z<:Integer}(x::N, i::Z, v::Bool) 
+	function sbit(x::N, i::Z, v::Bool) where N<:Unsigned where Z<:Integer
 		return ((x >> (i - 1)) & N(1) == v) ? x : Base.xor_int(x, N(1 << (i - 1)))
 	end
 
@@ -139,7 +139,7 @@
 	export cb_merge
 
 	##-----------------------------------------------------------------------------------
-	function cb_merge{N<:Unsigned}(v::Array{N, 1})
+	function cb_merge(v::Array{N, 1}) where N<:Unsigned
 		s = Base.mul_int(sizeof(N), 8)
 		l = size(v, 1)
 		c = UInt8(1)
@@ -172,7 +172,7 @@
 	export cb_split
 
 	##-----------------------------------------------------------------------------------
-	function cb_split{N<:Unsigned, Z<:Integer}(x::N, d::Z)
+	function cb_split(x::N, d::Z) where N<:Unsigned where Z<:Integer
 		s = Base.mul_int(sizeof(N), 8)
 		r = Array{N, 1}(d)
 		c = UInt8(1)
@@ -211,12 +211,12 @@
 	export gray, igray
 
 	##-----------------------------------------------------------------------------------
-	function gray{N<:Unsigned}(x::N)
+	function gray(x::N) where N<:Unsigned
 		return Base.xor_int(x, (x >> 1))
 	end
 
 	##-----------------------------------------------------------------------------------
-	function igray{N<:Unsigned}(x::N)
+	function igray(x::N) where N<:Unsigned
 		y = x
 		r = x
 
@@ -237,7 +237,7 @@
 	export hilbertc, ihilbertc
 
 	##-----------------------------------------------------------------------------------
-	function hilbertc{N<:Unsigned}(v::Array{N, 1})
+	function hilbertc(v::Array{N, 1}) where N<:Unsigned
 		b = Base.mul_int(sizeof(N), 8)
 		r = deepcopy(v)
 		s = size(r, 1)
@@ -262,7 +262,7 @@
 	end
 
 	##-----------------------------------------------------------------------------------
-	function ihilbertc{N<:Unsigned, Z<:Integer}(x::N, d::Z)
+	function ihilbertc(x::N, d::Z) where N<:Unsigned where Z<:Integer
 		b = Base.mul_int(sizeof(N), 8)
 		r = cb_split(igray(x), d)
 		

@@ -1,4 +1,4 @@
-@everywhere module rnd
+#@everywhere module rnd
 	##===================================================================================
 	##	normal distribution
 	##		m: mean
@@ -7,7 +7,7 @@
 	export rnormal
 
 	##-----------------------------------------------------------------------------------
-	function rnormal{R<:Number, N<:Integer}(m::R, s::R, d::N... = (1))
+	function rnormal(m::R, s::R, d::N... = (1)) where R<:Number where N<:Integer
 		return (randn(R, d).-m)./s
 	end 
 
@@ -19,7 +19,7 @@
 	export rexp
 
 	##-----------------------------------------------------------------------------------
-	function rexp{R<:Number, N<:Integer}(a::R, d::N... = (1))
+	function rexp(a::R, d::N... = (1)) where R<:Number where N<:Integer
 		return -a*log.(rand(R, d))
 	end
 
@@ -32,7 +32,7 @@
 	export rhexp
 	
 	##-----------------------------------------------------------------------------------
-	function rhexp{R<:Number, N<:Integer}(a::R, n::N, d::N... = (1))
+	function rhexp(a::R, n::N, d::N... = (1)) where R<:Number where N<:Integer
 		r = zeros(R, d)
 		@inbounds for i = 1:n
 			r += log.(rand(R, d))
@@ -47,7 +47,7 @@
 	export rstri
 
 	##-----------------------------------------------------------------------------------
-	function rstri{N<:Integer}(d::N... = (1))
+	function rstri(d::N... = (1)) where N<:Integer
 		return rand(d).-rand(d)
 	end
 
@@ -59,7 +59,7 @@
 	export rspow
 
 	##-----------------------------------------------------------------------------------
-	function rspow{R<:Number, N<:Integer}(a::R, d::N... = (1))
+	function rspow(a::R, d::N... = (1)) where R<:Number where N<:Integer
 		return rand(R, d).^(1/a)
 	end
 
@@ -72,8 +72,8 @@
 	export rexpp
 
 	##-----------------------------------------------------------------------------------
-	function rexpp{R<:Number, N<:Integer}(a::R, b::R, d::N... = (1))
-			return (log.(1-log.(1-rand(R, d)))/a).^(1/b)
+	function rexpp(a::R, b::R, d::N... = (1)) where R<:Number where N<:Integer
+		return (log.(1-log.(1-rand(R, d)))/a).^(1/b)
 	end
 
 
@@ -83,7 +83,7 @@
 	export rcompertz
 
 	##-----------------------------------------------------------------------------------
-	function rcompertz{R<:Number, N<:Integer}(a::R, b::R, d::N... = (1))
+	function rcompertz(a::R, b::R, d::N... = (1)) where R<:Number where N<:Integer
 		return log.(1-(log.(rand(R, d))*log(b)./a))./log(b)
 	end
 
@@ -94,7 +94,7 @@
 	export rpareto
 
 	##-----------------------------------------------------------------------------------
-	function rpareto{R<:Number, N<:Integer}(a::R, b::R, d::N... = (1))
+	function rpareto(a::R, b::R, d::N... = (1)) where R<:Number where N<:Integer
 		return a.*(rand(R, d)^(-1/b))
 	end
 
@@ -107,7 +107,7 @@
 	export runi
 
 	##-----------------------------------------------------------------------------------
-	function runi{R<:Number, N<:Integer}(a::R, b::R, d::N... = (1))
+	function runi(a::R, b::R, d::N... = (1)) where R<:Number where N<:Integer
 		return a.+((b-a).*rand(R, d))
 	end
 
@@ -118,7 +118,7 @@
 	export rbenford
 
 	##-----------------------------------------------------------------------------------
-	function rbenford{N<:Integer}(d::N... = (1))
+	function rbenford(d::N... = (1)) where N<:Integer
 		return floor((10).^rand(d))
 	end
 
@@ -129,7 +129,7 @@
 	export rllog
 
 	##-----------------------------------------------------------------------------------
-	function rllog{R<:Number, N<:Integer}(a::R, b::R, d::N... = (1))
+	function rllog(a::R, b::R, d::N... = (1)) where R<:Number where N<:Integer
 		r = rand(R, d)
 		return ((((1).-r)./r).^(1/b))/a
 	end
@@ -141,7 +141,7 @@
 	export rlog
 
 	##-----------------------------------------------------------------------------------
-	function rlog{R<:Number, N<:Integer}(a::R, b::R, d::N... = (1))
+	function rlog(a::R, b::R, d::N... = (1)) where R<:Number where N<:Integer
 		return log.rllog(a, b, d)
 	end
 
@@ -152,7 +152,7 @@
 	export rscauchy
 
 	##-----------------------------------------------------------------------------------
-	function rscauchy{N<:Integer}(d::N... = (1))
+	function rscauchy(d::N... = (1)) where N<:Integer
 		return randn(d)./randn(d)
 	end
 
@@ -163,7 +163,7 @@
 	export rcauchy
 
 	##-----------------------------------------------------------------------------------
-	function rcauchy{R<:Number, N<:Integer}(a::R, b::R, d::N... = (1))
+	function rcauchy(a::R, b::R, d::N... = (1)) where R<:Number where N<:Integer
 		return a.+(b.*(randn(R, d)./randn(R, d)))
 	end
 
@@ -174,7 +174,7 @@
 	export rhsec
 
 	##-----------------------------------------------------------------------------------
-	function rhsec{N<:Integer}(d::N... = (1))
+	function rhsec(d::N... = (1)) where N<:Integer
 		return log.(abs.(randn(d)./randn(d)))
 	end
 
@@ -186,7 +186,7 @@
 	export rchi
 
 	##-----------------------------------------------------------------------------------
-	function rchi{N<:Integer}(a::N, d::N... = (1))
+	function rchi(a::N, d::N... = (1)) where N<:Integer
 		r = zeros(d)
 
 		@inbounds for i = 1:a
@@ -206,7 +206,7 @@
 	export rnchi
 
 	##-----------------------------------------------------------------------------------
-	function rnchi{R<:Number, N<:Integer}(a::N, m::R, s::R, d::N... = (1))
+	function rnchi(a::N, m::R, s::R, d::N... = (1)) where R<:Number where N<:Integer
 		r = zeros(d)
 
 		@inbounds for i = 1:a
@@ -224,7 +224,7 @@
 	export rschi
 
 	##-----------------------------------------------------------------------------------
-	function rschi{N<:Integer}(a::N, d::N... = (1))
+	function rschi(a::N, d::N... = (1)) where N<:Integer
 		r = zeros(d)
 
 		@inbounds for i = 1:a
@@ -244,7 +244,7 @@
 	export rnschi
 
 	##-----------------------------------------------------------------------------------
-	function rnschi{R<:Number, N<:Integer}(a::N, m::R, s::R, d::N... = (1))
+	function rnschi(a::N, m::R, s::R, d::N... = (1)) where R<:Number where N<:Integer
 		r = zeros(d)
 
 		@inbounds for i = 1:a
@@ -261,7 +261,7 @@
 	export rcf
 
 	##-----------------------------------------------------------------------------------
-	function rcf{R<:Number, N<:Integer}(d1::R, d2::R, a::N, d::N... = (1))
+	function rcf(d1::R, d2::R, a::N, d::N... = (1)) where R<:Number where N<:Integer
 		r1 = zeros(d)
 		r2 = zeros(d)
 
@@ -280,7 +280,7 @@
 	export rnf
 	
 	##----------------------------------------------------------------------------------
-	function rnf{R<:Number, N<:Integer}(d1::R, d2::R, a::N, m::R, s::R, d::N... = (1))
+	function rnf(d1::R, d2::R, a::N, m::R, s::R, d::N... = (1)) where R<:Number where N<:Integer
 		r1 = zeros(d)
 		r2 = zeros(d)
 
@@ -291,4 +291,4 @@
 
 		return (r1./d1)./(r2./d2)
 	end
-end
+#end

@@ -2,7 +2,7 @@
     ##===================================================================================
     ##  types
     ##===================================================================================
-    type tdfa{T<:Int}
+	struct tdfa{T<:Int}
         is::T               # initial state
         fs::Array{T, 1}     # final states
         cs::T               # current state
@@ -17,7 +17,7 @@
     export ais!, aiw!
 
     ##-----------------------------------------------------------------------------------
-    function ais!(dfa::tdfa, symbol::Any)                                               # input a symbol
+    function ais!(dfa::tdfa, symbol::T) where T<:Any                                 	# input a symbol
         dfa.cs = dfa.tm[dfa.cs, dfa.il[symbol]]
         return dfa
     end

@@ -1,5 +1,5 @@
 # path to apl
-path = "/home/mxar/Documents/Projects/"
+path = "/home/mxar/Documents/projects/"
 
 # base imports
 import Base.deepcopy
@@ -9,8 +9,9 @@ import Base.print
 using SpecialFunctions
 
 # base usings
-using Base.LinAlg
-using Base.Test
+using LinearAlgebra.BLAS
+using Distributed
+using Test
 
 # atomic modules
 include(string(path, "apl.jl/src/ADT/graph.jl"))

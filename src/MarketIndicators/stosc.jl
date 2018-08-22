@@ -5,7 +5,7 @@
 	export sstosc
 
 	##-----------------------------------------------------------------------------------
-	function sstosc{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, current_price::T, p::N, n::N, start::N, stop::N)
+	function sstosc(v::Array{T, 1}, current_price::T, p::N, n::N, start::N, stop::N) where T<:AbstractFloat where N<:Integer
 		@assert(start <= stop && stop <= size(v, 1), "out of bounds error")
 		@assert(start > 0 && stop > 0, "out of bounds error")
 		r = zeros(T, stop-start+1)
@@ -39,7 +39,7 @@
 	export lstosc
 
 	##-----------------------------------------------------------------------------------
-	function lstosc{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, current_price::T, pivot_weight::T, slope::T, p::N, n::N, start::N, stop::N)
+	function lstosc(v::Array{T, 1}, current_price::T, pivot_weight::T, slope::T, p::N, n::N, start::N, stop::N) where T<:AbstractFloat where N<:Integer
 		@assert(start <= stop && stop <= size(v, 1), "out of bounds error")
 		@assert(start > 0 && stop > 0, "out of bounds error")
 		r = zeros(T, stop-start+1)
@@ -73,7 +73,7 @@
 	export estosc
 
 	##-----------------------------------------------------------------------------------
-	function estosc{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, current_price::T, pivot_weight::T, slope::T, p::N, n::N, start::N, stop::N)
+	function estosc(v::Array{T, 1}, current_price::T, pivot_weight::T, slope::T, p::N, n::N, start::N, stop::N) where T<:AbstractFloat where N<:Integer
 		@assert(start <= stop && stop <= size(v, 1), "out of bounds error")
 		@assert(start > 0 && stop > 0, "out of bounds error")
 		r = zeros(T, stop-start+1)

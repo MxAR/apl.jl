@@ -29,14 +29,15 @@
 
     ##===================================================================================
     ## coordinate (latitude/longitude) <> points in three dimensional space
+	##	where nvec_to_coord returns [la, lo]
     ##===================================================================================
     export coord_to_nvec, nvec_to_coord
 
     ##-----------------------------------------------------------------------------------
-    coord_to_nvec{T<:Number}(la::T, lo::T) = [cos(la)*cos(lo), cos(la)*sin(lo), sin(la)]
+    coord_to_nvec(la::T, lo::T) where T<:Number = [cos(la)*cos(lo), cos(la)*sin(lo), sin(la)]
 
     ##-----------------------------------------------------------------------------------
-    nvec_to_coord{T<:Number}(v::Array{T, 1}) = [atan2(v[3], norm(v[1:2], 2)), atan2(v[2], v[1])]  # return: [la, lo]
+    nvec_to_coord(v::Array{T, 1}) where T<:Number = [atan2(v[3], norm(v[1:2], 2)), atan2(v[2], v[1])]
 
 
     ##===================================================================================
@@ -45,7 +46,7 @@
     export ssmm
 
     ##-----------------------------------------------------------------------------------
-    function ssm{T<:Number}(v::Array{T, 1})
+    function ssm(v::Array{T, 1}) where T<:Number
         l = size(v, 1); m = cross(v, b)
         b = insert!(zeros(l-1), 1, 1)
 
@@ -64,7 +65,7 @@
     export pdrom_to_nvec
 
     ##-----------------------------------------------------------------------------------
-    pdrom_to_nvec{T<:Number}(v::Array{T, 1}, center::Array{T, 1} = zeros(3)) = normalize(v-center)
+    pdrom_to_nvec(v::Array{T, 1}, center::Array{T, 1} = zeros(3)) where T<:Number = normalize(v-center)
 
 
     ##===================================================================================
@@ -73,7 +74,7 @@
     export join
 
     ##-----------------------------------------------------------------------------------
-    function join{T<:Any}(vl::Array{Array{T, 1}, 1})
+    function join(vl::Array{Array{T, 1}, 1}) where T<:Any
         v = vl[1]
 
         @inbounds for i=2:length(vl)
@@ -89,7 +90,7 @@
     export mat_to_vl, vl_to_mat
 
     ##-----------------------------------------------------------------------------------
-    function mat_to_vl{T<:Any}(m::Array{T, 2}, columns = true)
+    function mat_to_vl(m::Array{T, 2}, columns = true) where T<:Any
         m = columns ? m : m'
         vl = []
 
@@ -100,7 +101,7 @@
         return vl
     end
 
-    function vl_to_mat{T<:Any}(vl::Array{Array{T, 1}, 1}, columns = true)
+    function vl_to_mat(vl::Array{Array{T, 1}, 1}, columns = true) where T<:Any
         m = vl[1]
 
         @inbounds for i = 2:size(vl, 1)

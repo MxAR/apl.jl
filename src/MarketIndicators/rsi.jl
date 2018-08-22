@@ -5,7 +5,7 @@
 	export srsi
 
 	##-----------------------------------------------------------------------------------
-	function srsi{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, p::N, n::N, start::N)
+	function srsi(v::Array{T, 1}, p::N, n::N, start::N) where T<:AbstractFloat where N<:Integer
 		@assert(start > 0 && n > 0, "out of bounds error")
 		r = zeros(T, 2)
 		np = n * p
@@ -18,7 +18,7 @@
 			end
 		end
 
-		return r[2] >= 0 ? 100. : (100. - (100./(1+(r[1]/r[2]))))
+		return r[2] >= 0 ? 100. : (100. - (100. /(1+(r[1]/r[2]))))
 	end
 
 
@@ -28,7 +28,7 @@
 	export lrsi
 
 	##-----------------------------------------------------------------------------------
-	function lrsi{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, pivot_weight::T, slope::T, p::N, n::N, start::N)
+	function lrsi(v::Array{T, 1}, pivot_weight::T, slope::T, p::N, n::N, start::N) where T<:AbstractFloat where N<:Integer
 		@assert(start > 0 && n > 0, "out of bounds error")
 		r = zeros(T, 2)
 		np = n * p
@@ -41,7 +41,7 @@
 			end
 		end
 
-		return r[2] >= 0 ? 100. : (100 - (100/(1+(r[1]/r[2]))))
+		return r[2] >= 0 ? 100. : (100. - (100. /(1+(r[1]/r[2]))))
 	end
 
 
@@ -51,7 +51,7 @@
 	export ersi
 
 	##-----------------------------------------------------------------------------------
-	function ersi{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, pivot_weight::T, slope::T, p::N, n::N, start::N)
+	function ersi(v::Array{T, 1}, pivot_weight::T, slope::T, p::N, n::N, start::N) where T<:AbstractFloat where N<:Integer
 		@assert(start > 0 && n > 0, "out of bounds error")
 		r = zeros(T, 2)
 		np = n * p
@@ -64,6 +64,6 @@
 			end
 		end
 
-		return r[2] >= 0 ? 100. : (100 - (100/(1+(r[1]/r[2]))))
+		return r[2] >= 0 ? 100. : (100. - (100. /(1+(r[1]/r[2]))))
 	end
 end
