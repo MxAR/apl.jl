@@ -1,4 +1,4 @@
-#@everywhere module rnd
+@everywhere module rnd
 	##===================================================================================
 	##	normal distribution
 	##		m: mean
@@ -291,4 +291,4 @@
 
 		return (r1./d1)./(r2./d2)
 	end
-#end
+end

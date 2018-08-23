@@ -2,12 +2,12 @@
 	##===================================================================================
 	## prime factorisation 
 	##	- not determinitistic
-	##	- using an augumented Pollard-Strassen method)
+	##	- using an augumented Pollard-Strassen method
 	##===================================================================================
 	export pfactor
 
 	##-----------------------------------------------------------------------------------
-	function pfactor{Z<:Integer}(x::Z)
+	function pfactor(x::Z) where Z<:Integer
 		r = Array{Z, 1}()
 		n = UInt(abs(x))
 		T = UInt
@@ -52,8 +52,8 @@
 	export orthc
 
 	##-----------------------------------------------------------------------------------
-	function orthc{N<:Number}(m::Array{N, 2})
-		x = Array{(N<:Real ? Float64 : Complex128), 2}(lufact(m)[:U])
+	function orthc(m::Array{T, 2}) where T<:Number
+		x = Array{(T<:Real ? Float64 : Complex128), 2}(lufact(m)[:U])
 		s = size(m)
 		d = s[2]-s[1]
 
@@ -125,20 +125,20 @@
 	export nroot, nroot_posdef
 
 	##-----------------------------------------------------------------------------------
-	function nroot{C<:Number, Z<:Integer}(m::Array{C, 2}, n::Z = 2)
-		T = Complex128
-		g = Base.LinAlg.Eigen{T,T,Array{T,2},Array{T,1}}(eigfact(m; permute=false, scale=false))
+	function nroot(m::Array{T, 2}, n::Z = 2) where T<:Number where Z<:Integer
+		C = Complex128
+		g = Base.LinAlg.Eigen{C,C,Array{C,2},Array{C,1}}(eigfact(m; permute=false, scale=false))
 		s = size(m, 1)
-		p = T(1/n)
+		p = C(1/n)
 		
-		r = Array{T, 2}(s, s)
+		r = Array{C, 2}(s, s)
 		i = 1
 
 		@inbounds while i <= s
 			j = 1
 
 			while j < i 
-				r[i, j] = T(0)
+				r[i, j] = C(0)
 				r[j, i] = r[i, j]
 				j = j + 1
 			end 
@@ -152,20 +152,20 @@
 	end 
 
 	##-----------------------------------------------------------------------------------
-	function nroot_posdef{C<:Number, Z<:Integer}(m::Array{C, 2}, n::Z = 2)
-		T = Float64
-		g = Base.LinAlg.Eigen{T,T,Array{T,2},Array{T,1}}(eigfact(m; permute=false, scale=false))
+	function nroot_posdef(m::Array{C, 2}, n::Z = 2) where T<:Number where Z<:Integer
+		R = Float64
+		g = Base.LinAlg.Eigen{R,R,Array{R,2},Array{R,1}}(eigfact(m; permute=false, scale=false))
 		s = size(m, 1)
-		p = T(1/n)
+		p = R(1/n)
 
-		r = Array{T, 2}(s, s)
+		r = Array{R, 2}(s, s)
 		i = 1
 
 		@inbounds while i <= s
 			j = 1
 
 			while j < i
-				r[i, j] = T(0)
+				r[i, j] = R(0)
 				r[j, i] = r[i, j]
 				j = j + 1
 			end
@@ -188,7 +188,7 @@
 	export ccovm
 
 	##-----------------------------------------------------------------------------------
-	function ccovm{T<:Number, N<:Integer}(m::Array{T, 2}, t::N)
+	function ccovm(m::Array{T, 2}, t::Z) where T<:Number where Z<:Integer
 		C = Complex128
 		R = Float64
 
@@ -260,12 +260,12 @@
 	export pmtrm, npmtrm
 
 	##-----------------------------------------------------------------------------------
-	function pmtrm{R<:Number}(m::Array{R, 2})
+	function pmtrm(m::Array{T, 2}) where T<:Number
 		s = size(m)
 		l = s[1] - 1
 		n = s[2]
 		
-		r = Array{R, 2}(l, n)
+		r = Array{T, 2}(l, n)
 		i = 1
 		j = 1
 
@@ -282,14 +282,14 @@
 	end 
 
 	##-----------------------------------------------------------------------------------
-	function npmtrm{R<:Number}(m::Array{R, 2})
+	function npmtrm(m::Array{T, 2}) where T<:Number
 		s = size(m)
 		l = s[1] - 1
 		n = s[2]
 
-		r = Array{R, 2}(l, n)
-		d = zeros(R, n)
-		a = zeros(R, n)
+		r = Array{T, 2}(l, n)
+		d = zeros(T, n)
+		a = zeros(T, n)
 
 		i = 1
 		j = 1
@@ -355,7 +355,7 @@
 	export rcnnm
 
 	##-----------------------------------------------------------------------------------
-	function rcnnm{N<:Integer, R<:AbstractFloat}(inrn::N, onrn::N, trh::R = -.5, hnrn::Array{N, 1} = Array{N, 1}())
+	function rcnnm(inrn::Z, onrn::Z, trh::R = -.5, hnrn::T = T()) where T<:Array{Z, 1} where Z<:Integer where R<:AbstractFloat
 		s = size(hnrn, 1)
 		if s == 0
 			r = zeros(R, onrn+1, inrn+1)
@@ -396,7 +396,7 @@
 	export fib
 
 	##-----------------------------------------------------------------------------------
-	function fib{T<:Integer}(n::T)
+	function fib(n::Z) where Z<:Integer
 		p = 1.61803398874989484820458683437
 		@fastmath return round(((p^n)-((-p)^(-n)))/(2.23606797749978969640917366873))
 	end 
@@ -408,7 +408,7 @@
 	export dctdnoise
 
 	##-----------------------------------------------------------------------------------
-	function dctdnoise{R<:AbstractFloat}(v::Array{R, 1}, k = R(3), lowpass::Bool = true, highpass::Bool = true)
+	function dctdnoise(v::Array{R, 1}, k = R(3), lowpass::Bool, highpass::Bool) where R<:AbstractFloat
 		s = size(v, 1)
 		t = Array{R, 1}(s)
 		p = plan_dct(v)
@@ -472,7 +472,7 @@
 	export fftdnoise
 
 	##-----------------------------------------------------------------------------------
-	function fftdnoise{R<:AbstractFloat}(v::Array{R, 1}, k = R(3))
+	function fftdnoise(v::Array{R, 1}, k::R) where R<:AbstractFloat
 		s = size(v, 1)
 		a = zeros(R, s)
 		t = fft(v)
@@ -514,10 +514,10 @@
     export gcd, coprime
 
     ##-----------------------------------------------------------------------------------
-    function gcd{T<:Integer}(x::T, y::T)
-        z0 = T(0)
-        z1 = T(0)
-        s = T(0)
+    function gcd(x::Z, y::Z) where Z<:Integer
+        z0 = Z(0)
+        z1 = Z(0)
+        s = Z(0)
         
         if x < y
             z0 = y
@@ -537,7 +537,7 @@
     end
 
     ##-----------------------------------------------------------------------------------
-    coprime{T<:Integer}(x::T, y::T) = gcd(x, y) == 1
+    coprime(x::Z, y::Z) where Z<:Integer = gcd(x, y) == 1
 
 
     ##===================================================================================
@@ -546,11 +546,11 @@
     export collatz
 
     ##-----------------------------------------------------------------------------------
-    function collatz{T<:Integer}(x::T)
+    function collatz(x::Z) where Z<:Integer
 		c = UInt(0)
 
         while x != 1
-            x = x & 1 == 1 ? 3*x + 1: x >> 1
+            x = x & 1 == 1 ? 3*x + 1 : x >> 1
             c = c + 1
         end
 
@@ -564,10 +564,10 @@
 	export binomf, binomi
 
 	##-----------------------------------------------------------------------------------
-	function binomf{T<:AbstractFloat}(n::T, k::T)
+	function binomf(n::R, k::R) where R<:AbstractFloat
 		if n < 0
-			r0 = T(1)
-			r1 = T(2)
+			r0 = R(1)
+			r1 = R(2)
 
 			@inbounds for i = 0:(n-1)
 				r0 *= (n-i)
@@ -581,18 +581,20 @@
 		end 
 
 		if n > 0
-			return ggamma(n+T(1))/(ggamma(k+T(1))ggamma(n-k+T(1)))
+			return ggamma(n+R(1))/(ggamma(k+R(1))ggamma(n-k+R(1)))
 		else
-			return T(1)
+			return R(1)
 		end
 	end
 
 	##-----------------------------------------------------------------------------------
-	function binomi{T<:Integer}(n::T, k::T)
-		r = T(NaN)
+	function binom(n::Z, k::Z) where Z<:Integer
+		r = Z(NaN)
 
 		if k < 0
 			r = 0
+		elseif n > 0
+			r = ggamma(n+Z(1))/(ggamma(k+Z(1))*ggamma(n-k+Z(1)))
 		elseif n < 0
 			b = -n + k -1
 			i = -n
@@ -611,7 +613,7 @@
 				i = i + 1
 			end
 
-			r = (k%2==0?1:-1) * T(r / b)
+			r = (k%2==0 ? 1 : -1) * Z(r / b)
 		end
 
 		return r
@@ -624,7 +626,7 @@
 	export ggamma
 	
 	##-----------------------------------------------------------------------------------
-	function ggamma{T<:Number}(x::T)
+	function ggamma(x::T) where T<:Number
 		if x >= 0
 			if T <: Integer
 				return AbstractFloat(factorial(x - 1))
@@ -651,9 +653,9 @@
 	export partnorm
 
 	##-----------------------------------------------------------------------------------
-	function partnorm{R<:Number}(v::Array{R, 1})
-		b = -R(Inf)
-		s = R(0)
+	function partnorm(v::Array{T, 1}) where T<:Number
+		b = -T(Inf)
+		s = T(0)
 
 		@inbounds for i = 2:size(v, 1)
 			s = v[i]-v[i-1]
@@ -672,9 +674,9 @@
     export dcd
 
     ##-----------------------------------------------------------------------------------
-    function dcd{T<:AbstractFloat}(x::T)
+    function dcd(x::R) where R<:AbstractFloat
         set_zero_subnormals(true)
-		return x == 0 ? Inf : 0.
+		return R(x == 0 ? Inf : 0)
 	end
 
 
@@ -684,7 +686,7 @@
     export ked
 
     ##-----------------------------------------------------------------------------------
-	ked{T<:Number}(x::T, y::T) = T(x == y ? 1 : 0)
+	ked(x::T, y::T) where T<:Number = T(x == y ? 1 : 0)
 
 
     ##===================================================================================
@@ -693,14 +695,16 @@
     export mpow
 
     ##-----------------------------------------------------------------------------------
-    function mpow{N<:Integer}(bse::N, exp::N, mod::N)
+    function mpow(bse::Z, exp::Z, mod::Z) where Z<:Integer
         if mod == 1
             return 0
         else
             c = 1
-            @inbounds for i = 1:exp
-                c = (c*bse)%mod
+            
+			@inbounds for i = 1:exp
+                c = (c * bse) % mod
             end
+
             return c
         end
     end
@@ -712,7 +716,7 @@
 	export king
 
 	##-----------------------------------------------------------------------------------
-	function king{T<:AbstractFloat, N<:Integer}(x::T, p::T, ca::T, cs::T, c::N)
+	function king(x::R, p::R, ca::R, cs::R, c::Z) where R<:AbstractFloat where Z<:Integer
 		@fastmath return (p^sqrt(2*c+2))*x*((ca^2)+(cs^2))/(2-2*p)
 	end
 
@@ -723,7 +727,7 @@
 	export divt
 
 	##-----------------------------------------------------------------------------------
-	divt{T<:Integer}(x::T, y::T) = y % x == 0
+	divt(x::T, y::T) where Z<:Integer = y % x == 0
 
 
     ##===================================================================================

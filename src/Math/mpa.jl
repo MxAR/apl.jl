@@ -1,11 +1,12 @@
 @everywhere module mpa # matching putsuit algorithms
     ##===================================================================================
     ## orthogonal matching pursuit algorithm
+	##	columns of X should be normalized
     ##===================================================================================
     export omp
 
     ##-----------------------------------------------------------------------------------
-    function omp{T<:AbstractFloat}(y::Array{T, 1}, X::Array{T, 2}, min_eps::T)         # columns of X should be normalized
+    function omp(y::Array{R, 1}, X::Array{R, 2}, min_eps::R) where R<:AbstractFloat
         ly = size(y, 1)
         re = y
         @assert(ly == size(X, 1))
@@ -40,7 +41,7 @@
     export mp
 
     ##-----------------------------------------------------------------------------------
-    function mp{T<:AbstractFloat}(y::Array{T, 1}, X::Array{T, 2}, min_eps::T)          # columns of X should be normalized
+    function mp(y::Array{R, 1}, X::Array{R, 2}, min_eps::R) where R<:AbstractFloat
         ly = length(y); re = y
         @assert ly == size(X, 1)
         gv = mat_to_vl(X, false)

@@ -2,14 +2,14 @@
 	##===================================================================================
 	##	using directives
 	##===================================================================================
-	using op
-	using gen
+	using ..op
+	using ..gen
 
 	##===================================================================================
 	##	types
 	##===================================================================================
-	type topt_prb																		# optimization problem
-		sp::gen.tncbd																		# search space
+	mutable struct topt_prb																# optimization problem
+		sp::gen.tncbd																	# search space
 		ff::Function																	# fitness function
 	end
 
@@ -24,7 +24,7 @@
 	##		mut = mutation function
 	##		mr = mutation rate
 	##===================================================================================
-	function eve{T<:AbstractFloat, N<:Integer}(optp::topt_prb, tc::Tuple{N, T}, pop::Array{Array{T, 1}, 1}, mut::Function, mr::Function)
+	function eve(optp::topt_prb, tc::Tuple{Z, R}, pop::Array{Array{R, 1}, 1}, mut::F, mr::F) where R<:AbstractFloat where F<:Function where Z<:Integer
 		supremum = optp.sp.alpha + optp.sp.delta										# supremum of the n dim cubiod (for mutation)
 		gen_size = size(pop, 1)															# size of each generation
 		swp = T(0)																		# swap var, mainly for searching for the best element
@@ -62,7 +62,7 @@
 	##		max_delta = the maximal change that can occure through muation
 	## 		supremum = the supremum of the n dim cubiod represented in optp.sp
 	##===================================================================================
-	function mut_default{T<:AbstractFloat}(child::Array{T, 1}, parent::Array{T, 1}, ncbd::gen.tncbd, max_delta::Array{T, 1}, supremum::Array{T, 1})
+	function mut_default(child::T, parent::T, ncbd::gen.tncbd, max_delta::T, supremum::T) where T<:Array{R, 1} where R<:AbstractFloat
 		@inbounds for i=1:ncbd.n																		# mutate each value inside the vector
 			child[i] = parent[i] + prison(2*(rand()-.5)*max_delta[i], ncbd.alpha[i], supremum[i])	# random mutation inside the given n dim intervall
 		end

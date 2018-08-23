@@ -1,17 +1,7 @@
 # path to apl
 path = "/home/mxar/Documents/projects/"
 
-# base imports
-import Base.deepcopy
-import Base.print
-
-# special base modules
-using SpecialFunctions
-
-# base usings
-using LinearAlgebra.BLAS
-using Distributed
-using Test
+#import Distributed.@everywhere
 
 # atomic modules
 include(string(path, "apl.jl/src/ADT/graph.jl"))
@@ -33,23 +23,22 @@ include(string(path, "apl.jl/src/Math/yamartino.jl"))
 include(string(path, "apl.jl/src/Packages/pkg.jl"))
 
 # atomic usings
-using graph
-using heap
-using dfa
-using pda
-using tuma
-using cnv
-using tmp_op
-using rsi
-using stosc
-using bin
-using dist
-using rnd
-using mean
-using op
-using yamartino
-using pkg
-			
+using .graph
+using .heap
+using .dfa
+using .pda
+using .tuma
+using .cnv
+using .tmp_op
+using .rsi
+using .stosc
+using .bin
+using .dist
+using .rnd
+using .mean
+using .op
+using .yamartino
+using .pkg
 
 # composite modules
 include(string(path, "apl.jl/src/Math/gen.jl"))					# bin
@@ -68,17 +57,17 @@ include(string(path, "apl.jl/src/ProcedualGeneration/wfc.jl"))	# f/cnv
 include(string(path, "apl.jl/src/RBFNetworks/rbfn.jl"))			# f
 
 # composite usings
-using gen
-using f
-using eva
-using bb
-using macd
-using mpa
-using bla
-using sta
-using trig
-using vq
-using mlp
-using pct
-using wfc
-using rbfn
+using .gen
+using .f
+using .eva
+using .bb
+using .macd
+using .mpa
+using .bla
+using .sta
+using .trig
+using .vq
+using .mlp
+using .pct
+using .wfc
+using .rbfn

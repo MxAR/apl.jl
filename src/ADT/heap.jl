@@ -1,4 +1,4 @@
-#@everywhere module heap
+@everywhere module heap
     export parent, children, is_heap, heapify, heap_build, heap_sort
 
     ##-----------------------------------------------------------------------------------
@@ -62,4 +62,4 @@
 
         return v
     end
-#end
+end

@@ -5,7 +5,7 @@
 	export sbb
 
 	##-----------------------------------------------------------------------------------
-	function sbb{T<:Float64, N<:Integer}(v::Array{T, 1}, k::T, p::N, n::N, start::N, stop::N)
+	function sbb(v::Array{R, 1}, k::R, p::Z, n::Z, start::Z, stop::Z) where R<:AbstractFloat where Z<:Integer
 		@assert(start <= stop && stop <= size(v, 1), "out of bounds error")
 		@assert(start > 0 && stop > 0, "out of bounds error")
 		s = stop-start+1
@@ -33,7 +33,7 @@
 	export lbb
 
 	##-----------------------------------------------------------------------------------
-	function lbb{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, k::T, pivot_weight::T, slope::T, p::N, n::N, start::N, stop::N)
+	function lbb(v::Array{R, 1}, k::R, pivot_weight::R, slope::R, p::Z, n::Z, start::Z, stop::Z) where R<:AbstractFloat where Z<:Integer
 		@assert(start <= stop && stop <= size(v, 1), "out of bounds error")
 		@assert(start > 0 && stop > 0, "out of bounds error")
 		r1 = r2 = r3 = zeros(T, stop-start+1)
@@ -62,7 +62,7 @@
 	export ebb
 
 	##-----------------------------------------------------------------------------------
-	function ebb{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, k::T, pivot_weight::T, slope::T, p::N, n::N, start::N, stop::N)
+	function ebb(v::Array{R, 1}, k::R, pivot_weight::R, slope::R, p::Z, n::Z, start::Z, stop::Z) where R<:AbstractFloat where Z<:Integer
 		@assert(start <= stop && stop <= size(v, 1), "out of bounds error")
 		@assert(start > 0 && stop > 0, "out of bounds error")
 		r1 = r2 = r3 = zeros(T, stop-start+1)

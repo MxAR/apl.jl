@@ -1,11 +1,17 @@
-#@everywhere module op
+@everywhere module op
     ##===================================================================================
+	## using directives
+	##===================================================================================
+	using Distributed
+
+
+	##===================================================================================
     ## aggregations
     ##===================================================================================
     export mul, imp_add, lr_imp_add, imp_sub, lr_imp_sub
 
     ##-----------------------------------------------------------------------------------
-    function mul{T<:Number}(v::Array{T, 1})
+    function mul(v::Array{T, 1}) where T<:Number
         r = v[1]
 
         @inbounds for i = 2:size(v, 1)
@@ -16,7 +22,7 @@
     end
 
     ##-----------------------------------------------------------------------------------
-    function imp_add{T<:Number}(v1::Array{T, 1}, v2::Array{T, 1})
+    function imp_add(v1::Array{T, 1}, v2::Array{T, 1}) where T<:Number
         l = (size(v1, 1), size(v1, 1))
         v = zeros(max(l))
         v[1:l[1]] = v1
@@ -25,7 +31,7 @@
     end
 
     ##-----------------------------------------------------------------------------------
-    function imp_add{T<:Number}(m1::Array{T, 2}, m2::Array{T, 2})
+    function imp_add(m1::Array{T, 2}, m2::Array{T, 2}) where T<:Number
         s = (size(m1), size(m2))
         b = (max(s[1][1], s[2][1]), max(s[1][2], s[2][2]))
         r = Array{T, 2}(i)
@@ -44,7 +50,7 @@
     end
 
     ##-----------------------------------------------------------------------------------
-    function imp_sub{T<:Number}(V1::Array{T, 1}, V2::Array{T, 1})
+    function imp_sub(V1::Array{T, 1}, V2::Array{T, 1}) where T<:Number
         l = (length(v1), length(v1))
         v = zeros(max(l))
         v[1:l[1]] = v1
@@ -53,7 +59,7 @@
     end
 
     ##-----------------------------------------------------------------------------------
-    function imp_sub{T<:Number}(m1::Array{T, 2}, m2::Array{T, 2})
+    function imp_sub(m1::Array{T, 2}, m2::Array{T, 2}) where T<:Number
         s = (size(m1), size(m2))
         b = (max(s[1][1], s[2][1]), max(s[1][2], s[2][2]))
         r = Array{T, 2}(i)
@@ -78,10 +84,10 @@
     export prison
 
     ##-----------------------------------------------------------------------------------
-    prison{T<:Number}(value::T, infimum::T, supremum::T) = min(max(value, infimum), supremum)
+    prison(value::T, infimum::T, supremum::T) where T<:Number = min(max(value, infimum), supremum)
 
     ##-----------------------------------------------------------------------------------
-    prison{T<:Number}(x::T, f::Function, infimum::T, supremum::T) = x < infimum ? 0 : (x > supremum ? 1 : f(x))
+    prison(x::T, f::Function, infimum::T, supremum::T) where T<:Number = x < infimum ? 0 : (x > supremum ? 1 : f(x))
 
 
     ##===================================================================================
@@ -90,13 +96,13 @@
     export rm, rms
 
     ##-----------------------------------------------------------------------------------
-    function rm{T<:Any}(m::Array{T, 2}, i::Integer, column::Bool = true)
+    function rm(m::Array{T, 2}, i::Integer, column::Bool = true) where T<:Any
 		r = column ? m : m'
         return hcat(r[:, 1:(i-1)], r[:, (i+1):end])
     end
 
     ##-----------------------------------------------------------------------------------
-    function rms{T<:Any}(m::Array{T, 2}, i::Array{Any, 1}, column::Bool = true)
+    function rms(m::Array{T, 2}, i::Array{Any, 1}, column::Bool = true) where T<:Any
 		r = column ? m : m'
 
 		@inbounds for x in i
@@ -108,7 +114,7 @@
     end
 
     ##-----------------------------------------------------------------------------------
-    function rm{T<:Any}(m::Array{T, 2}, i::Array{Any, 1}, column::Bool = true)
+    function rm(m::Array{T, 2}, i::Array{Any, 1}, column::Bool = true) where T<:Any
 		r = column ? m : m'
 
 		@inbounds for x in sort(i)
@@ -120,7 +126,7 @@
     end
 
     ##-----------------------------------------------------------------------------------
-    function rm{T<:Any, N<:Integer}(m::Array{T, 2}, ub::N, lb::N, column::Bool = true)
+    function rm(m::Array{T, 2}, ub::Z, lb::Z, column::Bool = true) where T<:Any where Z<:Integer
 		column::Bool = true
         return hcat(r[:, 1:(lb-1)], r[:, (ub+1):end])
     end
@@ -132,7 +138,7 @@
     export rm, rms
 
     ##-----------------------------------------------------------------------------------
-    function rm{T<:Any, N<:Int}(v::Array{T, 1}, i::Array{N, 1})
+    function rm(v::Array{T, 1}, i::Array{Z, 1}) where T<:Any where Z<:Integer
         i = sort(i)
 
         @inbounds for j=1:length(i)
@@ -144,7 +150,7 @@
     end
 
     ##-----------------------------------------------------------------------------------
-    function rms{T<:Any, N<:Int}(v::Array{T, 1}, i::Array{N, 1})
+    function rms(v::Array{T, 1}, i::Array{Z, 1}) where T<:Any where Z<:Integer
         @inbounds for j=1:length(i)
             v = cat(1, v[1:(i[j]-1)], v[(i[j]+1):end])
             i .-= 1
@@ -161,7 +167,7 @@
 	export union
 
     ##-----------------------------------------------------------------------------------
-    function union{T<:Any}(vl::Array{Array{T, 1}, 1})
+    function union(vl::Array{Array{T, 1}, 1}) where T<:Any
         v = vl[1]
 
         @inbounds for i=2:size(vl, 1)
@@ -179,7 +185,7 @@
 	export intersect
 
     ##-----------------------------------------------------------------------------------
-    function intersect{T<:Any}(vl::Array{Array{T, 1}, 1})
+    function intersect(vl::Array{Array{T, 1}, 1}) where T<:Any
         v = vl[1]
 
         @inbounds for i=2:size(vl, 1)
@@ -196,16 +202,16 @@
     export prepend, prepend!
 
     ##-----------------------------------------------------------------------------------
-    prepend{T<:Any}(v::Array{T, 1}, w) = cat(1, [w], v)
+    prepend(v::Array{T, 1}, w) where T<:Any = cat(1, [w], v)
 
     ##-----------------------------------------------------------------------------------
-    prepend{T<:Any}(v::Array{T, 1}, w::Array{T, 1}) = cat(1, w, v)
+    prepend(v::Array{T, 1}, w::Array{T, 1}) where T<:Any = cat(1, w, v)
 
     ##-----------------------------------------------------------------------------------
-    prepend!{T<:Any}(v::Array{T, 1}, w) = v = cat(1, [w], v)
+    prepend!(v::Array{T, 1}, w) where T<:Any = v = cat(1, [w], v)
 
     ##-----------------------------------------------------------------------------------
-    prepend!{T<:Any}(v::Array{T, 1}, w::Array{T, 1}) = v = cat(1, w, v)
+    prepend!(v::Array{T, 1}, w::Array{T, 1}) where T<:Any = v = cat(1, w, v)
 
 
     ##===================================================================================
@@ -215,7 +221,7 @@
 	export map
 
     ##-----------------------------------------------------------------------------------
-    function map{T<:Any}(f::Function, vl::Array{Array{T, 1}, 1})
+    function map(f::Function, vl::Array{Array{T, 1}, 1}) where T<:Any
 		ul = Array{Array{T, 1}, 1}()
 
         @inbounds @simd for i = 1:length(ul)
@@ -233,7 +239,7 @@
 	export min
 
 	##-----------------------------------------------------------------------------------
-	min{T<:Number}(x::Tuple{T, T}) = x[1] < x[2] ? x[1] : x[2]
+	min(x::Tuple{T, T}) where T<:Number = x[1] < x[2] ? x[1] : x[2]
 
 
 	##===================================================================================
@@ -243,7 +249,7 @@
 	export max
 
 	##-----------------------------------------------------------------------------------
-	max{T<:Number}(x::Tuple{T, T}) = x[1] > x[2] ? x[1] : x[2]
+	max(x::Tuple{T, T}) where T<:Number = x[1] > x[2] ? x[1] : x[2]
 
 
     ##===================================================================================
@@ -264,7 +270,7 @@
     function apply_p(g::Function, m)
         m = convert(SharedArray, m)
 
-		@inbounds @sync @parallel for i in eachindex(m)
+		@inbounds @sync @distributed for i in eachindex(m)
             m[i] = g(m[i])
         end
 
@@ -273,7 +279,7 @@
 
     ##-----------------------------------------------------------------------------------
     function apply_ps(g::Function, m)
-        @inbounds @sync @parallel for i in eachindex(m)
+        @inbounds @sync @distributed for i in eachindex(m)
             m[i] = g(m[i])
         end
 
@@ -281,7 +287,7 @@
     end
 
     ##------------------------------------------------------------------------------------
-    function apply_triu{T<:Number}(g::Function, m::Array{T, 2})
+    function apply_triu(g::Function, m::Array{T, 2}) where T<:Number
         @inbounds for j = 2:size(m, 2), i = 1:j-1
             m[i, j] = g(m[i, j])
         end
@@ -290,7 +296,7 @@
     end
 
     ##------------------------------------------------------------------------------------
-    function apply_tril{T<:Number}(g::Function, m::Array{T, 2})
+    function apply_tril(g::Function, m::Array{T, 2}) where T<:Number
         @inbounds for i = 2:size(m, 2), j = 1:i-1
             m[i, j] = g(m[i, j])
         end
@@ -299,7 +305,7 @@
     end
 
 	##-----------------------------------------------------------------------------------
-	function apply_dia{T<:Number}(g::Function, m::Array{T, 2})
+	function apply_dia(g::Function, m::Array{T, 2}) where T<:Number
 		for i = min(size(m))
 			m[i, i] = g(m[i, i])
 		end
@@ -343,7 +349,7 @@
 	export /
 
     ##-----------------------------------------------------------------------------------
-    function /{T<:AbstractFloat}(x::T, v::Array{T, 1})
+    function /(x::R, v::Array{R, 1}) where R<:AbstractFloat
         @inbounds for i = 1:size(v, 1)
             v[i] = x/v[i]
         end
@@ -362,4 +368,4 @@
 		set_zero_subnormals(true)
 		sumabs(v) == 0
 	end
-#end
+end

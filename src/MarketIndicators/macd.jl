@@ -5,7 +5,7 @@
 	export smacd
 
 	##-----------------------------------------------------------------------------------
-	function smacd{T<:Float64, N<:Integer}(v::Array{T, 1}, p::Tuple{N, N}, n::N, start::N, stop::N)
+	function smacd(v::Array{R, 1}, p::Tuple{Z, Z}, n::Z, start::Z, stop::Z) where R<:AbstractFloat where Z<:Integer
 		@assert(start <= stop && stop <= size(v, 1), "out of bounds error")
 		@assert(start > 0 && stop > 0, "out of bounds error")
 		r = q = zeros(T, stop-start+1)
@@ -38,7 +38,7 @@
 	export lmacd
 
 	##-----------------------------------------------------------------------------------
-	function lmacd{T<:Float64, N<:Integer}(v::Array{T, 1}, pivot_weight::T, slope::T, p::Tuple{N, N}, n::N, start::N, stop::N)
+	function lmacd(v::Array{R, 1}, pivot_weight::R, slope::R, p::Tuple{Z, Z}, n::Z, start::Z, stop::Z) where R<:AbstractFloat where Z<:Integer
 		d = N(abs(p[1] - p[2]))
 		return -1*lma(v, (pivot_weight + slope*d), slope, minimum(p), n, start-d, stop-d)
 	end
@@ -50,7 +50,7 @@
 	export emacd
 
 	##-----------------------------------------------------------------------------------
-	function emacd{T<:Float64, N<:Integer}(v::Array{T, 1}, pivot_weight::T, slope::T, p::Tuple{N, N}, n::N, start::N, stop::N)
+	function emacd(v::Array{R, 1}, pivot_weight::R, slope::R, p::Tuple{Z, Z}, n::Z, start::Z, stop::Z) where R<:AbstractFloat where Z<:Integer
 		@assert(start <= stop && stop <= size(v, 1), "out of bounds error")
 		@assert(start > 0 && stop > 0, "out of bounds error")
 		np = n * (p[1] < p[2] ? p[1] : p[2])
