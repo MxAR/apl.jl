@@ -6,6 +6,50 @@
 
 
 	##===================================================================================
+	## beta divergence/distance
+	##===================================================================================
+	export beta_dist
+
+	##-----------------------------------------------------------------------------------
+	function beta_dist(beta::R, l::Z, x::Array{T}, inc_x, y::Array{T}, inc_y::Z) where T<:Number where Z<:Integer where R<:Real
+		@assert(l > 0, "l needs to be a positive number")
+		@assert(inc_x > 0, "index increment for vector x needs to be positive (inc_x)")
+		@assert(inc_y > 0, "index increment for vector y needs to be positive (inc_y)")
+		@assert(inc_x*l <= length(x), "the number of requested computations musn't be larger than the dimension of x")
+		@assert(inc_y*l <= length(y), "the number of requested computations musn't be larger than the dimension of y")
+		@assert(0 <= beta && beta <= 1, "beta must lie in [0, 1]") 
+
+		s = T(1)
+		r = T(0)
+		f = NaN
+
+		x_i = 1
+		y_i = 1
+		i = 1
+
+		if beta == 1
+			f = (a, b) -> a * log(a / b) - a + b
+		elseif beta == 0
+			f = (a, b) -> (a / b) - log(a / b)
+			r = T(-l)
+		else
+			f = (a, b) -> a^beta + ((beta - 1) * b^beta) - (beta * a * b^(beta - 1))
+			s = (beta * (beta - 1))
+		end
+
+		@inbounds while i <= l
+			@fastmath r = r + f(x[x_i], y[y_i])
+
+			x_i = x_i + inc_x
+			y_i = y_i + inc_y
+			i += 1
+		end
+
+		return r / (s * l)
+	end
+
+
+	##===================================================================================
 	## log specteal distance
 	##===================================================================================
 	export log_spectral_dist
@@ -35,7 +79,8 @@
 		return r
 	end
 
-    ##===================================================================================
+    
+	##===================================================================================
 	## itakura-saito distance/divergence
 	##	(all values have to be bigger than 0)
 	##===================================================================================
