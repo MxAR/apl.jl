@@ -5,6 +5,36 @@
 	using Distributed
 
 
+	##===================================================================================
+	## log specteal distance
+	##===================================================================================
+	export log_spectral_dist
+
+	##-----------------------------------------------------------------------------------
+	function log_spectral_dist(l::Z, x::Array{T}, inc_x, y::Array{T}, inc_y::Z) where T<:Number where Z<:Integer
+		@assert(l > 0, "l needs to be a positive number")
+		@assert(inc_x > 0, "index increment for vector x needs to be positive (inc_x)")
+		@assert(inc_y > 0, "index increment for vector y needs to be positive (inc_y)")
+		@assert(inc_x*l <= length(x), "the number of requested computations musn't be larger than the dimension of x")
+		@assert(inc_y*l <= length(y), "the number of requested computations musn't be larger than the dimension of y")
+		
+		r = T(0)
+		x_i = 1
+		y_i = 1
+		i = 1
+
+		@inbounds while i <= l
+			@fastmath r = r + log10(x[x_i] / y[y_i])^2
+
+			x_i = x_i + inc_x
+			y_i = y_i + inc_y
+			i += 1
+		end
+
+		r = @fastmath sqrt(r / (.01 * l))
+		return r
+	end
+
     ##===================================================================================
 	## itakura-saito distance/divergence
 	##	(all values have to be bigger than 0)
@@ -35,7 +65,7 @@
 			i = i + 1
 		end
 
-		return r
+		return r / l
 	end
 	
 	
