@@ -6,21 +6,32 @@
 
 
     ##===================================================================================
-	## itakura-saito distance
+	## itakura-saito distance/divergence
 	##	(all values have to be bigger than 0)
 	##===================================================================================
-	export isdist
+	export itakura_sait_dist
 
 	##-----------------------------------------------------------------------------------
-	function isdist(m::Array{R}, n::Array{R}) where R<:AbstractFloat
-		s = min(length(m), length(n))
-		r = R(-s)
-		a = R(0)
+	function itakura_saito_dist(l::Z, x::Array{T}, inc_x::Z, y::Array{T}, inc_y::Z) where T<:Number where Z<:Integer
+		@assert(l > 0, "l needs to be a positive number")
+		@assert(inc_x > 0, "index increment for vector x needs to be positive (inc_x)")
+		@assert(inc_y > 0, "index increment for vector y needs to be positive (inc_y)")
+		@assert(inc_x*l <= length(x), "the number of requested computations musn't be larger than the dimension of x")
+		@assert(inc_y*l <= length(y), "the number of requested computations musn't be larger than the dimension of y")
+
+		r = T(-l)
+		q = T(0)
+
+		x_i = 1
+		y_i = 1
 		i = 1
 
-		@inbounds while i <= s
-			@fastmath a = m[i] / n[i]
-			@fastmath r = r + a - log(a)
+		@inbounds while i <= l
+			@fastmath q = x[x_i] / y[y_i]
+			@fastmath r = r + q - log(q)
+
+			x_i = x_i + inc_x
+			y_i = y_i + inc_y
 			i = i + 1
 		end
 
