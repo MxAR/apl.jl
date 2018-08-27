@@ -11,43 +11,93 @@
 	export beta_dist
 
 	##-----------------------------------------------------------------------------------
-	function beta_dist(beta::R, l::Z, x::Array{T}, inc_x, y::Array{T}, inc_y::Z) where T<:Number where Z<:Integer where R<:Real
+	function beta_dist(beta::R, l::Z, x::Array{N, 1}, inc_x::Z, y::Array{N, 1}, inc_y::Z) where N<:Number where Z<:Integer where R<:Real
 		@assert(l > 0, "l needs to be a positive number")
 		@assert(inc_x > 0, "index increment for vector x needs to be positive (inc_x)")
 		@assert(inc_y > 0, "index increment for vector y needs to be positive (inc_y)")
 		@assert(inc_x*l <= length(x), "the number of requested computations musn't be larger than the dimension of x")
 		@assert(inc_y*l <= length(y), "the number of requested computations musn't be larger than the dimension of y")
-		@assert(0 <= beta && beta <= 1, "beta must lie in [0, 1]") 
 
-		s = T(1)
-		r = T(0)
-		f = NaN
+		if beta == 1
+			return beta_dist_b1(l, x, inc_x, y, inc_y)
+		elseif beta == 0
+			return beta_dist_b0(l, x, inc_x, y, inc_y)		
+		else
+			return beta_dist_br(beta, l, x, inc_x, y, inc_y)
+		end
+	end
+
+	function beta_dist_br(beta::R, l::Z, x::Array{N, 1}, inc_x::Z, y::Array{N, 1}, inc_y::Z) where N<:Number where Z<:Integer where R<:Real
+		C = Complex{Float64}
+		r = C(0)
+		a = C(0)
+		b = C(0)
 
 		x_i = 1
 		y_i = 1
 		i = 1
 
-		if beta == 1
-			f = (a, b) -> a * log(a / b) - a + b
-		elseif beta == 0
-			f = (a, b) -> (a / b) - log(a / b)
-			r = T(-l)
-		else
-			f = (a, b) -> a^beta + ((beta - 1) * b^beta) - (beta * a * b^(beta - 1))
-			s = (beta * (beta - 1))
-		end
+		beta_m = beta - 1
 
-		@inbounds while i <= l
-			@fastmath r = r + f(x[x_i], y[y_i])
+		@fastmath @inbounds while i <= l
+			a = C(x[x_i])
+			b = C(y[y_i])
 
+			r = r + a^beta + (beta_m * b^beta) - (beta * a * b^beta_m)
+			
 			x_i = x_i + inc_x
 			y_i = y_i + inc_y
-			i += 1
+			i = i + 1
 		end
 
-		return r / (s * l)
+		return r / (l * beta * beta_m)
 	end
+	
+	function beta_dist_b0(l::Z, x::Array{N, 1}, inc_x::Z, y::Array{N, 1}, inc_y::Z) where N<:Number where Z<:Integer
+		C = Complex{Float64}
+		r = C(-l)
+		a = C(0)
 
+		x_i = 1
+		y_i = 1
+		i = 1
+
+		@fastmath @inbounds while i <= l
+			a = C(x[x_i] / y[y_i])
+			
+			r = r + a - log(a)
+			
+			x_i = x_i + inc_x
+			y_i = y_i + inc_y
+			i = i + 1
+		end
+
+		return r / l
+	end
+	
+	function beta_dist_b1(l::Z, x::Array{N, 1}, inc_x::Z, y::Array{N, 1}, inc_y::Z) where N<:Number where Z<:Integer
+		C = Complex{Float64}
+		r = C(0)
+		a = C(0)
+		b = C(0)
+
+		x_i = 1
+		y_i = 1
+		i = 1
+
+		@fastmath @inbounds while i <= l
+			a = C(x[x_i])
+			b = C(y[y_i])
+
+			r = r + (a * log(a / b)) + (b - a)
+			
+			x_i = x_i + inc_x
+			y_i = y_i + inc_y
+			i = i + 1
+		end
+
+		return r / l
+	end
 
 	##===================================================================================
 	## log specteal distance
