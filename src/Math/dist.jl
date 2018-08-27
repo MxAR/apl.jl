@@ -27,6 +27,7 @@
 		end
 	end
 
+	##-----------------------------------------------------------------------------------
 	function beta_dist_br(beta::R, l::Z, x::Array{N, 1}, inc_x::Z, y::Array{N, 1}, inc_y::Z) where N<:Number where Z<:Integer where R<:Real
 		C = Complex{Float64}
 		r = C(0)
@@ -53,6 +54,7 @@
 		return r / (l * beta * beta_m)
 	end
 	
+	##-----------------------------------------------------------------------------------
 	function beta_dist_b0(l::Z, x::Array{N, 1}, inc_x::Z, y::Array{N, 1}, inc_y::Z) where N<:Number where Z<:Integer
 		C = Complex{Float64}
 		r = C(-l)
@@ -75,6 +77,7 @@
 		return r / l
 	end
 	
+	##-----------------------------------------------------------------------------------
 	function beta_dist_b1(l::Z, x::Array{N, 1}, inc_x::Z, y::Array{N, 1}, inc_y::Z) where N<:Number where Z<:Integer
 		C = Complex{Float64}
 		r = C(0)
@@ -98,6 +101,7 @@
 
 		return r / l
 	end
+
 
 	##===================================================================================
 	## log specteal distance
