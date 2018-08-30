@@ -2,7 +2,7 @@
 	##===================================================================================
 	##	using directives
 	##===================================================================================
-	using bla
+	using ..bla
 
 	##===================================================================================
 	## basic
@@ -71,10 +71,10 @@
 	export rad, irad
 
 	##-----------------------------------------------------------------------------------
-	rad{T<:Number}(x::T) = @. x*0.0174532925199432957692369076849
+	rad(x::T) where T<:Number = @. x*0.0174532925199432957692369076849
 
 	##-----------------------------------------------------------------------------------
-	irad{T<:Number}(x::T) = @. x*57.2957795130823208767981548141
+	irad(x::T) where T<:Number = @. x*57.2957795130823208767981548141
 
 
 	##===================================================================================
@@ -84,28 +84,38 @@
 	export cntrl_angle, hcntrl_angle, vincenty_cntrl_angle
 
 	##-----------------------------------------------------------------------------------
-	function angle{T<:AbstractFloat}(u::Array{T, 1}, v::Array{T, 1}, bias::T = T(0)) 
+	function angle(u::Array{R, 1}, v::Array{R, 1}, bias::R = 0.) where R<:AbstractFloat 
 		return acosd((abs(bdot(u, v))/(bnrm(v)*bnrm(u)))+bias)
 	end
 
 	##-----------------------------------------------------------------------------------
-	ccntrl_angle{T<:AbstractFloat}(u::Array{T, 1}, v::Array{T, 1}) = @. acos(bdot(u, v))           				# returns radians | u&v = normal vectors on the circle
+	function ccntrl_angle(u::Array{R, 1}, v::Array{R, 1}) where R<:AbstractFloat
+		return @. acos(bdot(u, v))           			# returns radians | u&v = normal vectors on the circle
+	end
 
 	##-----------------------------------------------------------------------------------
-	scntrl_angle{T<:AbstractFloat}(u::Array{T, 1}, v::Array{T, 1}) = @. asin(bnrm(cross(u, v)))     			# returns radians | u&v = normal vectors on the circle
+	function scntrl_angle(u::Array{R, 1}, v::Array{R, 1}) where R<:AbstractFloat
+		return @. asin(bnrm(cross(u, v)))     			# returns radians | u&v = normal vectors on the circle
+	end
 
 	##-----------------------------------------------------------------------------------
-	tcntrl_angle{T<:AbstractFloat}(u::Array{T, 1}, v::Array{T, 1}) = @. atan(bnrm(cross(u, v))/bdot(u, v))  	# returns radians | u&v = normal vectors on the circle
+	function tcntrl_angle(u::Array{R, 1}, v::Array{R, 1}) where R<:AbstractFloat 
+		return @. atan(bnrm(cross(u, v))/bdot(u, v))  	# returns radians | u&v = normal vectors on the circle
+	end
 
 	##-----------------------------------------------------------------------------------
-	cntrl_angle{T<:AbstractFloat}(pla::T, plo::T, sla::T, slo::T) = acos((sin(pla)*sin(sla))+(cos(pla)*cos(sla)*cos(abs(plo-slo)))) 						# returns radians | pla/sla = primary/secondary latitude / plo/slo = primary/secondary longitude
+	function cntrl_angle(pla::R, plo::R, sla::R, slo::R) where R<:AbstractFloat 
+		return acos((sin(pla)*sin(sla))+(cos(pla)*cos(sla)*cos(abs(plo-slo))))				# returns radians | pla/sla = primary/secondary latitude / plo/slo = primary/secondary longitude
+	end
 
 	##-----------------------------------------------------------------------------------
-	hcntrl_angle{T<:AbstractFloat}(pla::T, plo::T, sla::T, slo::T) = 2*asin(sqrt(havsin(abs(pla-sla))+cos(pla)*cos(sla)*havsin(abs(plo-slo)))) 				# returns radians | pla/sla = primary/secondary latitude / plo/slo = primary/secondary longitude
+	function hcntrl_angle(pla::R, plo::R, sla::R, slo::R) where R<:AbstractFloat 
+		return 2*asin(sqrt(havsin(abs(pla-sla))+cos(pla)*cos(sla)*havsin(abs(plo-slo))))	# returns radians | pla/sla = primary/secondary latitude / plo/slo = primary/secondary longitude
+	end
 
 	##-----------------------------------------------------------------------------------
-	function vcntrl_angle{T<:AbstractFloat}(pla::T, plo::T, sla::T, slo::T)
-		longitude_delta = abs(plo-slo)                                                                                      								# returns radians | pla/sla = primary/secondary latitude / plo/slo = primary/secondary longitude
+	function vcntrl_angle(pla::R, plo::R, sla::R, slo::R) where R<:AbstractFloat
+		longitude_delta = abs(plo-slo)														# returns radians | pla/sla = primary/secondary latitude / plo/slo = primary/secondary longitude
 		return atan2(sqrt((cos(sla)*sin(longitude_delta))^2+((cos(pla)*sin(sla))-(sin(pla)*cos(sla)*cos(longitude_delta)))^2), (sin(pla)*sin(sla)+cos(pla)*cos(sla)*cos(longitude_delta)))
 	end
 end

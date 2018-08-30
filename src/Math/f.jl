@@ -152,7 +152,7 @@
 	end 
 
 	##-----------------------------------------------------------------------------------
-	function nroot_posdef(m::Array{C, 2}, n::Z = 2) where T<:Number where Z<:Integer
+	function nroot_posdef(m::Array{T, 2}, n::Z = 2) where T<:Number where Z<:Integer
 		R = Float64
 		g = Base.LinAlg.Eigen{R,R,Array{R,2},Array{R,1}}(eigfact(m; permute=false, scale=false))
 		s = size(m, 1)
@@ -408,7 +408,7 @@
 	export dctdnoise
 
 	##-----------------------------------------------------------------------------------
-	function dctdnoise(v::Array{R, 1}, k = R(3), lowpass::Bool, highpass::Bool) where R<:AbstractFloat
+	function dctdnoise(v::Array{R, 1}, k::Z, lowpass::Bool, highpass::Bool) where R<:AbstractFloat where Z<:Integer
 		s = size(v, 1)
 		t = Array{R, 1}(s)
 		p = plan_dct(v)
@@ -727,19 +727,19 @@
 	export divt
 
 	##-----------------------------------------------------------------------------------
-	divt(x::T, y::T) where Z<:Integer = y % x == 0
+	divt(x::Z, y::Z) where Z<:Integer = y % x == 0
 
 
     ##===================================================================================
     ## sigmoid
     ##===================================================================================
-    export sigmoid, sigmoidd
+    export sigmoid, sigmoid_derivate
 
     ##-----------------------------------------------------------------------------------
-	sigmoid{T<:Number}(x::T, eta::T = T(0)) = 1 / (1 + exp(-(x - eta)))
+	sigmoid(x::T, eta::T = T(0)) where T<:Number = 1 / (1 + exp(-(x - eta)))
 
     ##-----------------------------------------------------------------------------------
-	sigmoidd{T<:Number}(x::T, eta::T = T(0)) =  sigmoid(x, eta) * (1 - sigmoid(x, eta))
+	sigmoid_derivate(x::T, eta::T = T(0)) where T<:Number =  sigmoid(x, eta) * (1 - sigmoid(x, eta))
 
 
     ##===================================================================================
@@ -748,15 +748,15 @@
     export normd
 
     ##-----------------------------------------------------------------------------------
-	function normd{C<:Number, N<:Integer}(v::Array{C, 1}, p::N = N(2)) 
+	function normd(v::Array{T, 1}, p::Z = Z(2)) where T<:Number where Z<:Integer 
 		s = size(v, 1)
-		r = Array{C, 1}(s)
+		r = Array{T, 1}(s)
 		i = 1
 
 		while i <= s
 			@inbounds begin 
 				r[i] = v[i]
-				if r[i] != C(0)
+				if r[i] != T(0)
 					r[i] = r[i] / norm(v, p)
 				end
 				@fastmath r[i] = r[i]^(p - 1)
@@ -774,50 +774,50 @@
     export rbf_psq, rbf_inv_psq, rbf_inv_sq, rbf_tps
 
     ##-----------------------------------------------------------------------------------
-	function rbf_gauss{T<:Number}(delta::T, lambda::T = T(1))
+	function rbf_gauss(delta::T, lambda::T = T(1)) where T<:Number
 		return exp(-(delta / (2 * lambda))^2)
 	end 
 
     ##-----------------------------------------------------------------------------------
-	function rbf_gaussdl{T<:Number}(delta::T, lambda::T = T(1))
+	function rbf_gaussdl(delta::T, lambda::T = T(1)) where T<:Number
         d = delta^2
         l = lambda^2
         return (d / (l * lambda))*exp(-d / l)
     end
 
     ##-----------------------------------------------------------------------------------
-	function rbf_gaussdd{T<:Number}(delta::T, lambda::T = T(1))
+	function rbf_gaussdd(delta::T, lambda::T = T(1)) where T<:Number
         l = lambda^2
         return (delta / l) * exp(-(delta^2) / (2 * l))
     end
 
     ##-----------------------------------------------------------------------------------
-	function rbf_triang{T<:Number}(delta::T, lambda::T = T(1))
+	function rbf_triang(delta::T, lambda::T = T(1)) where T<:Number
 		return delta > lambda ? T(0) : T(1 - (delta / lambda))
 	end
 
     ##-----------------------------------------------------------------------------------
-	function rbf_cos_decay{T<:Number}(delta::T, lambda::T = (1)) 
+	function rbf_cos_decay(delta::T, lambda::T = (1)) where T<:Number
 		@fastmath return delta > lambda ? T(0) : T(((cos((pi * delta) / (2 * lambda))) + 1) / 2)
 	end
 
     ##-----------------------------------------------------------------------------------
-	function rbf_psq{T<:Number}(delta::T, lambda::T = T(1))
+	function rbf_psq(delta::T, lambda::T = T(1)) where T<:Number
 		@fastmath return sqrt(1 + (lambda * delta)^2)
 	end 
 
     ##-----------------------------------------------------------------------------------
-	function rbf_inv_psq{T<:Number}(delta::T, lambda::T = T(1)) 
+	function rbf_inv_psq(delta::T, lambda::T = T(1)) where T<:Number 
 		@fastmath return (1 + (lambda * delta)^2)^-.5
 	end 
 
     ##-----------------------------------------------------------------------------------
-	function rbf_inv_sq{T<:Number}(delta::T, lambda::T = T(1))
+	function rbf_inv_sq(delta::T, lambda::T = T(1)) where T<:Number
 		@fastmath return 1/(1 + (lambda * delta)^2)
 	end
 
     ##-----------------------------------------------------------------------------------
-	function rbf_tps{T<:Number}(delta::T, expt::T = T(2))
+	function rbf_tps(delta::T, expt::T = T(2)) where T<:Number
 		@fastmath return (delta^expt)*log(delta)
 	end
 
@@ -828,10 +828,10 @@
     export ramp, rampd
 
     ##-----------------------------------------------------------------------------------
-	ramp{T<:Number}(x::T, eta::T) = max(T(0), x-eta)
+	ramp(x::T, eta::T) where T<:Number = max(T(0), x-eta)
 
     ##-----------------------------------------------------------------------------------
-    rampd{T<:Number}(x::T, eta::T) = x-eta > 0 ? T(1) : T(0)
+    rampd(x::T, eta::T) where T<:Number = x-eta > 0 ? T(1) : T(0)
 
 
     ##===================================================================================
@@ -840,19 +840,20 @@
     export trapezr
 
     ##-----------------------------------------------------------------------------------
-    function trapezr{R<:AbstractFloat, N<:Integer}(a::R, b::R, f::Function, n::N)
-        d = (b-a)/n
-        ck = a+d
+    function trapezr(a::R, b::R, f::Function, n::Z) where R<:AbstractFloat where Z<:Integer
+        d = (b - a) / n
+        ck = a + d
         lk = a
+
         r = R(0)
 
         @inbounds for i = 1:n
-            r += f(lk)+f(ck)
+            r = r + f(lk) + f(ck)
             lk = ck
-            ck += d
+            ck = ck + d
         end
 
-        return (d*r)/2
+        return (d * r) / 2
     end
 
 
@@ -862,37 +863,40 @@
     export midptr
 
     ##-----------------------------------------------------------------------------------
-    function midptr{R<:AbstractFloat, N<:Integer}(a::R, b::R, f::Function, n::N)
-        d = (b-a)/n
-        k = a+(d/2)
+    function midptr(a::R, b::R, f::Function, n::Z) where R<:AbstractFloat where Z<:Integer
+        d = (b - a) / n
+        k = a + (d / 2)
         r = R(0)
 
         @inbounds for i = 1:n
-            r += f(k)
-            k += d
+            r = r + f(k)
+            k = k + d
         end
 
-        return d*r
+        return d * r
     end
 
 
     ##===================================================================================
     ## simpson's rule
+	##	n must be even
     ##===================================================================================
     export simpsonr
 
     ##-----------------------------------------------------------------------------------
-    function simpsonr{R<:AbstractFloat, N<:Integer}(a::R, b::R, f::Function, n::N)
-        @assert(n%2==0, "n is not even")
-        d = (b-a)/n; di = 2*d; r = R(0)
-        j = Array{R, 1}([a, a+d, a+di])
+    function simpsonr(a::R, b::R, f::Function, n::Z) where R<:AbstractFloat where Z<:Integer
+        d = (b - a) / n 
+		di = 2 * d 
+		r = R(0)
+        
+		j = Array{R, 1}([a, a+d, a+di])
 
         @inbounds for i = 1:N(n/2)
-            r += f(j[1])+4*f(j[2])+f(j[3])
-            j += di
+			r = r + f(j[1]) + (4 * f(j[2])) + f(j[3])
+            j = j + di
         end
 
-        return (d*r)/3
+        return (d * r) / 3
     end
 
 
@@ -941,18 +945,19 @@
     step(x, eta = 0.5) = @. ifelse(x >= eta, 1, 0)
 
     ##-----------------------------------------------------------------------------------
-    stepd{T<:Number}(x::T, eta) = @. ifelse(x == eta, typemax(T), 0)
+    stepd(x::T, eta) where T<:Number = @. ifelse(x == eta, typemax(T), 0)
 
 
     ##===================================================================================
     ## supp (support)
+	## second supp is for vector lists
     ##===================================================================================
     export supp
 
     ##-----------------------------------------------------------------------------------
-    function supp{T<:AbstractFloat}(v::Array{T, 1}, f::Function = (x::T) -> x)
+    function supp(v::Array{R, 1}, f::Function = (x::R) -> x) where R<:AbstractFloat
         set_zero_subnormals(true)
-        u = Array{T, 1}
+        u = Array{R, 1}
 
         @inbounds for i = 1:size(v, 1)
 			if abs(f(x)) == 0
@@ -964,8 +969,8 @@
     end
 
     ##-----------------------------------------------------------------------------------
-    function supp{T<:AbstractFloat}(vl::Array{Array{T, 1}, 1}, f::Function = (x::T) -> x)# supp for vector lists
-        ul = Array{Array{T, 1}, 1}
+    function supp(vl::Array{Array{R, 1}, 1}, f::Function = (x::R) -> x) where R<:AbstractFloat
+        ul = Array{Array{R, 1}, 1}
         set_zero_subnormals(true)
 
         @inbounds for i = 1:size(vl, 1)
@@ -979,33 +984,36 @@
 
 
 	##===================================================================================
-	##	Sawtooth wave
+	## Sawtooth wave
+	##	a = amplitude, p = period, q = phase
 	##===================================================================================
 	export saww
 
 	##-----------------------------------------------------------------------------------
-	saww{T<:AbstractFloat}(x::T, a::T, p::T, q::T) = (-2*a/pi)*atan(cot((x-q)*pi/p))	# a = amplitude, p = period, q = phase
+	saww(x::R, a::R, p::R, q::R) where R<:AbstractFloat = (-2 * a / pi) * atan(cot((x - q) * pi / p))
 
 
 	##===================================================================================
-	##	Square wave
+	## Square wave
+	##	a = amplitude, p = period, q = phase
 	##===================================================================================
 	export sqw
 
 	##-----------------------------------------------------------------------------------
-	sqw{T<:AbstractFloat}(x::T, a::T, p::T, q::T) = a*sign(sin((x-q)*q))				# a = amplitude, p = period, q = phase
+	sqw(x::R, a::R, p::R, q::R) where R<:AbstractFloat = a * sign(sin((x - q) * q))
 
 
 	##===================================================================================
-	##	Triangle wave
+	## Triangle wave
+	##	a = amplitude, p = period, q = phase	
 	##===================================================================================
 	export triw
 
 	##-----------------------------------------------------------------------------------
-	function triw{T<:AbstractFloat}(x::T, a::T, p::T, q::T)
-		s1 = 2/p
-		s2 = floor(s1*(x+q)+.5)
-		return a*2*s1*((x+q)-s1*s2)*(s2 % 2 == 0 ? 1 : -1)
+	function triw(x::R, a::R, p::R, q::R) where R<:AbstractFloat
+		s1 = 2 / p
+		s2 = floor(s1 * (x + q) + .5)
+		return a * 2 * s1 * ((x + q) - s1 * s2) * (s2 % 2 == 0 ? 1 : -1)
 	end
 
 
@@ -1015,7 +1023,7 @@
 	export rop
 
 	##-----------------------------------------------------------------------------------
-	function rop{T<:AbstractFloat}(c::Array{T, 1})
+	function rop(c::Array{R, 1}) where R<:AbstractFloat
 		s = size(c, 1)
 		reverse!(c)
 
@@ -1026,8 +1034,8 @@
 			s -= 1
 		end
 
-		m = shift(s-1, false)
-		m[1, :] = (-c[2:end])/c[1]
+		m = shift(s - 1, false)
+		m[1, :] = (-c[2:end]) / c[1]
 		return map((x) -> 1/x, eigvals(m))
 	end
 
@@ -1038,7 +1046,7 @@
 	export rou
 
 	##-----------------------------------------------------------------------------------
-	rou{N<:Integer}(n::N) = [exp((2*pi*i*im)/n) for i = 0:(n-1)]
+	rou(n::Z) where Z<:Integer = [exp((2 * pi * i * im) / n) for i = 0:(n-1)]
 
 
 	##===================================================================================
@@ -1047,7 +1055,7 @@
 	export crossp
 
 	##-----------------------------------------------------------------------------------
-	function crossp{T<:Number}(u::Array{T, 1}, v::Array{T, 1})
+	function crossp(u::Array{T, 1}, v::Array{T, 1}) where T<:Number
 		return [(u[2]*v[3])-(u[3]-v[2]), (u[3]*v[1])-(u[1]*v[3]), (u[1]*v[2])-(u[2]*v[1])]
 	end
 
@@ -1058,20 +1066,21 @@
 	export ln
 
 	##-----------------------------------------------------------------------------------
-	ln{T<:Number}(n::T) = log(n)
+	ln(n::T) where T<:Number = log(n)
 
 
     ##===================================================================================
     ## levi civita tensor
-    ##===================================================================================
-    export lecit, ipc
+	## 	index permutations count [3,4,5,2,1] -> [1,2,3,4,5] (3 permutation)
+	##===================================================================================
+    export lecit, index_permutations_count
 
     ##-----------------------------------------------------------------------------------
-    lecit{T<:Number}(v::Array{T, 1}) = 0 == index_permutations_count(v) % 2 ? 1 : -1
+    lecit(v::Array{Z, 1}) where Z<:Integer = 0 == index_permutations_count(v) % 2 ? 1 : -1
 
     ##-----------------------------------------------------------------------------------
-    function ipc{T<:Any}(v::Array{T, 1})                                                # index permutations count [3,4,5,2,1] -> [1,2,3,4,5]
-        s = size(v, 1)                                                            		# 3 permutations needed
+    function index_permutations_count(v::Array{Z, 1}) where Z<:Integer                                                
+        s = size(v, 1)
         t = linspace(1, s, s)
 		c = 0
 
@@ -1082,7 +1091,7 @@
                     if s != i
                         v[s] = v[i]
                         v[i] = i
-                        c += 1
+                        c = c + 1
                     end
                 end
             end

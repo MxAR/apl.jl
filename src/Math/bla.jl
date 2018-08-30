@@ -1,47 +1,53 @@
 @everywhere module bla    
 	##===================================================================================
-	##	BLAS wrapper
-	##		l = length of the vector
+	## using directives
+	##===================================================================================
+	using LinearAlgebra.BLAS
+
+
+	##===================================================================================
+	## BLAS wrapper
+	##	l = length of the vector
 	##===================================================================================
 	export bdot, bdotu, bdotc, bnrm
 
 	##-----------------------------------------------------------------------------------
-	function bdot{T<:AbstractFloat, N<:Integer}(l::N, v::Array{T, 1}, u::Array{T, 1}) 
+	function bdot(l::Z, v::Array{R, 1}, u::Array{R, 1}) where R<:AbstractFloat where Z<:Integer
 		return BLAS.dot(l, v, 1, u, 1)
 	end
 
 	##-----------------------------------------------------------------------------------
-	function bdot{T<:AbstractFloat}(v::Array{T, 1}, u::Array{T, 1}) 
+	function bdot(v::Array{R, 1}, u::Array{R, 1}) where R<:AbstractFloat
 		return BLAS.dot(size(v, 1), v, 1, u, 1)
 	end
 
 	##-----------------------------------------------------------------------------------
-	function bdotu{C<:Complex, N<:Integer}(l::N, v::Array{C, 1}, u::Array{C, 1}) 
+	function bdotu(l::Z, v::Array{C, 1}, u::Array{C, 1}) where C<:Complex where Z<:Integer
 		return BLAS.dotu(l, v, 1, u, 1)
 	end
 
 	##-----------------------------------------------------------------------------------
-	function bdotu{C<:Complex}(v::Array{C, 1}, u::Array{C, 1}) 
+	function bdotu(v::Array{C, 1}, u::Array{C, 1}) where C<:Complex 
 		return BLAS.dotu(size(v, 1), v, 1, u, 1)
 	end
 
 	##-----------------------------------------------------------------------------------
-	function bdotc{C<:Complex, N<:Integer}(l::N, v::Array{C, 1}, u::Array{C, 1}) 
+	function bdotc(l::Z, v::Array{C, 1}, u::Array{C, 1}) where C<:Complex where Z<:Integer 
 		return BLAS.dotc(l, v, 1, u, 1)
 	end
 
 	##-----------------------------------------------------------------------------------
-	function bdotc{C<:Complex}(v::Array{C, 1}, u::Array{C, 1}) 
+	function bdotc(v::Array{C, 1}, u::Array{C, 1}) where C<:Complex 
 		return BLAS.dotc(size(v, 1), v, 1, u, 1)
 	end
 
 	##-----------------------------------------------------------------------------------
-	function bnrm{T<:AbstractFloat, N<:Integer}(l::N, v::Array{T, 1}) 
+	function bnrm(l::Z, v::Array{R, 1}) where R<:AbstractFloat where Z<:Integer 
 		BLAS.nrm2(l, v, 1)
 	end
 
 	##-----------------------------------------------------------------------------------
-	function bnrm{T<:AbstractFloat}(v::Array{T, 1})
+	function bnrm(v::Array{R, 1}) where R<:AbstractFloat
 		BLAS.nrm2(size(v, 1), v, 1)
 	end
 
@@ -52,32 +58,32 @@
 	export soq, soqu, soqc
 
 	##-----------------------------------------------------------------------------------
-	function soq{T<:AbstractFloat, N<:Integer}(l::N, v::Array{T, 1}, n::N = 1) 
+	function soq(l::R, v::Array{R, 1}, n::Z = 1) where R<:AbstractFloat where Z<:Integer 
 		return BLAS.dot(l, v, n, v, n)
 	end
 
 	##-----------------------------------------------------------------------------------
-	function soq{T<:AbstractFloat}(v::Array{T, 1}) 
+	function soq(v::Array{R, 1}) where R<:AbstractFloat
 		return bdot(v, v)
 	end
 
 	##-----------------------------------------------------------------------------------
-	function soqu{C<:Complex, N<:Integer}(l::N, v::Array{C, 1}, n::N = N(1)) 
+	function soqu(l::Z, v::Array{C, 1}, n::Z = 1) where C<:Complex where Z<:Integer
 		return BLAS.dot(l, v, n, v, n)
 	end
 
 	##-----------------------------------------------------------------------------------
-	function soqu{C<:Complex}(v::Array{C, 1})
+	function soqu(v::Array{C, 1}) where C<:Complex
 		return bdotu(v, v)
 	end
 
 	##-----------------------------------------------------------------------------------
-	function soqc{C<:Complex, N<:Integer}(l::N, v::Array{C, 1}, n::N = 1) 
+	function soqc(l::Z, v::Array{C, 1}, n::Z = 1) where C<:Complex where Z<:Integer
 		return bdotc(l, v, n, v, n)
 	end
 
 	##-----------------------------------------------------------------------------------
-	function soqc{C<:Complex}(v::Array{C, 1}) 
+	function soc(v::Array{C, 1}) where C<:Complex 
 		return bdotc(v, v)
 	end
 
@@ -85,12 +91,12 @@
 	##===================================================================================
 	## kullback-leibler divergence
 	##	gkld = generalized kld
-	##	(all elements in m and n must be above zero)
+	##	(all elements in m and n must be positive)
 	##===================================================================================
 	export kld, gkld
 
 	##-----------------------------------------------------------------------------------
-	function kld{R<:AbstractFloat}(m::Array{R}, n::Array{R})
+	function kld(m::Array{R}, n::Array{R}) where R<:AbstractFloat
 		s = min(length(m), length(n))
 		r = R(0)
 		i = 1
@@ -104,7 +110,7 @@
 	end
 
 	##-----------------------------------------------------------------------------------
-	function gkld{R<:AbstractFloat}(m::Array{R}, n::Array{R})
+	function gkld(m::Array{R}, n::Array{R}) where R<:AbstractFloat
 		s = min(length(m), length(n))
 		r = R(0)
 		i = 1
@@ -122,10 +128,10 @@
 	## k statistics
 	##===================================================================================
 	export kstat, kstat_1, kstat_2, kstat_3, kstat_4
-	import mean.gamean
+	import ..mean.gamean
 
 	##-----------------------------------------------------------------------------------
-	function kstat{R<:Real, N<:Integer}(v::Array{R, 1}, k::N)
+	function kstat(v::Array{R, 1}, k::Z) where R<:Real where Z<:Integer
 		if k == 1
 			return kstat_1(v)
 		elseif k == 2
@@ -138,12 +144,12 @@
 	end
 	
 	##-----------------------------------------------------------------------------------
-	function kstat_1{R<:Real}(v::Array{R, 1})
+	function kstat_1(v::Array{R, 1}) where R<:Real
 		return gamean(v)
 	end
 
 	##-----------------------------------------------------------------------------------
-	function kstat_2{R<:Real}(v::Array{R, 1})
+	function kstat_2(v::Array{R, 1}) where R<:Real
 		m = AbstractFloat(v[1])
 		s = size(v, 1)
 
@@ -167,7 +173,7 @@
 	end
 
 	##-----------------------------------------------------------------------------------
-	function kstat_3{R<:Real}(v::Array{R, 1})
+	function kstat_3(v::Array{R, 1}) where R<:Real
 		m = AbstractFloat(v[1])
 		s = size(v, 1)
 
@@ -191,7 +197,7 @@
 	end
 
 	##-----------------------------------------------------------------------------------
-	function kstat_4{R<:Real}(v::Array{R, 1})
+	function kstat_4(v::Array{R, 1}) where R<:Real
 		m = AbstractFloat(v[1])
 		s = size(v, 1)
 
@@ -225,7 +231,7 @@
 	export moment, central_moment
 
 	##-----------------------------------------------------------------------------------
-	function moment{R<:Real, N<:Integer}(v::Array{R, 1}, k::N)
+	function moment(v::Array{R, 1}, k::Z) where R<:Real where Z<:Integer
 		@fastmath r = AbstractFloat(v[1]^k)
 		s = size(v, 1)
 
@@ -240,7 +246,7 @@
 	end
 
 	##-----------------------------------------------------------------------------------
-	function moment{C<:Complex, N<:Integer}(v::Array{C, 1}, k::N)
+	function moment(v::Array{C, 1}, k::Z) where C<:Complex where Z<:Integer
 		s = size(v, 1)
 		r = C(v[1]^k)
 
@@ -250,12 +256,11 @@
 			i = i + 1
 		end
 
-		r = r / s
-		return r
+		return r / s
 	end
 
 	##-----------------------------------------------------------------------------------
-	function central_moment{R<:Real, N<:Integer}(v::Array{R, 1}, c::R, k::N)
+	function central_moment(v::Array{R, 1}, c::R, k::Z) where R<:Real where Z<:Integer
 		@fastmath r = AbstractFloat((v[1] - c)^k)
 		s = size(v, 1)
 
@@ -265,12 +270,11 @@
 			i = i + 1
 		end
 
-		r = r / s
-		return r
+		return r / s
 	end
 
 	##-----------------------------------------------------------------------------------
-	function central_moment{C<:Complex, N<:Integer}(v::Array{C, 1}, c::C, k::N)
+	function central_moment(v::Array{C, 1}, c::C, k::Z) where C<:Complex where Z<:Integer
 		r = C((v[i] - c)^k)
 		s = size(v, 1)
 
@@ -280,8 +284,7 @@
 			i = i + 1
 		end
 
-		r = r / s
-		return r
+		return r / s
 	end
 
 
@@ -291,16 +294,16 @@
 	export snorm
 
 	##-----------------------------------------------------------------------------------
-	function snorm{N<:Number}(m::Array{N, 2})
-		T = Complex{Float64}
-		a = Base.LinAlg.Eigen{T,T,Array{T,2},Array{T,1}}(eigfact(m; scale=false, permute=false))
+	function snorm(m::Array{T, 2}) where T<:Number
+		C = Complex{AbstractFloat}
+		a = Base.LinAlg.Eigen{C,C,Array{C,2},Array{C,1}}(eigfact(m; scale=false, permute=false))
 		return sqrt(a[:values][1])
 	end
 
 	##-----------------------------------------------------------------------------------
-	function snorm_posdef{N<:Number}(m::Array{N, 2})
-		T = Float64
-		a = Base.LinAlg.Eigen{T,T,Array{T,2},Array{T,1}}(eigfact(m; scale=false, permute=false))
+	function snorm_posdef(m::Array{T, 2}) where T<:Number
+		R = AbstractFloat 
+		a = Base.LinAlg.Eigen{R,R,Array{R,2},Array{R,1}}(eigfact(m; scale=false, permute=false))
 		return sqrt(a[:values][1])
 	end
 
@@ -311,12 +314,12 @@
 	export qrd_sq, qrd
 
 	##-----------------------------------------------------------------------------------
-	function qrd_sq{T<:AbstractFloat}(m::Array{T, 2})
+	function qrd_sq(m::Array{R, 2}) where R<:AbstractFloat
 		s = size(m, 1)
-		t = Array{T, 2}(s, s)
-		v = Array{T, 1}(s)
+		t = Array{R, 2}(s, s)
+		v = Array{R, 1}(s)
 		r = copy(m)
-		w = T(0)
+		w = R(0)
 
 		@inbounds for i = 1:(s-1)
 			w = 0.
@@ -364,16 +367,16 @@
 			end
 		end
 
-		return (m*inv(r), r)
+		return (m * inv(r), r)
 	end
 
 	##-----------------------------------------------------------------------------------
-	function qrd{T<:AbstractFloat}(m::Array{T, 2})
+	function qrd(m::Array{R, 2}) where R<:AbstractFloat
 		s = size(m, 1)
-		t = Array{T, 2}(s, s)
-		v = Array{T, 1}(s)
+		t = Array{R, 2}(s, s)
+		v = Array{R, 1}(s)
 		r = copy(m)
-		w = T(0)
+		w = R(0)
 		i = 1
 
 		@inbounds while i <= (s-1)
@@ -454,7 +457,7 @@
 			i = i + 1
 		end
 
-		return (m*inv(r), r)
+		return (m * inv(r), r)
 	end
 
 
@@ -465,7 +468,7 @@
 	export ul_x_expand
 
 	##-----------------------------------------------------------------------------------
-	function ul_x_expand{T<:Number, N<:Integer}(m::Array{T, 2}, s::Tuple{N, N}, x::T = 1.0)
+	function ul_x_expand(m::Array{T, 2}, s::Tuple{Z, Z}, x::T = 1.0) where T<:Number where Z<:Integer
 		d = (s[1] - size(m, 1), s[2] - size(m,2))
 		r = Array{T, 2}(s[1], s[2])
 		i = 1
@@ -495,9 +498,9 @@
 	export minor
 
 	##-----------------------------------------------------------------------------------
-	function minor{T<:AbstractFloat, N<:Integer}(m::Array{T, 2}, p::Tuple{N, N} = (1, 1))
+	function minor(m::Array{R, 2}, p::Tuple{Z, Z} = (1, 1)) where R<:AbstractFloat where Z<:Integer
 		s = size(m)
-		r = Array{T, 2}(s[1]-p[1], s[2]-p[1])
+		r = Array{R, 2}(s[1] - p[1], s[2] - p[1])
 		i = 1 + p[1]
 		a = 1 + p[2]
 		k = 1
@@ -521,10 +524,10 @@
 	##===================================================================================
 	##  outer product implementation (faster than vanila)
 	##===================================================================================
-	export otr
+	export outer_product
 
 	##-----------------------------------------------------------------------------------
-	function otr{T<:AbstractFloat}(v::Array{T, 1}, w::Array{T, 1})
+	function outer_product(v::Array{R, 1}, w::Array{R, 1}) where R<:AbstractFloat
 		s = (size(v, 1), size(w, 1))
 		m = Array{T, 2}(s)
 		i = 1
@@ -548,7 +551,7 @@
     export grsc, grscn
 
 	##-----------------------------------------------------------------------------------
-	function grsc{T<:AbstractFloat}(m::Array{T, 2})
+	function grsc(m::Array{R, 2}) where R<:AbstractFloat
     	s = size(m)
 		r = Array{T, 2}(s[1], s[2])
 		d = Array{T, 1}(s[2])
@@ -563,7 +566,7 @@
 
 			j = 1
 			while j <= (i-1)
-				n = T(0)
+				n = R(0)
 				k = 1
 
 				while k <= s[1]
@@ -597,10 +600,10 @@
 	end
 
     ##-----------------------------------------------------------------------------------
-   	function grscn{T<:AbstractFloat}(m::Array{T, 2})
+   	function grscn(m::Array{R, 2}) where R<:AbstractFloat
     	s = size(m)
 		r = Array{T, 2}(s[1], s[2])
-		d = T(0)
+		d = R(0)
 
 		i = 1
 		@inbounds while i <= s[2]
@@ -658,7 +661,7 @@
     export proj, projn
 
     ##-----------------------------------------------------------------------------------
-    function proj{T<:Number}(v::Array{T, 1}, m::Array{T, 2})
+    function proj(v::Array{T, 1}, m::Array{T, 2}) where T<:Number
 		s = size(m)
 		r = Array{T, 1}(s[1])
 		n = T(0)
@@ -696,14 +699,14 @@
     end
 
     ##-----------------------------------------------------------------------------------
-    function projn{T<:AbstractFloat}(v::Array{T, 1}, m::Array{T, 2})
+    function projn(v::Array{R, 1}, m::Array{R, 2}) where R<:AbstractFloat
 		s = size(m)
-		r = Array{T, 1}(s[1])
-		n = T(0)
+		r = Array{R, 1}(s[1])
+		n = R(0)
 
 		i = 1
 		@inbounds while i <= s[1]
-			r[i] = T(0)
+			r[i] = R(0)
 			i = i + 1
 		end
 
@@ -722,7 +725,7 @@
 			end
 
 			i = i + 1
-			n = T(0)
+			n = R(0)
 		end
 
 		return r
@@ -736,7 +739,7 @@
     export cof
 
     ##-----------------------------------------------------------------------------------
-    function cof{T<:Number}(m::Array{T, 2})
+    function cof(m::Array{T, 2}) where T<:Number
 		s = size(m)
 		n = Array{T, 2}(s[1]-1, s[2]-1)
 		r = Array{T, 2}(s[1], s[2])
@@ -783,7 +786,7 @@
 	export adj
 
 	##-----------------------------------------------------------------------------------
-	adj{T<:Number}(m::Array{T, 2}) = return cof(m)'
+	adj(m::Array{T, 2}) where T<:Number = return cof(m)'
 
 
 	##===================================================================================
@@ -792,12 +795,12 @@
 	export ker
 
 	##-----------------------------------------------------------------------------------
-	function ker{T<:AbstractFloat}(m::Array{T, 2})
+	function ker(m::Array{R, 2}) where R<:AbstractFloat
 		s = size(m)
 		d = s[2] - s[1]
 
 		if d <= 0
-			r = Array{T, 2}(1, s[2])
+			r = Array{R, 2}(1, s[2])
 			
 			i = 1
 			@inbounds while i <= s[2]
@@ -807,8 +810,8 @@
 		
 			return r
 		else
-			x = Array{T, 2}(lufact(m)[:U])
-			r = Array{T, 2}(s[1] + d, d)
+			x = Array{R, 2}(lufact(m)[:U])
+			r = Array{R, 2}(s[1] + d, d)
 			xi = inv(x[1:s[1], 1:s[1]])
 
 			i = s[1] + 1
@@ -860,12 +863,12 @@
     export split, splith
 
     ##-----------------------------------------------------------------------------------
-    function split{T<:Number, Z<:Integer}(m::Array{T, 2}, i::Z, by_rows::Bool = true)
+    function split(m::Array{T, 2}, i::Z, by_rows::Bool = true) where T<:Number where Z<:Integer
 		return by_rows ? (m[1:i, :], m[(i+1):end, :]) : (m[:, 1:i], m[:, (i+1):end]) 
     end
 
     ##-----------------------------------------------------------------------------------
-    function splith{T<:Number}(m::Array{T, 2}, by_rows::Bool = true)
+    function splith(m::Array{T, 2}, by_rows::Bool = true) where T<:Number
 		return msplit(m, convert(Int, round(size(m, by_rows ? 1 : 2)/2)), by_rows)
     end
 
@@ -876,7 +879,7 @@
 	export ols
 
 	##-----------------------------------------------------------------------------------
-	ols{T<:AbstractFloat}(m::Array{T, 2}, y::Array{T, 1}) = (m'*m)\(m'*y)
+	ols(m::Array{R, 2}, y::Array{R, 1}) where R<:AbstractFloat = (m'*m)\(m'*y)
 
 
 	##===================================================================================
@@ -887,7 +890,7 @@
 	export hhr, hhm
 
 	##-----------------------------------------------------------------------------------
-	function hhr{R<:AbstractFloat}(v::Array{R, 1}, u::Array{R, 1})
+	function hhr(v::Array{R, 1}, u::Array{R, 1}) where R<:AbstractFloat
 		s = size(u, 1)
 		r = Array{R, 1}(s)
 		a = R(2) * BLAS.dot(s, v, 1, u, 1)
@@ -902,7 +905,7 @@
 	end
 
 	##-----------------------------------------------------------------------------------
-	function hhm{R<:AbstractFloat}(v::Array{R, 1})
+	function hhm(v::Array{R, 1}) where R<:AbstractFloat
 		s = size(v, 1)
 		m = Array{R, 2}(s, s)
 
@@ -932,7 +935,7 @@
     export kep
 
     ##-----------------------------------------------------------------------------------
-    function kep{R<:AbstractFloat}(m::Array{R, 2}, n::Array{R, 2})
+    function kep(m::Array{R, 2}, n::Array{R, 2}) where R<:AbstractFloat
 		sm = size(m)
 		sn = size(n)
 		r = Array{R, 2}(sm[1]^2, sn[1]^2)
@@ -969,7 +972,7 @@
 	export normalize
 
 	##-----------------------------------------------------------------------------------
-	function normalize{R<:Real}(m::Array{R, 2})
+	function normalize(m::Array{R, 2}) where R<:Real
 		T = AbstractFloat
 		s = size(m)
 		r = Array{T, 2}(s[1], s[2])
@@ -1004,7 +1007,7 @@
 	export phi, iphi
 
 	##-----------------------------------------------------------------------------------
-	function phi{R<:AbstractFloat}(m::Array{R, 2})
+	function phi(m::Array{R, 2}) where R<:AbstractFloat
 		s = size(m)
 		r = Array{R, 2}(s[1], s[2])
 
@@ -1031,7 +1034,7 @@
 	end
 
 	##-----------------------------------------------------------------------------------
-	function iphi{R<:Real}(m::Array{R, 2})
+	function iphi(m::Array{R, 2}) where R<:Real
 		s = size(m)
 		r = Array{R, 2}(s[1], s[2])
 
@@ -1059,7 +1062,7 @@
 	export scal
 
 	##-----------------------------------------------------------------------------------
-	function scal{R<:AbstractFloat}(v::Array{R, 1}, u::Array{R, 1})
+	function scal(v::Array{R, 1}, u::Array{R, 1}) where R<:AbstractFloat
 		s = size(v, 1)
 		c = Array{R, 1}(s)
 		a = BLAS.nrm2(s, v, 1)
@@ -1080,12 +1083,13 @@
 	export proj
 
 	##-----------------------------------------------------------------------------------
-	function proj{R<:AbstractFloat}(v::Array{R, 1}, u::Array{R, 1})
+	function proj(v::Array{R, 1}, u::Array{R, 1}) where R<:AbstractFloat
 		s = size(v, 1)
 		r = Array{R, 1}(s)
 
 		a = BLAS.nrm2(s, v, 1)
 		i = 1
+		
 		@inbounds while i <= s 
 			r[i] = v[i] / a
 			i = i + 1
@@ -1093,6 +1097,7 @@
 
 		a = BLAS.dot(s, r, 1, u, 1)
 		i = 1
+
 		@inbounds while i <= s
 			r[i] = r[i] * a
 			i = i + 1
@@ -1108,7 +1113,7 @@
     export rg_qr
 
     ##-----------------------------------------------------------------------------------
-    function rg_qr{T<:AbstractFloat}(X::Array{T, 2})
+    function rg_qr(X::Array{R, 2}) where R<:AbstractFloat
         QR = qr(hcat(ones(size(X, 1)), X[:, 1:end-1]))
         return QR[2] \ QR[1]' * X[:, end]
     end
@@ -1122,7 +1127,7 @@
 	export pca
 
 	##-----------------------------------------------------------------------------------
-	function pca{T<:AbstractFloat}(m::Array{T, 2})
+	function pca(m::Array{R, 2}) where R<:AbstractFloat
 		s = size(m, 1)
 		d = svd(m)
 		
@@ -1146,7 +1151,7 @@
 	export normalize
 
 	##-----------------------------------------------------------------------------------
-	function normalize{T<:Number}(m::Array{T, 2})
+	function normalize(m::Array{T, 2}) where T<:Number
 		s = size(m)
 		r = zeros(s[1], s[2])
 
@@ -1173,7 +1178,7 @@
 	export scal
 
 	##-----------------------------------------------------------------------------------
-	function scal{T<:Number}(a::Array{T, 1}, b::Array{T, 1})
+	function scal(a::Array{T, 1}, b::Array{T, 1}) where T<:Number
 		l = size(a, 1)
 		c = b ./ BLAS.nrm2(l, b, 1) 
 		return BLAS.dot(l, a, 1, c, 1)
@@ -1186,7 +1191,7 @@
 	export proj
 
 	##-----------------------------------------------------------------------------------
-	function proj{T<:Number}(a::Array{T, 1}, b::Array{T, 1})
+	function proj(a::Array{T, 1}, b::Array{T, 1}) where T<:Number
 		l = size(a, 1)
 		c = b ./ BLAS.nrm2(l, b, 1)
 		return c.*BLAS.dot(l, a, 1, c, 1)

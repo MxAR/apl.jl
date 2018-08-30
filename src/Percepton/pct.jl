@@ -2,32 +2,33 @@
     ##===================================================================================
     ##  types
     ##===================================================================================
-    type tpct{T<:AbstractFloat}                                                         # Percepton
-        weights::Array{T, 1}
-        threshold::T
+    mutable struct tpct{R<:AbstractFloat}                                                         # Percepton
+        weights::Array{R, 1}
+        threshold::R
         threshold_func::Function
     end
 
 
     ##===================================================================================
-    ##  constructors
+    ## constructors
+	##	tpctv2 will approximate all weights
     ##===================================================================================
     export tpctv0, tpctv1, tpctv2
 
     ##-----------------------------------------------------------------------------------
-    function tpctv0{T<:AbstractFloat}(weights::Array{T, 1}, threshold::T = .5, threshold_func::Function = t(x, y) = x >= y ? 1 : 0)
+    function tpctv0(weights::Array{R, 1}, threshold::R = .5, threshold_func::Function = t(x, y) = x >= y ? 1 : 0) where R<:AbstractFloat
         return tpct(weights, threshold, threshold_func)
     end
 
     ##-----------------------------------------------------------------------------------
-    function tpctv1{T<:AbstractFloat, N<:Integer}(Inputs::N, Random::Bool = true, threshold::T = .5, threshold_func::Function = t(x, y) = x >= y ? 1 : 0)
+    function tpctv1(Inputs::Z, Random::Bool = true, threshold::R = .5, threshold_func::Function = t(x, y) = x >= y ? 1 : 0) where R<:AbstractFloat where Z<:Integer
         @assert(Inputs > 0, "the numerb of inputs musn't be negative")
         return tpct(Random ? randn(Inputs) : zeros(Inputs), threshold, threshold_func)
     end
 
     ##-----------------------------------------------------------------------------------
-    function tpctv2{T<:AbstractFloat}(Inputs::Array{T, 2}, ExpectedResults::Array{T, 2}, threshold::T = .5, threshold_func::Function = t(x, y) = x >= y ? 1 : 0) # constructor which will approximate all weights
-        return tpct((Inputs \ ExpectedResults), threshold, threshold_func)
+    function tpctv2(Inputs::Array{R, 2}, ExpectedResults::Array{R, 2}, threshold::R = .5, threshold_func::Function = t(x, y) = x >= y ? 1 : 0) where R<:AbstractFloat 
+		return tpct((Inputs \ ExpectedResults), threshold, threshold_func)
     end
 
 
@@ -37,7 +38,7 @@
     export iaf
 
     ##-----------------------------------------------------------------------------------
-    function iaf{T<:AbstractFloat}(PCT::tpct, Input::Array{T, 1})
+    function iaf(PCT::tpct, Input::Array{R, 1}) where R<:AbstractFloat
         @assert(size(PCT.weights, 1) == size(Input, 1), "input array length must match weight length")
         return PCT.threshold_func(bdot(PCT.weights, Input), PCT.threshold);
     end
@@ -49,7 +50,7 @@
     export gdb!, gdo!
 
     ##-----------------------------------------------------------------------------------
-    function gdo!{T<:AbstractFloat}(PCT::tpct, Inputs::Array{T, 2}, ExpectedResults::Array{T, 1}, LearningRate::T = 0.2, MaxCycles::Int = -1)
+    function gdo!(PCT::tpct, Inputs::Array{R, 2}, ExpectedResults::Array{R, 1}, LearningRate::R = .2, MaxCycles::Z = -1) where R<:AbstractFloat where Z<:Integer
         InputD2Size = size(Inputs, 2)                                                   # faster than Batch with tpctv2
         CurrentInput = []
         epsilon = delta = 10
@@ -71,7 +72,8 @@
         return PCT
     end
 
-    function gdb!{T<:AbstractFloat}(PCT::tpct, Inputs::Array{T, 2}, ExpectedResults::Array{T, 1}, LearningRate::T = 0.2, MaxCycles::Int = -1)
+	##-----------------------------------------------------------------------------------
+    function gdb!(PCT::tpct, Inputs::Array{R, 2}, ExpectedResults::Array{R, 1}, LearningRate::R = .2, MaxCycles::Z = -1) where R<:AbstractFloat where Z<:Integer
         InputD2Size = size(Inputs, 2)
         CurrentInput = Wc = []
         epsilon = delta = Tc = 10

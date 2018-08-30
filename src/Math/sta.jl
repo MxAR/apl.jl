@@ -1,11 +1,17 @@
 @everywhere module sta
 	##===================================================================================
+	## using directives
+	##===================================================================================
+	using Distributed
+
+	
+	##===================================================================================
 	## bernoulli trial probability
 	##===================================================================================
 	export bernoulli
 
 	##-----------------------------------------------------------------------------------
-	function bernoulli{R<:Real, Z<:Integer}(n::Z, k::Z, p::R)
+	function bernoulli(n::Z, k::Z, p::R) where R<:Real where Z<:Integer
 		return comb(n, k) * (p^k) * ((1 - p)^(n - k))
 	end
 
@@ -16,7 +22,7 @@
 	export comb
 
 	##-----------------------------------------------------------------------------------
-	function comb{Z<:Integer}(n::Z, k::Z)
+	function comb(n::Z, k::Z) where Z<:Integer
 		k = k > floor(n / 2) ? n - k : k
 		return perm(n, k)/factorial(k)
 	end
@@ -30,7 +36,7 @@
 	export perm, permr
 
 	##-----------------------------------------------------------------------------------
-	function perm{Z<:Integer}(n::Z, k::Z)
+	function perm(n::Z, k::Z) where Z<:Integer
 		i = n - k + 1
 		r = Z(1)
 
@@ -43,7 +49,7 @@
 	end
 
 	##-----------------------------------------------------------------------------------
-	function permr{Z<:Integer}(n::Z, rep::Array{Z, 1})
+	function permr(n::Z, rep::Array{Z, 1}) where Z<:Integer
 		l = size(rep, 1)
 		i = 1
 		a = 1
@@ -66,9 +72,9 @@
 	export xstd
 
 	##-----------------------------------------------------------------------------------
-	function xstd{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, l::N, n::N = 1)
+	function xstd(v::Array{R, 1}, l::Z, n::Z = 1) where R<:AbstractFloat where Z<:Integer
 		s = n * l
-		m = T(0)
+		m = R(0)
 
 		@assert(s <= size(v, 1), "out of bounds error")
 		@inbounds for i = 1:n:(n*l)
@@ -79,8 +85,8 @@
 	end
 
 	##-----------------------------------------------------------------------------------
-	function std{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, m::T, l::N, n::N = 1) 
-		return sqrt(BLAS.dot(l, v, n, v, n)-m^2)
+	function std(v::Array{R, 1}, m::R, l::Z, n::Z = 1) where R<:AbstractFloat where Z<:Integer 
+		return sqrt(BLAS.dot(l, v, n, v, n) - m^2)
 	end
 
 
@@ -90,7 +96,7 @@
 	export derange
 
 	##-----------------------------------------------------------------------------------
-	function derange{Z<:Integer}(x::Z)
+	function derange(x::Z) where Z<:Integer
 		return round(AbstractFloat(factorial(x))/e)
 	end
 
@@ -101,11 +107,11 @@
 	export mad
 
 	##-----------------------------------------------------------------------------------
-	function mad{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, l::N, inx::N)
+	function mad(v::Array{R, 1}, l::Z, inx::Z) where R<:AbstractFloat where Z<:Integer
 		m = median(v)
 		r = zeros(l)
 		s = inx * l
-		j = N(1)
+		j = Z(1)
 
 		@assert(s <= size(v, 1), "out of bonds error");
 		@inbounds for i = 1:inx:(inx*l)
@@ -117,16 +123,17 @@
 	end
 
 	##-----------------------------------------------------------------------------------
-	mad{T<:AbstractFloat}(v::Array{T, 1}) = mad(v, size(v, 1), 1)
+	mad(v::Array{T, 1}) where T<:AbstractFloat = mad(v, size(v, 1), 1)
 
 
 	##===================================================================================
-	##	poission distribution
+	## poission distribution
+	##	l needs to be positive 
 	##===================================================================================
 	export pois
 
 	##-----------------------------------------------------------------------------------
-	pois{T<:Number}(k::T, l::T) = exp(k*log(l)-l-lgamma(k+1))
+	pois(k::T, l::T) where T<:Number = exp(k*log(l)-l-lgamma(k+1))
 
 
 	##===================================================================================
@@ -139,7 +146,7 @@
 	export nod
 
 	##-----------------------------------------------------------------------------------
-	function nod{T<:AbstractFloat, N<:Integer}(t::Array{T, 1}, p::N, l::N, inc::N = 1)
+	function nod(t::Array{R, 1}, p::Z, l::Z, inc::Z = 1) where R<:AbstractFloat where Z<:Integer
 		r = zeros(l)
 
 		for i = (p+1):inc:(p+l)
@@ -156,11 +163,12 @@
 	export zscore
 
 	##-----------------------------------------------------------------------------------
-	zscore{T<:AbstractFloat}(v::Array{T, 1}) = (v-(sum(v)/size(v, 1)))/std(v)
+	zscore(v::Array{R, 1}) where R<:AbstractFloat = (v-(sum(v)/size(v, 1)))/std(v)
 
 
 	##===================================================================================
-	##  dice sampling
+	## dice sampling
+	##	n must be positive	
 	##===================================================================================
 	export w6, nw6
 
@@ -168,7 +176,7 @@
 	w6() = Int(ceil(rand()*6))
 
 	##-----------------------------------------------------------------------------------
-	nw6(n::Integer) = sum([w6() for i = 1:n])
+	nw6(n::Z) where Z<:Integer = sum([w6() for i = 1:n])
 
 
 	##===================================================================================
@@ -177,7 +185,7 @@
 	export ar
 
 	##-----------------------------------------------------------------------------------
-	function ar{T<:AbstractFloat, N<:Integer}(q::N, v::Array{T, 1})
+	function ar(q::Z, v::Array{R, 1}) where R<:AbstractFloat where Z<:Integer
 		l = size(v, 1) - q
 		m = zeros(T, l, q+1)
 		y = zeros(T, l)
@@ -198,7 +206,7 @@
 	export diff, ndiff
 
 	##-----------------------------------------------------------------------------------
-	function diff{N<:Integer, R<:AbstractFloat}(t::Array{R, 1}, tau::N = 1)
+	function diff(t::Array{R, 1}, tau::Z = 1) where R<:AbstractFloat where Z<:Integer
 		l = size(t, 1)
 		r = zeros(R, l)
 
@@ -210,7 +218,7 @@
 	end
 
 	##-----------------------------------------------------------------------------------
-	function ndiff{N<:Integer, R<:AbstractFloat}(t::Array{R, 1}, tau::N = 1, ord::N = 1)
+	function ndiff(t::Array{R, 1}, tau::Z = 1, ord::Z = 1) where R<:AbstractFloat where Z<:Integer
 		l = size(t, 1)
 		r0 = deepcopy(t)
 		r1 = zeros(R, l)
@@ -231,16 +239,16 @@
 	export difut, adifut
 
 	##-----------------------------------------------------------------------------------
-	difut{T<:AbstractFloat}(v::Array{T, 1}, p::T = .01) = ar(1, v)[2] <= p
+	difut(v::Array{R, 1}, p::R = .01) where R<:AbstractFloat = ar(1, v)[2] <= p
 
 	##-----------------------------------------------------------------------------------
-	difut{T<:AbstractFloat}(v::Array{T, 1}, p::T, d::T) = ar(1, v-[d*x for x = 1:size(v, 1)])[2] <= p
+	difut(v::Array{R, 1}, p::R, d::R) where R<:AbstractFloat = ar(1, v-[d*x for x = 1:size(v, 1)])[2] <= p
 
 	##-----------------------------------------------------------------------------------
-	difut{T<:AbstractFloat}(v::Array{T, 1}, p::T, d::T, t::T) = ar(1, v-[(d*x)+(t*sum(x)) for x = 1:size(v, 1)])[2] <= p
+	difut(v::Array{R, 1}, p::R, d::R, t::R) where R<:AbstractFloat = ar(1, v-[(d*x)+(t*sum(x)) for x = 1:size(v, 1)])[2] <= p
 
 	##-----------------------------------------------------------------------------------
-	function adifut{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, q::N, p::T = .01)
+	function adifut(v::Array{R, 1}, q::Z, p::R = .01) where R<:AbstractFloat where Z<:Integer
 		@assert(l > p, "sample size to small")
 		d = (circshift(v, -1) - v)[1:end-1]
 		l = size(v, 1) - q - 1
@@ -257,10 +265,10 @@
 	end
 
 	##-----------------------------------------------------------------------------------
-	adifut{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, q::N, p::T, d::N) = adifut((v-[d*x for x = 1:size(v, 1)]), q, p)
+	adifut(v::Array{R, 1}, q::Z, p::R, d::Z) where R<:AbstractFloat where Z<:Integer = adifut((v-[d*x for x = 1:size(v, 1)]), q, p)
 
 	##-----------------------------------------------------------------------------------
-	adifut{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, q::N, p::T, d::T, t::T) = adifut((v-[(d*x)+(t*sum(x)) for x = 1:size(v, 1)]), q, p)
+	adifut(v::Array{R, 1}, q::Z, p::R, d::R, t::R) where R<:AbstractFloat where Z<:Integer = adifut((v-[(d*x)+(t*sum(x)) for x = 1:size(v, 1)]), q, p)
 
 
 	##===================================================================================
@@ -269,31 +277,44 @@
 	export angrat, aangrat
 
 	##-----------------------------------------------------------------------------------
-	angrat{T<:AbstractFloat}(x::Array{T, 1}, y::Array{T, 1}, p::T = .01) = difut(y - (((soq(x))\dot(x, y))*x), p)
+	function angrat(x::Array{R, 1}, y::Array{R, 1}, p::R = .01) where R<:AbstractFloat 
+		return difut(y - (((soq(x))\dot(x, y))*x), p)
+	end
 
 	##-----------------------------------------------------------------------------------
-	angrat{T<:AbstractFloat}(x::Array{T, 1}, y::Array{T, 1}, p::T, d::T) = difut(y - (((soq(x))\dot(x, y))*x), p, d)
+	function angrat(x::Array{R, 1}, y::Array{R, 1}, p::R, d::R) where R<:AbstractFloat
+		return difut(y - (((soq(x))\dot(x, y))*x), p, d)
+	end
 
 	##-----------------------------------------------------------------------------------
-	aangrat{T<:AbstractFloat}(x::Array{T, 1}, y::Array{T, 1}, p::T, d::T, t::T) = difut(y - (((soq(x))\dot(x, y))*x), p, d, t)
+	function aangrat(x::Array{R, 1}, y::Array{R, 1}, p::R, d::R, t::R) where R<:AbstractFloat 
+		return difut(y - (((soq(x))\dot(x, y))*x), p, d, t)
+	end
 
 	##-----------------------------------------------------------------------------------
-	aangrat{T<:AbstractFloat, N<:Integer}(x::Array{T, 1}, y::Array{T, 1}, q::N, p::T = .01) = difut(y - (((soq(x))\dot(x, y))*x), q, p)
+	function aangrat(x::Array{R, 1}, y::Array{R, 1}, q::Z, p::R = .01) where R<:AbstractFloat where Z<:Integer
+		return difut(y - (((soq(x))\dot(x, y))*x), q, p)
+	end
 
 	##-----------------------------------------------------------------------------------
-	aangrat{T<:AbstractFloat, N<:Integer}(x::Array{T, 1}, y::Array{T, 1}, q::N, p::T, d::T) = difut(y - (((soq(x))\dot(x, y))*x), q, p, d)
+	function aangrat(x::Array{R, 1}, y::Array{R, 1}, q::Z, p::R, d::R) where R<:AbstractFloat where Z<:Integer
+		return difut(y - (((soq(x))\dot(x, y))*x), q, p, d)
+	end 
 
 	##-----------------------------------------------------------------------------------
-	aangrat{T<:AbstractFloat, N<:Integer}(x::Array{T, 1}, y::Array{T, 1}, q::N, p::T, d::T, t::T) = difut(y - (((soq(x))\dot(x, y))*x), q, p, d, t)
+	function aangrat(x::Array{R, 1}, y::Array{R, 1}, q::Z, p::R, d::R, t::R) where R<:AbstractFloat where Z<:Integer 
+		return difut(y - (((soq(x))\dot(x, y))*x), q, p, d, t)
+	end
 
 
 	##===================================================================================
     ## mutual incoherence
+	##	the lower the value the better
     ##===================================================================================
     export mut_inch
 
     ##-----------------------------------------------------------------------------------
-    function mut_inch{T<:Number, N<:Integer}(m::Array{T, 2}, rows = true, p::N = 2)    	# the lower the better the mutual incoherence property
+    function mut_inch(m::Array{T, 2}, rows::Bool = true, p::Z = 2) where T<:Number where Z<:Integer
         m = rows ? m : m'
 		inf = 0
 
@@ -305,7 +326,7 @@
     end
 
     ##-----------------------------------------------------------------------------------
-    function mut_inch{T<:Number, N<:Integer}(vl::Array{Array{T, 1}}, p::N = 2)
+    function mut_inch(vl::Array{Array{T, 1}}, p::Z = 2) where T<:Number where Z<:Integer
         inf = 0
 
         @inbounds for x = 2:lenght(vl), y = 1:(x-1)
@@ -318,11 +339,12 @@
 
 	##===================================================================================
     ## normalize (statiscally)
+	##	sets variance to 1 and mean to 0
     ##===================================================================================
     export normalize_s, normalize_sp, normalize_sps
 
     ##-----------------------------------------------------------------------------------
-    function normalize_s{T<:Number}(m::Array{T, 2}, column::Bool = true)                # sets variance to 1 and mean to 0
+    function normalize_s(m::Array{T, 2}, column::Bool = true) where T<:Number
 		r = column ? m : m'
 		d = size(r, 1)
 
@@ -334,11 +356,11 @@
     end
 
 	##-----------------------------------------------------------------------------------
-    function normalize_sp{T<:Number}(m::Array{T, 2}, column::Bool = true)
+    function normalize_sp(m::Array{T, 2}, column::Bool = true) where T<:Number
 		r = column ? m : m'
 		d = size(m, 1)
 
-        @sync @parallel for w = 1:size(r, 2)
+        @sync @distributed for w = 1:size(r, 2)
             r[1:d, w] = (r[1:d, w] - median(r[1:d, w])) / std(r[1:d, w])
         end
 
@@ -346,11 +368,11 @@
     end
 
     ##-----------------------------------------------------------------------------------
-    function normalize_sps{T<:Number}(m::Array{T, 2}, column::Bool = true)
+    function normalize_sps(m::Array{T, 2}, column::Bool = true) where T<:Number
 		r = convert(SharedArray, column ? m : m')
 		d = size(r, 1)
 
-        @inbounds @sync @parallel for w = 1:size(r, 2)
+        @inbounds @sync @distributed for w = 1:size(r, 2)
             r[1:d, w] = (r[1:d, w] - median(r[1:d, w])) / std(r[1:d, w])
         end
 
@@ -360,33 +382,34 @@
 
 	##===================================================================================
     ## covariance
+	##	d = delay
     ##===================================================================================
     export cov
 
     ##-----------------------------------------------------------------------------------
-    function cov{T<:AbstractFloat, N<:Integer}(l::N, x::Array{T, 1}, n1::N, y::Array{T, 1}, n2::N)
+    function cov(l::Z, x::Array{R, 1}, n1::Z, y::Array{R, 1}, n2::Z) where R<:AbstractFloat where Z<:Integer
         m1 = m2 = T(0)
 
-		s = n1*l
+		s = n1 * l
 		@assert(s <= size(x, 1), "out of bounds error")
         @inbounds for i = 1:n1:(n1*l)
             m1 = m1 + x[i]
         end
 
-		s = n2*l
+		s = n2 * l
 		@assert(s <= size(y, 1), "out of bounds error")
         @inbounds for i = 1:n2:(n2*l)
             m2 = m2 + y[i]
         end
 
-        m1 = m1/l
-        m2 = m2/l
+        m1 = m1 / l
+        m2 = m2 / l
 
         return (BLAS.dot(l, x, n1, y, n2)/l)-(m1*m2)
     end
 
     ##-----------------------------------------------------------------------------------
-    cov{T<:AbstractFloat, N<:Integer}(l::N, x::Array{T, 1}, n::N, d::N = N(1)) = cov(l, x, n, x[d+1:end], n)     # d = delay
+    cov(l::Z, x::Array{R, 1}, n::Z, d::Z = 1) where R<:AbstractFloat where Z<:Integer = cov(l, x, n, x[d+1:end], n)
 
 
     ##===================================================================================
@@ -398,7 +421,7 @@
     export mcov
 
     ##-----------------------------------------------------------------------------------
-    function mcov{T<:AbstractFloat}(m::Array{T, 2}, t::Bool = false, p::Bool = true)
+    function mcov(m::Array{R, 2}, t::B= false, p::B = true) where R<:AbstractFloat where B<:Bool
 		s = size(m)
 
 		if t
@@ -417,12 +440,12 @@
     export covc
 
     ##-----------------------------------------------------------------------------------
-    function covc{T<:AbstractFloat}(x::Array{T, 1}, y::Array{T, 1})
+    function covc(x::Array{R, 1}, y::Array{R, 1}) where R<:AbstractFloat
         xs = size(x, 1); xm = gamean(x, xs, 1)
 		ys = size(y, 1); ym = gamean(y, ys, 1)
 
         r = zeros(T, xs, ys)
-		sc = 1/(xs*ys)
+		sc = 1 / (xs * ys)
 
 		@inbounds for xi = 1:xs, yi = 1:ys
             r[xi, yi] = cov(x[xi], xm, y[yi], ym, sc)
@@ -438,10 +461,15 @@
     export covcs
 
 	##-----------------------------------------------------------------------------------
-	covcs{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, u::Array{T, 1}, l::N, t::N) = bdot((l-t), (v-gamean(v, size(v, 1), 1)), (circshift(u, t)-gamean(u, size(v, 1), 1)))/(l-t)
+	function covcs(v::Array{R, 1}, u::Array{R, 1}, l::Z, t::Z) where R<:AbstractFloat where Z<:Integer 
+		return bdot((l-t), (v-gamean(v, size(v, 1), 1)), (circshift(u, t)-gamean(u, size(v, 1), 1)))/(l-t)
+	end
 
 	##-----------------------------------------------------------------------------------
-    covcs{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, u::Array{T, 1}, t::N = N(1)) = covcs(v, u, size(v, 1), t)
+    function covcs(v::Array{R, 1}, u::Array{R, 1}, t::Z = 1) where R<:AbstractFloat where Z<:Integer 
+		return covcs(v, u, size(v, 1), t)
+	end
+
 
     ##===================================================================================
     ## cross correlation (with delay)
@@ -449,7 +477,9 @@
     export ccor
 
     ##-----------------------------------------------------------------------------------
-    ccor{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, u::Array{T, 1}, t::N = N(1)) = covcs(v, u, t)./(std(v)*std(u))
+    function ccor(v::Array{R, 1}, u::Array{R, 1}, t::Z = 1) where R<:AbstractFloat where Z<:Integer
+		return covcs(v, u, t)./(std(v)*std(u))
+	end
 
 
 	##===================================================================================
@@ -458,7 +488,9 @@
 	export shai
 
 	##-----------------------------------------------------------------------------------
-	shai{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, l::N, n::N) = BLAS.dot(l, v, n, log.(v[1:n:(n*l)]), 1)
+	function shai(v::Array{R, 1}, l::Z, n::Z) where R<:AbstractFloat where Z<:Integer 
+		return BLAS.dot(l, v, n, log.(v[1:n:(n*l)]), 1)
+	end
 
 
 	##===================================================================================
@@ -467,7 +499,7 @@
 	export gishi
 
 	##-----------------------------------------------------------------------------------
-	gishi{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, l::N, n::N) = 1 - BLAS.dot(l, v, n, v, n)
+	gishi(v::Array{R, 1}, l::Z, n::Z) where R<:AbstractFloat where Z<:Integer = 1 - BLAS.dot(l, v, n, v, n)
 
 
 	##===================================================================================
@@ -476,7 +508,7 @@
 	export reepy
 
 	##-----------------------------------------------------------------------------------
-	function reepy{T<:AbstractFloat, N<:Integer}(v::Array{T, 1}, p::N, l::N, n::N)
+	function reepy(v::Array{R, 1}, p::Z, l::Z, n::Z) where R<:AbstractFloat where Z<:Integer
 		s = n * l
 		u = v[i]
 

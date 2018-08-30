@@ -2,10 +2,10 @@
     ##===================================================================================
     ##  types
     ##===================================================================================
-    type trbfn{T<:AbstractFloat}                                                        # radial basis function network
-        hl_ltwm::Array{T, 2}                                                            # hidden layer-transition-weight-matrix
-        hl_th::Array{T, 1}                                                              # hidden layer radiis
-        ol_ltwm::Array{T, 2}                                                            # output layer-transition-weight-matrix
+    mutable struct trbfn{R<:AbstractFloat}                                              # radial basis function network
+        hl_ltwm::Array{R, 2}                                                            # hidden layer-transition-weight-matrix
+        hl_th::Array{R, 1}                                                              # hidden layer radiis
+        ol_ltwm::Array{R, 2}                                                            # output layer-transition-weight-matrix
         rbf::Function                                                                   # radial basis function
         rbf_derivate_lamda::Function                                                    # radial basis function derivation after lambda
         rbf_derivate_dist::Function                                                     # radial basis function derivation after dist
@@ -25,7 +25,7 @@
     end
 
     ##-----------------------------------------------------------------------------------
-    function init_rbfn{T<:AbstractFloat, N<:Integer}(train_examp::Array{Any, 1}, support_points::N, rbf::Function = rbf_gaussian, rbf_derivate_lamda::Function = rbf_gaussian_d_lambda, rbf_derivate_dist::Function = rbf_gaussian_d_delta, df::Function = (x, y) -> norm(x-y), df_derivate = nrm_d, precision::T = 2.)
+    function init_rbfn(train_examp::Array{Any, 1}, support_points::Z, rbf::F = rbf_gaussian, rbf_derivate_lamda::F = rbf_gaussian_d_lambda, rbf_derivate_dist::F = rbf_gaussian_d_delta, df::F = (x, y) -> norm(x-y), df_derivate = nrm_d, precision::R = 2.) where R<:AbstractFloat where Z<:Integer where F<:Function
         sp = APL.samples(train_examp, support_points)
         out = convert(Array{Float64, 2}, train_examp[1][2]')
         hl_ltwm = convert(Array{Float64, 2}, sp[1][1]')
@@ -66,11 +66,15 @@
     export iaf
 
     ##-----------------------------------------------------------------------------------
-    function iaf{T<:AbstractFloat}(rbfn::trbfn, v::Array{T, 1})
+    function iaf(rbfn::trbfn, v::Array{R, 1}) where R<:AbstractFloat
         s = size(rbfn.hl_ltwm, 1)
         oh = zeros(T, eltype(rbfn.hl_ltwm), s)
-        for i = 1:s oh[i] = rbfn.rbf(rbfn.df(v, rbfn.hl_ltwm[i, :]), rbfn.hl_th[i]) end
-        return (rbfn.ol_ltwm * append!(oh, ones(T, 1)))
+        
+		@inbounds for i = 1:s 
+			oh[i] = rbfn.rbf(rbfn.df(v, rbfn.hl_ltwm[i, :]), rbfn.hl_th[i]) 
+		end
+        
+		return (rbfn.ol_ltwm * append!(oh, ones(T, 1)))
     end
 
 
@@ -87,7 +91,7 @@
     # alpha = evalation of the threshold derivate
     # beta = weight decay factor
     ##-----------------------------------------------------------------------------------
-    function gdb!{T<:AbstractFloat, N<:Integer}(rbfn::trbfn, td::Array{Any, 1}, lr::N = 1, max_ep::N = 1000, max_err::T = .01, alpha::T = .2, beta = 1)
+    function gdb!(rbfn::trbfn, td::Array{Any, 1}, lr::Z = 1, max_ep::Z = 1000, max_err::R = .01, alpha::R = .2, beta::R = 1.) where R<:AbstractFloat where Z<:Integer
         ntt = (zeros(T, rbfn.hl_ltwm), zeros(T, rbfn.hl_th), zeros(T, rbfn.ol_ltwm))    # network trainings type
         cvs = convert(Int, round(1.5*length(td) / log(length(td))))                     # cross validation sample size
         dlf = (x) -> x + (alpha * sign(x))                                              # derivate lifting function

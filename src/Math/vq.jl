@@ -5,7 +5,7 @@
 	export lvq
 
 	##-----------------------------------------------------------------------------------
-	function lvq{T<:Number}(vl::Array{Array{T, 1}, 1}, nn::Array{Array{T, 1}, 1}, eta::Function = (x) -> 0.2, max_epoch::Integer = 100)
+	function lvq(vl::Array{Array{T, 1}, 1}, nn::Array{Array{T, 1}, 1}, eta::Function = (x) -> 0.2, max_epoch::Z = 100) where T<:Number where Z<:Integer
 		for i in 1:max_epoch															# vl = data as vector list
 			bn = [0, inf]																# nn = probing points as vectorlist
 			@inbounds for v = 1:length(vl)												# eta = learn value function
@@ -30,7 +30,7 @@
 	export kmeans
 
 	##-----------------------------------------------------------------------------------
-	function kmeans{T<:Number, N<:Integer}(vl::Array{Array{T, 1}, 1}, k::N, max_iter::N = 100, dist::Function = (l, v) -> soq(l, v))
+	function kmeans(vl::Array{Array{T, 1}, 1}, k::Z, max_iter::Z = 100, dist::Function = (l, v) -> soq(l, v)) where T<:Number where Z<:Integer
 		l = size(vl[1], 1)
 		j = size(vl, 1)
 		cl = fill(0, j)

@@ -5,7 +5,7 @@
 	export wfcc
 
 	##-----------------------------------------------------------------------------------
-	function wfcc{T<:Integer}(pairs::Dict{T, Array{T, 1}}, space::Tuple{T, T}, border_type::T, start::Tuple{T, T, T})
+	function wfcc(pairs::Dict{Z, Array{Z, 1}}, space::Tuple{Z, Z}, border_type::Z, start::Tuple{Z, Z, Z}) where Z<:Integer
 		plane = fill(-1, space[1], space[2])											# to be filled plane
 		plane[start[1], start[2]] = start[3]											# set intial tile
 
@@ -58,22 +58,24 @@
 	##===================================================================================
 	##	internal functions
 	##===================================================================================
-	u{T<:Integer}(vl::Array{Array{Tuple{T, T}, 1}, 1}) = vcat(vl[1], vl[2])
+	u(vl::Array{Array{Tuple{Z, Z}, 1}, 1}) where Z<:Integer = vcat(vl[1], vl[2])
 
 	##-----------------------------------------------------------------------------------
-	function nigb{T<:Integer}(p::Tuple{T, T}, s::Tuple{T, T}, plane::Array{T, 2})
+	function nigb(p::Tuple{Z, Z}, s::Tuple{Z, Z}, plane::Array{Z, 2}) where Z<:Integer
 		c = [(p[1]+1, p[2]), (p[1], p[2]+1), (p[1]-1, p[2]), (p[1], p[2]-1)]
 		r = [Array{Tuple{T, T}, 1}(), Array{Tuple{T, T}, 1}()]
+		
 		@inbounds for i=1:4
 			if c[i][1]>0 && c[i][2]>0 && c[i][1]<=s[1] && c[i][2]<=s[2]
 				push!(r[(plane[c[i][1], c[i][2]] == -1) ? 2 : 1], c[i]) # 1 df | 2 idf
 			end
 		end
+		
 		return r
 	end
 
 	##-----------------------------------------------------------------------------------
-	function nigbt{T<:Integer}(nb::Array{Tuple{T, T}, 1}, plane::Array{T, 2}, pairs::Dict{T, Array{T, 1}}, border_type::T)
+	function nigbt(nb::Array{Tuple{Z, Z}, 1}, plane::Array{Z, 2}, pairs::Dict{Z, Array{Z, 1}}, border_type::Z) where Z<:Integer
 		nt = map((x) -> pairs[plane[x[1], x[2]]], nb)
 		if length(nt)<4; push!(nt, pairs[border_type]) end
 		return nt

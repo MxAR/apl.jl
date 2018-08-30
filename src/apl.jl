@@ -1,7 +1,7 @@
 # path to apl
 path = "/home/mxar/Documents/projects/"
 
-#import Distributed.@everywhere
+import Distributed.@everywhere
 
 # atomic modules
 include(string(path, "apl.jl/src/ADT/graph.jl"))

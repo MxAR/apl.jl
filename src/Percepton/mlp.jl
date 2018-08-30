@@ -2,7 +2,7 @@
     ##===================================================================================
     ##  types
     ##===================================================================================
-    type tlayer{T<:AbstractFloat, N<:Int}
+    mutable struct tlayer{T<:AbstractFloat, N<:Int}
         LTWM::Array{T, 2}                                                            # Layer-Transition-Weight-Matrix | x = current y = preceding
         LTWMD::Array{T, 2}
         Threshold::Array{T, 1}
@@ -11,7 +11,7 @@
         PreceedingLayer::N
     end
 
-    type tmlp{T<:Int}                                                                           # MultilayerPercepton
+    mutable struct tmlp{T<:Int}                                                                           # MultilayerPercepton
         Layers::Array{Any, 1}
         ThresholdFunction::Function
         ThresholdFunctionDerivate::Function
@@ -26,12 +26,12 @@
     export tmlpv0, disjuncfunc_to_tmlp
 
     ##-----------------------------------------------------------------------------------
-    function tmlpv0{N<:Integer}(NumberOfInputs::N, NeuronsPerLayer::Array{N, 1}, ThresholdFunction::Function, ThresholdFunctionDerivate::Function, RandomWeights::Bool = true)
+    function tmlpv0(NumberOfInputs::Z, NeuronsPerLayer::Array{Z, 1}, ThresholdFunction::F, ThresholdFunctionDerivate::F, RandomWeights::Bool = true) where Z<:Integer where F<:Function
         MLP = tmlp([], ThresholdFunction, ThresholdFunctionDerivate, 1, length(NeuronsPerLayer))
         for (i, l) in enumerate(NeuronsPerLayer)
             push!(MLP.Layers, tlayer(
-                RandomWeights == true ? rand(l, NumberOfInputs) * 0.5 : zeros(l, NumberOfInputs), zeros(l, NumberOfInputs),
-                RandomWeights == true ? rand(l) * 0.5 : zeros(l), zeros(l), i+1, i-1))
+                RandomWeights ? rand(l, NumberOfInputs) * 0.5 : zeros(l, NumberOfInputs), zeros(l, NumberOfInputs),
+                RandomWeights ? rand(l) * 0.5 : zeros(l), zeros(l), i+1, i-1))
             NumberOfInputs = l
         end
         return MLP
@@ -74,7 +74,7 @@
     export iaf
 
     ##-----------------------------------------------------------------------------------
-    function iaf{T<:AbstractFloat}(MLP::tmlp, V::Array{T, 1})
+    function iaf(MLP::tmlp, V::Array{R, 1}) where R<:AbstractFloat
         NextLayer = MLP.FirstHiddenLayer
         while true
             V = map(MLP.ThresholdFunction, *(MLP.Layers[NextLayer].LTWM, V), MLP.Layers[NextLayer].Threshold)
@@ -89,7 +89,7 @@
     export gdb!
 
     ##-----------------------------------------------------------------------------------
-    function gdb!{T<:AbstractFloat, N<:Integer}(MLP::tmlp, TrainingData::Array{Array{Array{T, 1}, 1}, 1}, LearningRate::T = 0.2, MaxEp::N = 2000, MaxErr::T = 0.01, Alpha::T = 0.2, Beta::T = 0.998)
+    function gdb!(MLP::tmlp, TrainingData::Array{Array{Array{R, 1}, 1}, 1}, LearningRate::R = 0.2, MaxEp::Z = 2000, MaxErr::R = 0.01, Alpha::R = 0.2, Beta::R = 0.998) where R<:AbstractFloat where Z<:Integer
         CVSize = convert(Int, round(length(TrainingData) / log(length(TrainingData))))  # TrainingData example:
         CVSize = 10
         NetworkLength = length(MLP.Layers)                                              # second subarray: output
