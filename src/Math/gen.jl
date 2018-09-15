@@ -204,14 +204,16 @@
 
 	##-----------------------------------------------------------------------------------
 	function hadamard(s::Z) where Z<:Integer
-		r = Array{Z, 2}(s, s)
+		r = fill(-1, s, s)
 		i = UInt(1)
 		k = UInt(0)
 
-		while i <= s
+		@inbounds while i <= s
 			j = UInt(1)
 			while j <= s
-				@inbounds r[i, j] = bit_dot(k, j - 1) % 2 == 0 ? 1 : -1
+				if bit_dot(k, j - 1) % 2 == 0
+					r[i, j] = 1
+				end
 				j = j + 1
 			end
 			k = k + 1

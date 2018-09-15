@@ -3,7 +3,9 @@
 	## using directives
 	##===================================================================================
 	using LinearAlgebra.BLAS
-
+	using SparseArrays
+	using SharedArrays
+	using Distributed
 
 	##===================================================================================
 	## BLAS wrapper
@@ -222,6 +224,51 @@
 
 		r = (s * (((s + 1) * r1) - ((s - 1) * (r0 / s)))) / ((s - 1) * (s - 2) * (s - 3))
 		return r
+	end
+
+
+	##===================================================================================
+	## fast johnson-lindenstrauss transfor n
+	##===================================================================================
+	export fjlt
+
+	##-----------------------------------------------------------------------------------
+	function fjlt(n::Z, d::Z, eps::R, p::Z) where Z<:Integer where R<:Real
+		@fastmath begin
+			q = min(1., ((eps^(p - 2)) * (log(n)^p)) / d)
+			k = Z(ceil(log(n)*eps^-2)) 
+			a = d^-.5
+		end
+
+		m_p = SharedArray{R, 2}(k, d)
+		m_h = SharedArray{R, 2}(d, d)
+		m_d = SharedArray{R, 2}(d, d)
+
+		@sync @distributed for i = 1:(k * d)
+			@fastmath m_p[i] = rand() >= q ? randn() / q : 0.
+		end
+
+		@sync @distributed for i = 1:d 
+			for j = 1:d
+				m_d[i, j] = i == j ? (rand(Bool) ? 1. : -1.) : 0.
+
+				if j < i 
+					continue
+				end
+
+				if Bool((((((i - 1) & (j - 1)) * 0x0101010101010101) & 0x8040201008040201) % 0x1FF) & 1)
+					m_h[i, j] = a
+					m_h[j, i] = a
+				else
+					m_h[i, j] = -a
+					m_h[j, i] = -a
+				end
+			end
+		end
+
+		return ((dropzeros(sparse(m_p); trim=true) *
+				 dropzeros(sparse(m_d); trim=true)) *
+				sparse(m_h))
 	end
 
 

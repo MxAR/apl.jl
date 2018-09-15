@@ -1,5 +1,12 @@
 @everywhere module f
 	##===================================================================================
+	## using directives
+	##===================================================================================
+	using LinearAlgebra
+	using FFTW
+
+
+	##===================================================================================
 	## prime factorisation 
 	##	- not determinitistic
 	##	- using an augumented Pollard-Strassen method
@@ -116,67 +123,6 @@
 
 		return n
 	end 
-
-
-	##===================================================================================
-	##	nth root of matrix
-	##		m: must be a square matrix
-	##===================================================================================
-	export nroot, nroot_posdef
-
-	##-----------------------------------------------------------------------------------
-	function nroot(m::Array{T, 2}, n::Z = 2) where T<:Number where Z<:Integer
-		C = Complex128
-		g = Base.LinAlg.Eigen{C,C,Array{C,2},Array{C,1}}(eigfact(m; permute=false, scale=false))
-		s = size(m, 1)
-		p = C(1/n)
-		
-		r = Array{C, 2}(s, s)
-		i = 1
-
-		@inbounds while i <= s
-			j = 1
-
-			while j < i 
-				r[i, j] = C(0)
-				r[j, i] = r[i, j]
-				j = j + 1
-			end 
-
-			r[i, i] = g[:values][i]^p
-			i = i + 1
-		end
-		
-		r = g[:vectors]*r*inv(g[:vectors])
-		return r
-	end 
-
-	##-----------------------------------------------------------------------------------
-	function nroot_posdef(m::Array{T, 2}, n::Z = 2) where T<:Number where Z<:Integer
-		R = Float64
-		g = Base.LinAlg.Eigen{R,R,Array{R,2},Array{R,1}}(eigfact(m; permute=false, scale=false))
-		s = size(m, 1)
-		p = R(1/n)
-
-		r = Array{R, 2}(s, s)
-		i = 1
-
-		@inbounds while i <= s
-			j = 1
-
-			while j < i
-				r[i, j] = R(0)
-				r[j, i] = r[i, j]
-				j = j + 1
-			end
-
-			@fastmath r[i, i] = g[:values][i]^p
-			i = i + 1
-		end
-
-		r = g[:vectors]*r*inv(g[:vectors])
-		return r
-	end
 
 
 	##===================================================================================
@@ -410,10 +356,8 @@
 	##-----------------------------------------------------------------------------------
 	function dctdnoise(v::Array{R, 1}, k::Z, lowpass::Bool, highpass::Bool) where R<:AbstractFloat where Z<:Integer
 		s = size(v, 1)
-		t = Array{R, 1}(s)
 		p = plan_dct(v)
-
-		A_mul_B!(t, p, v)
+		t =  p * v
 
 		m = R(0)
 		d = R(0)

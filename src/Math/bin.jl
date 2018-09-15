@@ -6,8 +6,8 @@
 
 	##-----------------------------------------------------------------------------------
 	function bit_dot(a::N, b::N) where N<:Unsigned
-		p = bits(a)
-		q = bits(b)
+		p = bitstring(a)
+		q = bitstring(b)
 		c = 0
 		i = 1
 
