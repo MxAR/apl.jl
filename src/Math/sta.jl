@@ -2,6 +2,7 @@
 	##===================================================================================
 	## using directives
 	##===================================================================================
+	using SpecialFunctions
 	using Distributed
 
 	
@@ -13,6 +14,21 @@
 	##-----------------------------------------------------------------------------------
 	function bernoulli(n::Z, k::Z, p::R) where R<:Real where Z<:Integer
 		return comb(n, k) * (p^k) * ((1 - p)^(n - k))
+	end
+
+
+	##===================================================================================
+	## c4 correction for the standard deviation of normally distributed data
+	##	n = 343 is the current upper computable limit
+	##===================================================================================
+	export c4
+
+	##-----------------------------------------------------------------------------------
+	function c4(n::Z) where Z<:Integer
+		@assert(n > 1, "n has to be greater than 1")
+		a = (n - 1) / 2
+		
+		return (a^-.5) * (gamma(n / 2) / gamma(a))
 	end
 
 
