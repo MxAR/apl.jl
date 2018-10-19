@@ -12,8 +12,8 @@ include(string(path, "apl.jl/src/Automatons/tuma.jl"))
 include(string(path, "apl.jl/src/Convertation/cnv.jl"))
 include(string(path, "apl.jl/src/IO/const.jl"))
 include(string(path, "apl.jl/src/IO/tmp_op.jl"))
-include(string(path, "apl.jl/src/MarketIndicators/rsi.jl"))
-include(string(path, "apl.jl/src/MarketIndicators/stosc.jl"))
+include(string(path, "apl.jl/src/technical_indicators/rsi.jl"))
+include(string(path, "apl.jl/src/technical_indicators/stosc.jl"))
 include(string(path, "apl.jl/src/Math/bin.jl"))
 include(string(path, "apl.jl/src/Math/dist.jl"))
 include(string(path, "apl.jl/src/Math/rnd.jl"))
@@ -43,8 +43,8 @@ using .pkg
 # composite modules
 include(string(path, "apl.jl/src/Math/gen.jl"))					# bin
 include(string(path, "apl.jl/src/Eva/eva.jl"))					# op/gen
-include(string(path, "apl.jl/src/MarketIndicators/bb.jl")) 		# sta
-include(string(path, "apl.jl/src/MarketIndicators/macd.jl")) 	# mean	
+include(string(path, "apl.jl/src/technical_indicators/bb.jl")) 	# sta
+include(string(path, "apl.jl/src/technical_indicators/macd.jl"))# mean	
 include(string(path, "apl.jl/src/Math/mpa.jl"))					# f	
 include(string(path, "apl.jl/src/Math/f.jl"))					# cnv/gen/op
 include(string(path, "apl.jl/src/Math/bla.jl"))					# mean/op
@@ -53,8 +53,8 @@ include(string(path, "apl.jl/src/Math/trig.jl"))				# bla
 include(string(path, "apl.jl/src/Math/vq.jl"))					# f
 include(string(path, "apl.jl/src/Percepton/mlp.jl"))			# f
 include(string(path, "apl.jl/src/Percepton/pct.jl"))			# f
-include(string(path, "apl.jl/src/ProcedualGeneration/wfc.jl"))	# f/cnv 	
-include(string(path, "apl.jl/src/RBFNetworks/rbfn.jl"))			# f
+include(string(path, "apl.jl/src/procedual_generation/wfc.jl"))	# f/cnv 	
+include(string(path, "apl.jl/src/rbf_networks/rbfn.jl"))		# f
 
 # composite usings
 using .gen
