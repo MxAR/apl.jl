@@ -2,9 +2,32 @@
 	##===================================================================================
 	## using directives
 	##===================================================================================
-	using SpecialFunctions
 	using LinearAlgebra
 	using FFTW
+
+	##===================================================================================
+	## log factorial
+	##	b: base of the logarithm
+	##===================================================================================
+	export lfactorial
+
+	##-----------------------------------------------------------------------------------
+	function lfactorial(x::Z) where Z<:Integer
+		@assert(x >= 0, "x has to be non negative")
+		r = 0.
+
+		@inbounds for i = 2:x
+			r = r + log(i)
+		end
+
+		return r
+	end
+
+	##-----------------------------------------------------------------------------------
+	function lfactorial(b::R, x::Z) where R<:AbstractFloat where Z<:Integer
+		return lfactorial(x) / log(b)
+	end
+
 
 	##===================================================================================
 	## binomial probabilities
@@ -14,18 +37,19 @@
 
 	##-----------------------------------------------------------------------------------
 	function binomp(m::Z, n::Z, p::R, q::R) where Z <:Integer where R<:AbstractFloat
-		s = R(m + n)
+		s = m + n
+		r = R(0)
 
 		if s > 20
-			s = lgamma(s + 1) + m*log(p) + n*log(q) 
-			s = s + lgamma(m + 1) + lgamma(n + 1)
-			s = exp(s)
+			r = lfactorial(s) + m*log(p) + n*log(q) 
+			r = r - lfactorial(m) - lfactorial(n)
+			r = exp(r)
 		else
-			s = factorial(s) * (p^m) * (q^n) 
-			s = s / (factorial(m) * factorial(n))
+			r = factorial(s) * (p^m) * (q^n) 
+			r = r / (factorial(m) * factorial(n))
 		end
 
-		return s
+		return r
 	end
 
 
