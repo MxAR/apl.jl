@@ -6,13 +6,22 @@
 	using FFTW
 
 	##===================================================================================
-	## tau (2*pi)
+	## pochhammer symbol (x + n - 1)!/(x - 1)!
 	##===================================================================================
-	const tau_f128 = BigFloat(2 * BigFloat(pi))
-	const tau_f64 = convert(Float64, tau_f128)
-	const tau_f32 = convert(Float32, tau_f128)
-	const tau_f16 = convert(Float16, tau_f128)
-	const tau = tau_f64
+	export pochhammer
+
+	##-----------------------------------------------------------------------------------
+	function pochhammer(x::Z, n::Z) where Z<:Integer
+		r = Z(1)
+		i = x
+
+		while i <= n 
+			r = r * i
+			i = i + 1
+		end
+
+		return r
+	end 
 
 
 	##===================================================================================
@@ -610,7 +619,7 @@
 	end
 
 	##-----------------------------------------------------------------------------------
-	function binom(n::Z, k::Z) where Z<:Integer
+	function binomi(n::Z, k::Z) where Z<:Integer
 		r = NaN
 
 		if k < 0
