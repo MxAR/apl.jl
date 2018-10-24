@@ -932,6 +932,24 @@
 		return msplit(m, convert(Int, round(size(m, by_rows ? 1 : 2)/2)), by_rows)
     end
 
+	
+	##===================================================================================
+	## projection matrix X*inv(X'*X)*X'
+	##===================================================================================
+	export projm
+
+	##-----------------------------------------------------------------------------------
+	function projm(m::Array{R, 2}) where R<:AbstractFloat
+		A = gram(m)
+
+		(A, ipiv, _) = LAPACK.getrf!(A)
+		A = LAPACK.getri!(A, ipiv)
+		
+		A = BLAS.gemm('N', 'T', A, m)
+		A = BLAS.gemm('N', 'N', m, A)
+
+		return A
+	end
 
 	##===================================================================================
 	## ordinary least squares (qr)
