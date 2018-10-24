@@ -5,6 +5,58 @@
 	using LinearAlgebra
 	using FFTW
 
+
+	##===================================================================================
+	## fast walsh hadamard transform
+	##===================================================================================
+	export fwht!, fwht
+
+	##-----------------------------------------------------------------------------------
+	function fwht!(v::Array{R, 1}) where R<:AbstractFloat
+		s = size(v, 1)
+
+		@assert(log(2, s) % 1 == 0., "the array must be a power of 2")
+		@assert(s > 0, "the array mustn't be empty")
+
+		return fwht_unsafe!(v, s)
+	end
+
+	##-----------------------------------------------------------------------------------
+	function fwht(v::Array{R, 1}) where R<:AbstractFloat
+		s_v = size(v, 1)
+		@assert(s_v > 0, "the array mustn't be empty")
+		
+		s_w = 2^ceil(Int, log(2, s_v))
+		w = zeros(R, s_w)
+
+		@inbounds for i = 1:s_v
+			w[i] = v[i]
+		end
+
+		return fwht_unsafe!(w, s_w)
+	end
+
+	##-----------------------------------------------------------------------------------
+	function fwht_unsafe!(v::Array{R, 1}, s::Z) where R<:AbstractFloat where Z<:Integer
+		h = 1
+	
+		@inbounds while h < s
+			d = h * 2
+			for i = 1:d:(s)
+				for j = i:(i + h - 1)
+					x = v[j]
+					y = v[j + h]
+					v[j] = x + y
+					v[j + h] = x - y
+				end
+			end 
+			h = d
+		end
+
+		return v
+	end
+
+
 	##===================================================================================
 	## pochhammer symbol (x + n - 1)!/(x - 1)!
 	##===================================================================================
