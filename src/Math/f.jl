@@ -7,7 +7,7 @@
 
 
 	##===================================================================================
-	## fast walsh hadamard transform
+	## fast walsh hadamard transform (bilateral)
 	##===================================================================================
 	export fwht!, fwht
 
@@ -26,7 +26,7 @@
 		s_v = size(v, 1)
 		@assert(s_v > 0, "the array mustn't be empty")
 		
-		s_w = 2^ceil(Int, log(2, s_v))
+		s_w = 2^ceil(Int, log(2, Base.sitofp(R, s_v)))
 		w = zeros(R, s_w)
 
 		@inbounds for i = 1:s_v
@@ -51,6 +51,12 @@
 				end
 			end 
 			h = d
+		end
+
+		a = Base.Math.sqrt_llvm(Base.sitofp(R, s))
+		
+		@inbounds  for i = 1:s
+			v[i] = v[i] / a
 		end
 
 		return v
