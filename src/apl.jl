@@ -1,27 +1,31 @@
 # path to apl
-path = "/home/mxar/Documents/projects/"
+path = "/home/mxar/Documents/projects/apl.jl/"
 
+# start a worker for each cpu thread
+include(string(path, "src/start_workers.jl"))
+
+# import everywhere directive for the modules
 import Distributed.@everywhere
 
 # atomic modules
-include(string(path, "apl.jl/src/ADT/graph.jl"))
-include(string(path, "apl.jl/src/ADT/heap.jl"))
-include(string(path, "apl.jl/src/Automatons/dfa.jl"))
-include(string(path, "apl.jl/src/Automatons/pda.jl"))
-include(string(path, "apl.jl/src/Automatons/tuma.jl"))
-include(string(path, "apl.jl/src/Convertation/cnv.jl"))
-include(string(path, "apl.jl/src/IO/const.jl"))
-include(string(path, "apl.jl/src/IO/tmp_op.jl"))
-include(string(path, "apl.jl/src/technical_indicators/rsi.jl"))
-include(string(path, "apl.jl/src/technical_indicators/stosc.jl"))
-include(string(path, "apl.jl/src/Math/bin.jl"))
-include(string(path, "apl.jl/src/Math/constants.jl"))
-include(string(path, "apl.jl/src/Math/dist.jl"))
-include(string(path, "apl.jl/src/Math/rnd.jl"))
-include(string(path, "apl.jl/src/Math/mean.jl"))
-include(string(path, "apl.jl/src/Math/op.jl"))
-include(string(path, "apl.jl/src/Math/yamartino.jl"))
-include(string(path, "apl.jl/src/Packages/pkg.jl"))
+include(string(path, "src/ADT/graph.jl"))
+include(string(path, "src/ADT/heap.jl"))
+include(string(path, "src/Automatons/dfa.jl"))
+include(string(path, "src/Automatons/pda.jl"))
+include(string(path, "src/Automatons/tuma.jl"))
+include(string(path, "src/Convertation/cnv.jl"))
+include(string(path, "src/IO/const.jl"))
+include(string(path, "src/IO/tmp_op.jl"))
+include(string(path, "src/technical_indicators/rsi.jl"))
+include(string(path, "src/technical_indicators/stosc.jl"))
+include(string(path, "src/Math/bin.jl"))
+include(string(path, "src/Math/constants.jl"))
+include(string(path, "src/Math/dist.jl"))
+include(string(path, "src/Math/rnd.jl"))
+include(string(path, "src/Math/mean.jl"))
+include(string(path, "src/Math/op.jl"))
+include(string(path, "src/Math/yamartino.jl"))
+include(string(path, "src/Packages/pkg.jl"))
 
 # atomic usings
 using .graph
@@ -42,20 +46,20 @@ using .yamartino
 using .pkg
 
 # composite modules
-include(string(path, "apl.jl/src/Math/gen.jl"))					# bin
-include(string(path, "apl.jl/src/Eva/eva.jl"))					# op/gen
-include(string(path, "apl.jl/src/technical_indicators/bb.jl")) 	# sta
-include(string(path, "apl.jl/src/technical_indicators/macd.jl"))# mean	
-include(string(path, "apl.jl/src/Math/mpa.jl"))					# f	
-include(string(path, "apl.jl/src/Math/f.jl"))					# cnv/gen/op
-include(string(path, "apl.jl/src/Math/bla.jl"))					# mean/op
-include(string(path, "apl.jl/src/Math/sta.jl"))					# mean/bla
-include(string(path, "apl.jl/src/Math/trig.jl"))				# bla
-include(string(path, "apl.jl/src/Math/vq.jl"))					# f
-include(string(path, "apl.jl/src/Percepton/mlp.jl"))			# f
-include(string(path, "apl.jl/src/Percepton/pct.jl"))			# f
-include(string(path, "apl.jl/src/procedual_generation/wfc.jl"))	# f/cnv 	
-include(string(path, "apl.jl/src/rbf_networks/rbfn.jl"))		# f
+include(string(path, "src/Math/gen.jl"))					# bin
+include(string(path, "src/Eva/eva.jl"))						# op/gen
+include(string(path, "src/technical_indicators/bb.jl")) 	# sta
+include(string(path, "src/technical_indicators/macd.jl"))	# mean	
+include(string(path, "src/Math/mpa.jl"))					# f	
+include(string(path, "src/Math/f.jl"))						# cnv/gen/op
+include(string(path, "src/Math/bla.jl"))					# mean/op
+include(string(path, "src/Math/sta.jl"))					# mean/bla
+include(string(path, "src/Math/trig.jl"))					# bla
+include(string(path, "src/Math/vq.jl"))						# f
+include(string(path, "src/Percepton/mlp.jl"))				# f
+include(string(path, "src/Percepton/pct.jl"))				# f
+include(string(path, "src/procedual_generation/wfc.jl"))	# f/cnv 	
+include(string(path, "src/rbf_networks/rbfn.jl"))			# f
 
 # composite usings
 using .gen
