@@ -48,7 +48,7 @@
 		end
 
 		if y == R(0)
-			return x^
+			return x^2
 		end
 
 		if abs(x) > abs(y)
