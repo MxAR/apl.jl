@@ -89,7 +89,11 @@
 
 	##-----------------------------------------------------------------------------------
 	function poisson(lambda::R, x::Z) where R<:AbstractFloat where Z<:Integer
-		@fastmath return exp(x * ln(lambda) - lambda - lfactorial(x))
+		if x > 20
+			@fastmath return exp(x * ln(lambda) - lambda - lfactorial(x))
+		else
+			@fastmath return (lambda^x) / (exp(lambda) * factorial(x))
+		end
 	end
 
 
