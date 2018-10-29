@@ -8,7 +8,61 @@
 	using SharedArrays
 	using Distributed
 
-	
+
+	##===================================================================================
+	## hypotenuse (numerically stable)
+	##===================================================================================
+	export hypot, hypot_sq
+
+	##-----------------------------------------------------------------------------------
+	function hypot(x::R, y::R) where R<:AbstractFloat
+		a = undef
+		b = undef
+		
+		if x == R(0)
+			return x == y ? R(0) : abs(y)
+		end
+
+		if y == R(0)
+			return abs(x)
+		end
+
+		if abs(x) > abs(y)
+			a = y / x
+			b = abs(x)
+		else
+			a = x / y
+			b = abs(y)
+		end
+
+		return b * Base.Math.sqrt_llvm(R(1) + a^2)
+	end
+
+	##-----------------------------------------------------------------------------------
+	function hypot(x::R, y::R) where R<:AbstractFloat
+		a = undef
+		b = undef
+		
+		if x == R(0)
+			return x == y ? R(0) : y^2
+		end
+
+		if y == R(0)
+			return x^
+		end
+
+		if abs(x) > abs(y)
+			a = y / x
+			b = x^2
+		else
+			a = x / y
+			b = y^2
+		end
+
+		return b * (R(1) + a^2)
+	end	
+
+
 	##===================================================================================
 	## BLAS wrapper
 	##	l = length of the vector
