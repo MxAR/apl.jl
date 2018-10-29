@@ -83,6 +83,17 @@
 
 
 	##===================================================================================
+	## poisson probability
+	##===================================================================================
+	export poisson
+
+	##-----------------------------------------------------------------------------------
+	function poisson(lambda::R, x::Z) where R<:AbstractFloat where Z<:Integer
+		@fastmath return exp(x * ln(lambda) - lambda - lfactorial(x))
+	end
+
+
+	##===================================================================================
 	## log factorial
 	##	b: base of the logarithm
 	##===================================================================================
@@ -94,7 +105,7 @@
 		r = 0.
 
 		@inbounds for i = 2:x
-			r = r + log(i)
+			r = r + ln(i)
 		end
 
 		return r
@@ -102,7 +113,7 @@
 
 	##-----------------------------------------------------------------------------------
 	function lfactorial(b::R, x::Z) where R<:AbstractFloat where Z<:Integer
-		return lfactorial(x) / log(b)
+		return lfactorial(x) / ln(b)
 	end
 
 
