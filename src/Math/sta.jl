@@ -2,6 +2,7 @@
 	##===================================================================================
 	## using directives
 	##===================================================================================
+	using LinearAlgebra.BLAS
 	using SpecialFunctions
 	using Distributed
 
@@ -404,7 +405,7 @@
 
     ##-----------------------------------------------------------------------------------
     function cov(l::Z, x::Array{R, 1}, n1::Z, y::Array{R, 1}, n2::Z) where R<:AbstractFloat where Z<:Integer
-        m1 = m2 = T(0)
+        m1 = m2 = R(0)
 
 		s = n1 * l
 		@assert(s <= size(x, 1), "out of bounds error")
