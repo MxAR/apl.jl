@@ -64,6 +64,60 @@
 
 
 	##===================================================================================
+	## basis pursuit denosing via [singular] in-crowd algorithm (L = 1)
+	##===================================================================================
+	export bpdn_sic
+
+	##-----------------------------------------------------------------------------------
+	function bpdn_sic(A::Array{R, 2}, y::Array{R, 1}, lambda::R) where R<:AbstractFloat
+		s = size(A)
+
+		b = zeros(R, s[1], 1)
+		x = zeros(R, s[2])
+		r = copy(y)
+		
+		while true
+			a_suparg = Int(0)
+			a_sup = R(-Inf)
+			
+			for i = 1:s[2]
+				if x[i] != 0
+					continue
+				end
+
+				a = R(0)
+
+				for j = 1:s[1]
+					a = a + r[j] * A[j, i]
+				end
+
+				a = abs(a)
+
+				if a > lambda && a > a_sup
+					a_suparg = i
+					a_sup = a
+				end
+			end
+	
+			if a_suparg == 0
+				return x
+			end
+
+			for i = 1:s[1]
+				b[i, 1] = A[i, a_suparg]
+			end
+
+			x[a_suparg] = (b \ r)[1]
+			a = x[a_suparg]
+
+			for i = 1:s[1]
+				r[i] = r[i] - a * A[i, a_suparg] 
+			end
+		end
+	end
+
+
+	##===================================================================================
 	## BLAS wrapper
 	##	l = length of the vector
 	##===================================================================================
