@@ -72,27 +72,28 @@
 	function bpdn_sic(A::Array{R, 2}, y::Array{R, 1}, lambda::R) where R<:AbstractFloat
 		s = size(A)
 
-		b = zeros(R, s[1], 1)
 		x = zeros(R, s[2])
 		r = copy(y)
-		
+	
+		a_suparg = Int(0)
+		a_sup = R(0)
+		a = R(0)
+
 		while true
 			a_suparg = Int(0)
 			a_sup = R(-Inf)
 			
-			for i = 1:s[2]
+			@inbounds for i = 1:s[2]
 				if x[i] != 0
 					continue
 				end
 
 				a = R(0)
-
 				for j = 1:s[1]
 					a = a + r[j] * A[j, i]
 				end
 
-				a = abs(a)
-
+				a = abs(a)	
 				if a > lambda && a > a_sup
 					a_suparg = i
 					a_sup = a
@@ -103,14 +104,15 @@
 				return x
 			end
 
-			for i = 1:s[1]
-				b[i, 1] = A[i, a_suparg]
+			a = R(0)
+			@inbounds for i = 1:s[1]
+				a = a + A[i, a_suparg]^2
 			end
 
-			x[a_suparg] = (b \ r)[1]
+			x[a_suparg] = a_sup / a
 			a = x[a_suparg]
 
-			for i = 1:s[1]
+			@inbounds for i = 1:s[1]
 				r[i] = r[i] - a * A[i, a_suparg] 
 			end
 		end
@@ -181,7 +183,7 @@
 	export soq, soqu, soqc
 
 	##-----------------------------------------------------------------------------------
-	function soq(l::R, v::Array{R, 1}, n::Z = 1) where R<:AbstractFloat where Z<:Integer 
+	function soq(l::Z, v::Array{R, 1}, n::Z = 1) where R<:AbstractFloat where Z<:Integer 
 		return BLAS.dot(l, v, n, v, n)
 	end
 
