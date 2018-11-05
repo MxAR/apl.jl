@@ -24,15 +24,16 @@
     function heapify(v::Array{T, 1}, n = 1, max = true, p = 1) where T<:Any				# n = start node
 		c = max ? (<;) : (>;)                                            				# max = if max heap should be build
 		l = length(v)
+		swap = undef
 
         while true                                                                      # p = index (when nodes represent vectors this is the element after which everything is sorted)
             ci = children(n); m = n
             if ci[1] <= l && c(v[n][p], v[ci[1]][p]) m = ci[1] end
             if ci[2] <= l && c(v[m][p], v[ci[2]][p]) m = ci[2] end
             if n == m break; else
-                v[m] = v[m] + v[n]
-                v[n] = v[m] - v[n]
-                v[m] = v[m] - v[n]
+                swap = v[m]
+                v[m] = v[n]
+                v[n] = swap
                 n = m
             end
         end
