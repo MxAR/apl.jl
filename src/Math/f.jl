@@ -7,6 +7,69 @@
 
 
 	##===================================================================================
+	## log star
+	##===================================================================================
+	export log_star
+
+	##-----------------------------------------------------------------------------------
+	function log_star(x::R) where R<:Real
+		@assert(x > 0, "x musn't be non-positive")
+		z = x
+		c = 0
+
+		while z > R(1)
+			z = ln(z)
+			c = c + 1
+		end
+
+		return c
+	end
+
+	##===================================================================================
+	## super logarithm
+	## slog: approximation of slog
+	## uila_slog: linear approximation of slog over the unit intervall
+	## uiqa_slog: quadratic approximation of slog over the unit intervall
+	## sln: approximation of slog for base e
+	##===================================================================================
+	export slog, uila_slog, uiqa_slog, sln
+
+	##-----------------------------------------------------------------------------------
+	function slog(base::N, x::N, linear_approximation::Bool = true) where N<:Number
+		a = N(0)
+		z = x
+
+		while true
+			if z <= 0
+				a = a - 1
+				z = base^z
+			elseif 1 < z
+				a = a + 1
+				z = log(base, z)
+			else
+				return a + (linear_approximation ? uila_slog(z) : uiqa_slog(base, z))
+			end
+		end
+	end
+
+	##-----------------------------------------------------------------------------------
+	function sln(x::N, linear_approximation::Bool = true) where N<:Number
+		return slog(N(MathConstants.e), x, linear_approximation)
+	end
+
+	##-----------------------------------------------------------------------------------
+	function uila_slog(z::N) where N<:Number
+		return z - 1
+	end
+
+	##-----------------------------------------------------------------------------------
+	function uiqa_slog(b::N, z::N) where N<:Number
+		a = ln(b)
+		return ((2 * a * z + (1 - a)*(z^2)) / (1 + a)) - 1
+	end
+
+
+	##===================================================================================
 	## fast walsh hadamard transform (bilateral)
 	##===================================================================================
 	export fwht!, fwht
