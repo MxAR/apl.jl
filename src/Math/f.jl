@@ -13,6 +13,9 @@
 	##		- first index of the maximum subarray
 	##      - last index of the maximum subarray
 	##===================================================================================
+	export max_subarray, max_subarray_sum
+	
+	##-----------------------------------------------------------------------------------
 	function max_subarray(v::Array{N, 1}) where N<:Number
 		sup = sup_tmp = v[1]
 		sup_arg = 0
@@ -34,6 +37,22 @@
 			end
 		end
 	end
+	
+	##-----------------------------------------------------------------------------------
+	function max_subarray_sum(v::Array{T, 1}) where T<:Number
+		sup = T(-Inf)
+		a = T(0)
+
+		@inbounds for i = 1:size(v, 1)
+			a = max(T(0), a + v[i])
+
+			if a > sup
+				sup = a
+			end 
+		end
+
+		return sup
+	end 
 
 
 	##===================================================================================
@@ -361,27 +380,6 @@
 		end
 
 		return n
-	end 
-
-	##===================================================================================
-	## maximum subarray
-	##===================================================================================
-	export max_subarray
-
-	##-----------------------------------------------------------------------------------
-	function max_subarray(v::Array{T, 1}) where T<:Number
-		sup = T(-Inf)
-		a = T(0)
-
-		@inbounds for i = 1:size(v, 1)
-			a = max(T(0), a + v[i])
-
-			if a > sup
-				sup = a
-			end 
-		end
-
-		return sup
 	end 
 
 
