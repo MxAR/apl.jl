@@ -7,6 +7,37 @@
 
 
 	##===================================================================================
+	## solver for the maximum subarray problem
+	## 	returns: 
+	##		- sum of the maximum subarray
+	##		- first index of the maximum subarray
+	##      - last index of the maximum subarray
+	##===================================================================================
+	function max_subarray(v::Array{N, 1}) where N<:Number
+		sup = sup_tmp = v[1]
+		sup_arg = 0
+
+
+		for i = 2:size(v, 1)
+			sup_tmp = max(sup_tmp + v[i], v[i])
+			
+			if sup_tmp > sup
+				sup = sup_tmp
+				sup_arg = i
+			end
+		end
+
+		sup_tmp = sup
+		for i = sup_arg:-1:1
+			sup_tmp = sup_tmp - v[i]
+			if sup_tmp == N(0)
+				return (sup, i, sup_arg)
+			end
+		end
+	end
+
+
+	##===================================================================================
 	## log star
 	##===================================================================================
 	export log_star
