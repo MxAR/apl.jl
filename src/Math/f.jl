@@ -17,8 +17,7 @@
 		sup = sup_tmp = v[1]
 		sup_arg = 0
 
-
-		for i = 2:size(v, 1)
+		@inbounds for i = 2:size(v, 1)
 			sup_tmp = max(sup_tmp + v[i], v[i])
 			
 			if sup_tmp > sup
@@ -27,7 +26,7 @@
 			end
 		end
 
-		sup_tmp = sup
+		@inbounds sup_tmp = sup
 		for i = sup_arg:-1:1
 			sup_tmp = sup_tmp - v[i]
 			if sup_tmp == N(0)
