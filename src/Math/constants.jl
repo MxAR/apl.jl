@@ -16,4 +16,13 @@
 	const euler_f32 = convert(Float32, euler_f128)
 	const euler_f16 = convert(Float16, euler_f128)
 	const euler = euler_f64
+
+	##===================================================================================
+	## fibonacci phi
+	##===================================================================================
+	const fib_phi_f128 = BigFloat(.5) + sqrt(BigFloat(1.25))
+	const fib_phi_f64 = convert(Float64, fib_phi_f128)
+	const fib_phi_f32 = convert(Float32, fib_phi_f128)
+	const fib_phi_f16 = convert(Float16, fib_phi_f128)
+	const fib_phi = fib_phi_f64
 end
