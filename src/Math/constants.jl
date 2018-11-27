@@ -25,4 +25,13 @@
 	const fib_phi_f32 = convert(Float32, fib_phi_f128)
 	const fib_phi_f16 = convert(Float16, fib_phi_f128)
 	const fib_phi = fib_phi_f64
+
+	##===================================================================================
+	## plastic number
+	##===================================================================================
+	const plastic_num_f128 = (0.5 + sqrt(BigFloat(69))/(18))^(1/BigFloat(3)) + (0.5 - sqrt(BigFloat(69))/(18))^(1/BigFloat(3))
+	const plastic_num_f64 = convert(Float64, plastic_num_f128)
+	const plastic_num_f32 = convert(Float32, plastic_num_f128)
+	const plastic_num_f16 = convert(Float16, plastic_num_f128)
+	const plastic_num = plastic_num_f64
 end
