@@ -38,6 +38,7 @@ using .tmp_op
 using .rsi
 using .stosc
 using .bin
+using .constants
 using .dist
 using .rnd
 using .mean
